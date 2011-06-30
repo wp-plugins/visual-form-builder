@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 1.0
+Stable tag: 1.1
 
 Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system. 
 
@@ -79,6 +79,17 @@ To use the more complex features of the Date Picker plugin, you will need to:
 
 == Changelog ==
 
+**Version 1.1**
+
+* Fix bug that prevented all selected checkbox options from being submitted
+* Add more help text on contextual Help tab
+* Fix missing closing paragraph tag on success message
+
 **Version 1.0**
 
 * Plugin launch!
+
+== Upgrade Notice ==
+
+= 1.1 =
+Bug fix for all checkbox options not being submitted

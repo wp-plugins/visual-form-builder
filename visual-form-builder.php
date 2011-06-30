@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.
 Author: Matthew Muro
-Version: 1.0
+Version: 1.1
 */
 
 /*
@@ -26,6 +26,8 @@ $visual_form_builder = new Visual_Form_Builder();
 
 /* Restrict Categories class */
 class Visual_Form_Builder{
+	
+	public $vfb_db_version = '1.1';
 	
 	public function __construct(){
 		global $wpdb;
@@ -62,10 +64,20 @@ class Visual_Form_Builder{
 		add_action( 'template_redirect', array( &$this, 'form_validation' ) );
 	}
 	
+	/**
+	 * Queue plugin CSS for admin styles
+	 * 
+	 * @since 1.0 
+	 */
 	public function form_admin_css(){
 		wp_enqueue_style( 'visual-form-builder-style', plugins_url( 'visual-form-builder' ) . '/css/visual-form-builder-admin.css' );
 	}
 	
+	/**
+	 * Register contextual help. This is for the Help tab dropdown
+	 * 
+	 * @since 1.0 
+	 */
 	public function add_visual_form_builder_contextual_help(){
 		$text = "<p><strong>Getting Started</strong></p>
 					<ul>
@@ -74,6 +86,24 @@ class Visual_Form_Builder{
 						<li>Edit the information for each form field by clicking on the down arrow.</li>
 						<li>Drag and drop the elements to put them in order.</li>
 						<li>Click Save Form to save your changes.</li>
+					</ul>
+				<p><strong>Form Item Configuration</strong></p>
+					<ul>
+						<li><em>Name</em> will change the display name of your form input.</li>
+						<li><em>Description</em> will be displayed below the associated input.</li>
+						<li><em>Validation</em> allows you to select from several of jQuery's Form Validation methods for text inputs. For more about the types of validation, read the <em>Validation</em> section below.</li>
+						<li><em>Required</em> is either Yes or No. Selecting 'Yes' will make the associated input a required field and the form will not submit until the user fills this field out correctly.</li>
+						<li><em>Options</em> will only be active for Radio and Checkboxes.  This field contols how many options are available for the associated input. Multiple options must be separated by commas (ex: <em>Option 1, Option 2, Option 3</em>).</li>
+						<li><em>Size</em> controls the width of Text, Textarea, Select, and Date Picker input fields.  The default is set to Medium but if you need a longer text input, select Large.</li>
+					</ul>
+				<p><strong>Validation</strong><p>
+					<ul>
+						<li>Visual Form Builder uses the <a href='http://docs.jquery.com/Plugins/Validation/Validator'>jQuery Form Validation plugin</a> to perform clientside form validation.</li>
+						<li><em>Email</em>: makes the element require a valid email.</li>
+						<li><em>URL</em>: makes the element require a valid url.</li>
+						<li><em>Date</em>: makes the element require a date. <a href='http://docs.jquery.com/Plugins/Validation/Methods/date'>Refer to documentation for various accepted formats</a>.
+						<li><em>Number</em>: makes the element require a decimal number.</li>
+						<li><em>Digits</em>: makes the element require digits only.</li>
 					</ul>
 				<p><strong>Tips</strong></p>
 					<ul>
@@ -84,8 +114,17 @@ class Visual_Form_Builder{
 		
     	add_contextual_help( 'settings_page_visual-form-builder', $text ); 
 	}
+	
+	/**
+	 * Install database tables
+	 * 
+	 * @since 1.0 
+	 */
 	static function install_db() {
 		global $wpdb;
+		
+		/* Declare version again here because this is a static function */
+		$vfb_db_version = '1.1';
 		
 		$field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
@@ -126,6 +165,14 @@ class Visual_Form_Builder{
 		/* Check to see if the table already exists before creating it */
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '$form_table_name'" ) != $form_table_name )
 		  dbDelta( $form_sql );
+		
+		/* Add a database version to help with upgrades */
+		if ( !get_option( 'vfb_db_version' ) )
+			update_option( 'vfb_db_version', $vfb_db_version );
+		
+		if ( get_option( 'vfb_db_version' ) != $vfb_db_version )
+			update_option( 'vfb_db_version', $vfb_db_version );
+			
 	}
 	
 	/**
@@ -733,7 +780,7 @@ class Visual_Form_Builder{
 		$open_fieldset = false;
 		
 		if ( isset( $_REQUEST['success'] ) && $_REQUEST['success'] == 1 && wp_verify_nonce( $_REQUEST['key'], 'visual-form-builder-success-nonce' ) ) {
-			$output = '<p id="form_success">Your form was successfully submitted. Thank you for contacting us.';
+			$output = '<p id="form_success">Your form was successfully submitted. Thank you for contacting us.</p>';
 		}
 		else {
 			foreach ( $forms as $form ) :
@@ -801,6 +848,7 @@ class Visual_Form_Builder{
 								$output .= '<span><label>' . $field->field_description . '</label></span>';
 							
 							$options = explode( ',', unserialize( $field->field_options ) );
+							
 							$output .= '<div>';
 							
 							/* Loop through each option and output */
@@ -826,8 +874,8 @@ class Visual_Form_Builder{
 							
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
-								$output .= '<span><input type="checkbox" name="'. $field->field_key. '" id="'. $field->field_key. '" value="'. $value . '" class="checkbox ' . $required . '" />'. 
-									' <label for="' . $field->field_key . '" class="choice">' . $value . '</label></span>';
+								$output .= '<span><input type="checkbox" name="'. $field->field_key. '[]" id="'. $field->field_key. '" value="'. trim( $value ) . '" class="checkbox ' . $required . '" />'. 
+									' <label for="' . $field->field_key . '" class="choice">' . trim( $value ) . '</label></span>';
 							}
 							
 							$output .= '</div>';
@@ -1166,7 +1214,7 @@ class Visual_Form_Builder{
 	public function email() {
 		global $wpdb, $post;
 		
-		/* Resets the options */
+		/* Security check before moving any further */
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['visual-form-builder-submit'] == 'Submit' && $_REQUEST['spam'] == '' && is_numeric( $_REQUEST['secret'] ) && strlen( $_REQUEST['secret'] ) == 2 ) {
 			$nonce = $_REQUEST['_wpnonce'];
 			
@@ -1177,6 +1225,7 @@ class Visual_Form_Builder{
 			/* Set submitted action to display success message */
 			$this->submitted = true;
 			
+			/* Tells us which form to get from the database */
 			$form_id = absint( $_REQUEST['form_id'] );
 			
 			/* Query to get all forms */
@@ -1186,6 +1235,7 @@ class Visual_Form_Builder{
 			/* Build our forms as an object */
 			$forms 	= $wpdb->get_results( $query );
 			
+			/* Get sender and email details */
 			foreach ( $forms as $form ) {
 				$form_title = $form->form_title;
 				$form_subject = $form->form_email_subject;
@@ -1199,10 +1249,13 @@ class Visual_Form_Builder{
 					
 			/* Loop through each form field and build the body of the message */
 			foreach ( $_POST as $key => $value ) {
+				/* Remove dashes and lowercase */
 				$key = strtolower( str_replace( '-', ' ', $key ) );
 				
-				$value = esc_html( $value );
+				/* If there are multiple values, build the list, otherwise it's a single value */
+				$value = is_array( $value ) ? implode( ', ', $value ) : esc_html( $value );
 				
+				/* Hide fields that aren't necessary to the body of the message */
 				if ( !in_array( $key, array( 'spam', 'secret', 'visual form builder submit', '_wpnonce', 'form_id' ) ) )
 					$message .= '<tr><td><strong>' . ucwords( $key ) . ': </strong></td><td>' . $value . '</td></tr>';
 			}
@@ -1234,5 +1287,6 @@ class Visual_Form_Builder{
 	}
 }
 
-register_activation_hook(__FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
+/* On plugin activation, install the databases and add/update the DB version */
+register_activation_hook( __FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
 ?>
