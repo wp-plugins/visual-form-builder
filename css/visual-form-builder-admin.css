@@ -1,0 +1,11 @@
+label.error{color:red;display:block;}
+#visual-form-builder-update input.error, #visual-form-builder-update textarea.error{border:1px solid red;}
+.menu-item-handle.fieldset{
+	background-image: -moz-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	background-image: -o-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #E3E3E3), color-stop(1, #CCCCCC));
+	background-image: linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	box-shadow:0 1px 0 #e3e3e3 inset;
+}
+.sender-labels{width:80px;}
+.is-field-required{color:#BC1212; vertical-align:middle;}
