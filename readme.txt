@@ -2,10 +2,10 @@
 Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 1.1
+Tested up to: 3.2.1
+Stable tag: 1.2
 
-Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system. 
+Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.  All form entries are stored in your WordPress database and can be managed using the dashboard.
 
 == Description ==
 
@@ -15,6 +15,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 
 * Setup and organize your form using a drag-and-drop interface
 * Automatically includes a basic logic-based verification system
+* Store form entries in your WordPress database and can manage them via the dashboard.
 * Send form submissions to multiple emails
 * Utilizes jQuery Form Validation
 * Save time by adding a complete address block field
@@ -76,8 +77,17 @@ To use the more complex features of the Date Picker plugin, you will need to:
 
 1. Visual Form Builder page
 2. Configuring field item options
+3. Entries management screen
 
 == Changelog ==
+
+**Version 1.2**
+
+* Fix bug where reserved words may have been used
+* Fix bug where multiple open validation dropdowns could not be used in the builder
+* Add entries tracking and management feature
+* Improve form submission by removing wp_redirect
+* Add Sender Name and Email override
 
 **Version 1.1**
 
@@ -88,8 +98,3 @@ To use the more complex features of the Date Picker plugin, you will need to:
 **Version 1.0**
 
 * Plugin launch!
-
-== Upgrade Notice ==
-
-= 1.1 =
-Bug fix for all checkbox options not being submitted

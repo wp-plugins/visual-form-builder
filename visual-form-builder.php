@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Visual Form Builder
-Description: Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.
+Description: Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.  All form entries are stored in your WordPress database and can be managed using the dashboard.
 Author: Matthew Muro
-Version: 1.1
+Version: 1.2
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.1';
+	public $vfb_db_version = '1.2';
 	
 	public function __construct(){
 		global $wpdb;
@@ -35,6 +35,7 @@ class Visual_Form_Builder{
 		/* Setup global database table names */
 		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
+		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
 		
 		/* Make sure we are in the admin before proceeding. */
 		if ( is_admin() ) {
@@ -44,12 +45,30 @@ class Visual_Form_Builder{
 			add_action( 'wp_ajax_visual_form_builder_process_sort', array( &$this, 'visual_form_builder_process_sort_callback' ) );
 			add_action( 'admin_init', array( &$this, 'add_visual_form_builder_contextual_help' ) );
 			
+			/* Load the includes files */
+			add_action( 'plugins_loaded', array( &$this, 'includes' ) );
+			
+			/* Adds a Screen Options tab to the Entries screen */
+			add_action( 'admin_init', array( &$this, 'save_screen_options' ) );
+			add_filter( 'screen_settings', array( &$this, 'add_visual_form_builder_screen_options' ) );
+			
 			/* Adds a Settings link to the Plugins page */
 			add_filter( 'plugin_action_links', array( &$this, 'visual_form_builder_plugin_action_links' ), 10, 2 );
 			
 			/* Load the nav-menu CSS if we're on our plugin page */
 			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'visual-form-builder' )
 				wp_admin_css( 'nav-menu' );
+			
+			/* Add a database version to help with upgrades */
+			if ( !get_option( 'vfb_db_version' ) )
+				update_option( 'vfb_db_version', $this->vfb_db_version );
+			
+			/* If database version doesn't match, update and run SQL install */
+			if ( get_option( 'vfb_db_version' ) != $this->vfb_db_version ) {
+				update_option( 'vfb_db_version', $this->vfb_db_version );
+				
+				add_action( 'plugins_loaded', array( &$this, 'install_db' ) );
+			}
 			
 			/* Load the jQuery and CSS we need if we're on our plugin page */
 			add_action( 'load-settings_page_visual-form-builder', array( &$this, 'form_admin_scripts' ) );
@@ -65,18 +84,18 @@ class Visual_Form_Builder{
 	}
 	
 	/**
-	 * Queue plugin CSS for admin styles
+	 * Adds extra include files
 	 * 
-	 * @since 1.0 
+	 * @since 1.2
 	 */
-	public function form_admin_css(){
-		wp_enqueue_style( 'visual-form-builder-style', plugins_url( 'visual-form-builder' ) . '/css/visual-form-builder-admin.css' );
+	public function includes(){
+		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-list.php' );
 	}
 	
 	/**
 	 * Register contextual help. This is for the Help tab dropdown
 	 * 
-	 * @since 1.0 
+	 * @since 1.0
 	 */
 	public function add_visual_form_builder_contextual_help(){
 		$text = "<p><strong>Getting Started</strong></p>
@@ -116,6 +135,53 @@ class Visual_Form_Builder{
 	}
 	
 	/**
+	 * Adds the Screen Options tab to the Entries screen
+	 * 
+	 * @since 1.2
+	 */
+	public function add_visual_form_builder_screen_options($current){
+		global $current_screen;
+		
+		$options = get_option( 'visual-form-builder-screen-options' );
+
+		if ( $current_screen->id == 'settings_page_visual-form-builder' && isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ){
+			$current = '<h5>Show on screen</h5>
+					<input type="text" value="' . $options['per_page'] . '" maxlength="3" id="visual-form-builder-per-page" name="visual-form-builder-screen-options[per_page]" class="screen-per-page"> <label for="visual-form-builder-per-page">Entries</label>
+					<input type="submit" value="Apply" class="button" id="visual-form-builder-screen-options-apply" name="visual-form-builder-screen-options-apply">';
+		}
+		
+		return $current;
+	}
+	
+	/**
+	 * Saves the Screen Options
+	 * 
+	 * @since 1.2
+	 */
+	public function save_screen_options(){
+		$options = get_option( 'visual-form-builder-screen-options' );
+		
+		/* Default is 20 per page */
+		$defaults = array(
+			'per_page' => 20
+		);
+		
+		/* If the option doesn't exist, add it with defaults */
+		if ( !$options )
+			update_option( 'visual-form-builder-screen-options', $defaults );
+		
+		/* If the user has saved the Screen Options, update */
+		if ( isset( $_REQUEST['visual-form-builder-screen-options-apply'] ) && in_array( $_REQUEST['visual-form-builder-screen-options-apply'], array( 'Apply', 'apply' ) ) ) {
+			$per_page = absint( $_REQUEST['visual-form-builder-screen-options']['per_page'] );
+			$updated_options = array(
+				'per_page' => $per_page
+			);
+			update_option( 'visual-form-builder-screen-options', $updated_options );
+		}
+	}
+
+	
+	/**
 	 * Install database tables
 	 * 
 	 * @since 1.0 
@@ -123,11 +189,9 @@ class Visual_Form_Builder{
 	static function install_db() {
 		global $wpdb;
 		
-		/* Declare version again here because this is a static function */
-		$vfb_db_version = '1.1';
-		
 		$field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
+		$entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
 		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); 
 				
@@ -155,24 +219,38 @@ class Visual_Form_Builder{
 				form_email_to TEXT,
 				form_email_from TEXT,
 				form_email_from_name TEXT,
+				form_email_from_override TEXT,
+				form_email_from_name_override TEXT
 				UNIQUE KEY  (form_id)
 			);";
 		
-		/* Check to see if the table already exists before creating it */
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$field_table_name'" ) != $field_table_name )
-		  dbDelta( $field_sql );
+		$entries_sql = "CREATE TABLE $entries_table_name (
+				entries_id BIGINT(20) NOT NULL AUTO_INCREMENT,
+				form_id BIGINT(20) NOT NULL,
+				data TEXT NOT NULL,
+				subject TEXT,
+				sender_name TEXT,
+				sender_email TEXT,
+				emails_to TEXT,
+				date_submitted TEXT,
+				ip_address TEXT,
+				UNIQUE KEY  (entries_id)
+			);";
 		
-		/* Check to see if the table already exists before creating it */
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$form_table_name'" ) != $form_table_name )
-		  dbDelta( $form_sql );
+		/* Create or Update database tables */
+		dbDelta( $field_sql );
+		dbDelta( $form_sql );
+		dbDelta( $entries_sql );
 		
-		/* Add a database version to help with upgrades */
-		if ( !get_option( 'vfb_db_version' ) )
-			update_option( 'vfb_db_version', $vfb_db_version );
-		
-		if ( get_option( 'vfb_db_version' ) != $vfb_db_version )
-			update_option( 'vfb_db_version', $vfb_db_version );
-			
+	}
+
+	/**
+	 * Queue plugin CSS for admin styles
+	 * 
+	 * @since 1.0
+	 */
+	public function form_admin_css(){
+		wp_enqueue_style( 'visual-form-builder-style', plugins_url( 'visual-form-builder' ) . '/css/visual-form-builder-admin.css' );
 	}
 	
 	/**
@@ -286,6 +364,8 @@ class Visual_Form_Builder{
 					$form_to = serialize( esc_html( $_REQUEST['form_email_to'] ) );
 					$form_from = esc_html( $_REQUEST['form_email_from'] );
 					$form_from_name = esc_html( $_REQUEST['form_email_from_name'] );
+					$form_from_override = esc_html( $_REQUEST['form_email_from_override'] );
+					$form_from_name_override = esc_html( $_REQUEST['form_email_from_name_override'] );
 					
 					check_admin_referer( 'update_form-' . $form_id );
 					
@@ -295,7 +375,9 @@ class Visual_Form_Builder{
 						'form_email_subject' => $form_subject,
 						'form_email_to' => $form_to,
 						'form_email_from' => $form_from,
-						'form_email_from_name' => $form_from_name
+						'form_email_from_name' => $form_from_name,
+						'form_email_from_override' => $form_from_override,
+						'form_email_from_name_override' => $form_from_name_override
 					);
 					
 					$where = array(
@@ -394,11 +476,9 @@ class Visual_Form_Builder{
 	/**
 	 * The jQuery field sorting callback
 	 * 
-	 * 
 	 * @since 1.0
 	 */
 	public function visual_form_builder_process_sort_callback() {
-		
 		global $wpdb;
 		
 		$order = explode( ',', $_REQUEST['order'] );
@@ -413,7 +493,7 @@ class Visual_Form_Builder{
 
 		die(1);
 	}
-		
+	
 	/**
 	 * Builds the options settings page
 	 * 
@@ -428,26 +508,43 @@ class Visual_Form_Builder{
 		
 		/* Query to get all forms */
 		$order = sanitize_sql_orderby( 'form_id DESC' );
-		$query 	= "SELECT * FROM $this->form_table_name ORDER BY $order";
+		$query = "SELECT * FROM $this->form_table_name ORDER BY $order";
 		
 		/* Build our forms as an object */
-		$forms 	= $wpdb->get_results( $query );
+		$forms = $wpdb->get_results( $query );
 		
 		/* Loop through each form and assign a form id, if any */
 		foreach ( $forms as $form ) {
 			$form_id = ( $form_nav_selected_id == $form->form_id ) ? $form->form_id : '';
-			//$form_name = ( $form_nav_selected_id == $form->form_id ) ? $form->form_title : '';
+			
 			if ( $form_nav_selected_id == $form->form_id )
-				$form_name = stripslashes( $form->form_title );
+				$form_name = stripslashes( $form->form_title );	
 		}
-		
 		
 	?>
 	
 		<div class="wrap">
 			<?php screen_icon( 'options-general' ); ?>
-			<h2><?php _e('Visual Form Builder', 'visual-form-builder'); ?></h2>
-            <?php echo ( isset( $this->message ) ) ? $this->message : ''; ?>          
+			<h2><?php _e('Visual Form Builder', 'visual-form-builder'); ?></h2>            
+            <ul class="subsubsub">
+                <li><a<?php echo ( !isset( $_REQUEST['view'] ) ) ? ' class="current"' : ''; ?> href="<?php echo admin_url( 'options-general.php?page=visual-form-builder' ); ?>">Forms</a> |</li>
+                <li><a<?php echo ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ) ? ' class="current"' : ''; ?> href="<?php echo add_query_arg( 'view', 'entries', admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>">Entries</a></li>
+            </ul>
+            
+            <?php
+				/* Display the Entries */
+				if ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ) : 
+				
+					$entries_list = new VisualFormBuilder_Entries_List();
+					$entries_list->prepare_items();
+			?>
+                <form id="entries-filter" method="post" action="">
+                    <?php $entries_list->display(); ?>
+                </form>
+            <?php
+				/* Display the Forms */
+				else:	
+					echo ( isset( $this->message ) ) ? $this->message : ''; ?>          
             <div id="nav-menus-frame">
                 <div id="menu-settings-column" class="metabox-holder<?php echo ( empty( $form_nav_selected_id ) ) ? ' metabox-holder-disabled' : ''; ?>">
                     <div id="side-sortables" class="metabox-holder">
@@ -528,7 +625,15 @@ class Visual_Form_Builder{
 												$form_subject = stripslashes( $form->form_email_subject );
 												$form_email_from_name = stripslashes( $form->form_email_from_name );
 												$form_email_from = stripslashes( $form->form_email_from);
+												$form_email_from_override = stripslashes( $form->form_email_from_override);
+												$form_email_from_name_override = stripslashes( $form->form_email_from_name_override);
 												$form_email_to = unserialize( stripslashes( $form->form_email_to ) );
+												
+												$email_query = "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes'";
+												$emails = $wpdb->get_results( $email_query );
+										
+												$sender_query 	= "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = '' AND field_required = 'yes'";
+												$senders = $wpdb->get_results( $sender_query );
 											else :
 												echo '<a href="' . 
 													esc_url( add_query_arg( 
@@ -559,7 +664,7 @@ class Visual_Form_Builder{
                             </div>
                             <div class="nav-tabs-arrow nav-tabs-arrow-right"><a>&raquo;</a></div>
                         </div>
-                        
+
                         <div class="menu-edit">
                         	<form method="post" id="visual-form-builder-update" action="">
                             	<input name="action" type="hidden" value="<?php echo $action; ?>" />
@@ -586,13 +691,29 @@ class Visual_Form_Builder{
                                             <br class="clear" />
                                             <label for="form-email-sender-name" class="menu-name-label howto open-label">
                                                 <span class="sender-labels">Sender Name</span>
-                                                <input type="text" value="<?php echo $form_email_from_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender-name" name="form_email_from_name" />
+                                                <input type="text" value="<?php echo $form_email_from_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
                                             </label>
+                                            <span>OR</span>
+                                            <select name="form_email_from_name_override" id="form_email_from_name_override">
+                                            	<option value="" <?php selected( $form_email_from_name_override, '' ); ?>>Select a required text field</option>
+                                                <?php foreach( $senders as $sender ) {
+														echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . $sender->field_name . '</option>';
+												}
+												?>
+                                            </select>
                                             <br class="clear" />
                                             <label for="form-email-sender" class="menu-name-label howto open-label">
                                                 <span class="sender-labels">Sender E-mail</span>
-                                                <input type="text" value="<?php echo $form_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender" name="form_email_from" />
+                                                <input type="text" value="<?php echo $form_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
                                             </label>
+                                            <span>OR</span>
+                                            <select name="form_email_from_override" id="form_email_from_override">
+                                            	<option value="" <?php selected( $form_email_from_override, '' ); ?>>Select a required text field with email validation</option>
+                                                <?php foreach( $emails as $email ) {
+														echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . $email->field_name . '</option>';
+												}
+												?>
+                                            </select>
                                             <br class="clear" />
                                             <label for="form-email-to" class="menu-name-label howto open-label">
                                                 <span class="sender-labels">E-mail(s) To</span>
@@ -689,7 +810,7 @@ class Visual_Form_Builder{
                                                         <p class="description description-thin">
                                                             <label for="edit-form-item-validation">
                                                                 Validation<br />
-                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation"<?php echo ( $field->field_type !== 'text' ) ? ' disabled="disabled"' : ''; ?>>
+                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( $field->field_type !== 'text' ) ? ' disabled="disabled"' : ''; ?>>
                                                                     <option value="" <?php selected( $field->field_validation, '' ); ?>>None</option>
                                                                     <option value="email" <?php selected( $field->field_validation, 'email' ); ?>>Email</option>
                                                                     <option value="url" <?php selected( $field->field_validation, 'url' ); ?>>URL</option>
@@ -750,6 +871,7 @@ class Visual_Form_Builder{
             </div>
 		</div>
 	<?php
+		endif;
 	}
 	
 	/**
@@ -766,23 +888,28 @@ class Visual_Form_Builder{
 			), $atts ) 
 		);
 		
+		/* Get form id.  Allows use of [vfb id=1] or [vfb 1] */
 		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : $atts[0];
-		
-		$order = sanitize_sql_orderby( 'form_id DESC' );
-		$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
-		
-		$forms 	= $wpdb->get_results( $query );
-		
-		$query_fields = "SELECT * FROM $this->field_table_name WHERE form_id = " . $form_id . " ORDER BY field_sequence ASC";
-	
-		$fields = $wpdb->get_results( $query_fields );
 		
 		$open_fieldset = false;
 		
-		if ( isset( $_REQUEST['success'] ) && $_REQUEST['success'] == 1 && wp_verify_nonce( $_REQUEST['key'], 'visual-form-builder-success-nonce' ) ) {
+		/* If form is submitted, show success message, otherwise the form */
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && in_array( $_REQUEST['visual-form-builder-submit'], array( 'Submit', 'submit' ) ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
 			$output = '<p id="form_success">Your form was successfully submitted. Thank you for contacting us.</p>';
 		}
 		else {
+			/* Get forms */
+			$order = sanitize_sql_orderby( 'form_id DESC' );
+			$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
+			
+			$forms 	= $wpdb->get_results( $query );
+			
+			/* Get fields */
+			$order_fields = sanitize_sql_orderby( 'field_sequence ASC' );
+			$query_fields = "SELECT * FROM $this->field_table_name WHERE form_id = $form_id ORDER BY $order_fields";
+			
+			$fields = $wpdb->get_results( $query_fields );
+			
 			foreach ( $forms as $form ) :
 						
 				$output = '<form id="' . $form->form_key . '" class="visual-form-builder" method="post">
@@ -811,9 +938,9 @@ class Visual_Form_Builder{
 						case 'text':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="' . esc_html( $field->field_key ) . '" id="' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
 							else
-								$output .= '<input type="text" name="' . esc_html( $field->field_key ) . '" id="' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" />';
+								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" />';
 						break;
 						
 						case 'textarea':
@@ -821,7 +948,7 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . $field->field_description . '</label></span>';
 								
-							$output .= '<textarea name="'. $field->field_key. '" id="'. $field->field_key. '" class="textarea ' . $field->field_size . $required . '"></textarea>';
+							$output .= '<textarea name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="textarea ' . $field->field_size . $required . '"></textarea>';
 								
 						break;
 						
@@ -829,7 +956,7 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . $field->field_description . '</label></span>';
 									
-							$output .= '<select name="'. $field->field_key. '" id="'. $field->field_key. '" class="select ' . $field->field_size . $required . '">';
+							$output .= '<select name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="select ' . $field->field_size . $required . '">';
 							
 							$options = explode( ',', unserialize( $field->field_options ) );
 							
@@ -854,7 +981,7 @@ class Visual_Form_Builder{
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
 								$output .= '<span>
-												<input type="radio" name="'. $field->field_key. '" value="'. $value . '" class="radio ' . $required . '" />'. 
+												<input type="radio" name="vfb-'. $field->field_key . '" value="'. $value . '" class="radio ' . $required . '" />'. 
 											' <label for="' . $field->field_key . '" class="choice">' . $value . '</label>' .
 											'</span>';
 							}
@@ -874,7 +1001,7 @@ class Visual_Form_Builder{
 							
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
-								$output .= '<span><input type="checkbox" name="'. $field->field_key. '[]" id="'. $field->field_key. '" value="'. trim( $value ) . '" class="checkbox ' . $required . '" />'. 
+								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '[]" id="vfb-'. $field->field_key . '" value="'. trim( $value ) . '" class="checkbox ' . $required . '" />'. 
 									' <label for="' . $field->field_key . '" class="choice">' . trim( $value ) . '</label></span>';
 							}
 							
@@ -890,29 +1017,29 @@ class Visual_Form_Builder{
 							$output .= '<div>
 								<span class="full">
 					
-									<input type="text" name="address" maxlength="150" id="address" class="text medium" />
+									<input type="text" name="vfb-address" maxlength="150" id="vfb-address" class="text medium" />
 									<label>Address</label>
 								</span>
 								<span class="full">
-									<input type="text" name="address-2" maxlength="150" id="address-2" class="text medium" />
+									<input type="text" name="vfb-address-2" maxlength="150" id="vfb-address-2" class="text medium" />
 									<label>Address Line 2</label>
 								</span>
 								<span class="left">
 					
-									<input type="text" name="city" maxlength="150" id="city" class="text medium" />
+									<input type="text" name="vfb-city" maxlength="150" id="vfb-city" class="text medium" />
 									<label>City</label>
 								</span>
 								<span class="right">
-									<input type="text" name="state" maxlength="150" id="state" class="text medium" />
+									<input type="text" name="vfb-state" maxlength="150" id="vfb-state" class="text medium" />
 									<label>State / Province / Region</label>
 								</span>
 								<span class="left">
 					
-									<input type="text" name="zip" maxlength="150" id="zip" class="text medium" />
+									<input type="text" name="vfb-zip" maxlength="150" id="vfb-zip" class="text medium" />
 									<label>Postal / Zip Code</label>
 								</span>
 								<span class="right">
-									<select class="select" name="country" id="country">
+									<select class="select" name="vfb-country" id="vfb-country">
 									<option selected="selected" value=""></option>
 									<option value="Afghanistan">Afghanistan</option>
 									<option value="Albania">Albania</option>
@@ -1162,9 +1289,9 @@ class Visual_Form_Builder{
 						case 'date':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="' . esc_html( $field->field_key ) . '" id="' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
 							else
-								$output .= '<input type="text" name="' . esc_html( $field->field_key ) . '" id="' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" />';
+								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" />';
 							
 						break;
 					}
@@ -1182,14 +1309,14 @@ class Visual_Form_Builder{
 								<li>
 									<label class="desc">Please enter any two digits with <strong>no</strong> spaces (Example: 12) <span>*</span></label>
 									<div>
-										<input type="text" name="secret" id="secret" class="text medium required digits" />
+										<input type="text" name="vfb-secret" id="vfb-secret" class="text medium required digits" />
 									</div>
 								</li>
 								<div style="display:none;">
 								<li>
-									<label for="spam">This box is for spam protection - <strong>please leave it blank</strong>:</label>
+									<label for="vfb-spam">This box is for spam protection - <strong>please leave it blank</strong>:</label>
 									<div>
-										<input name="spam" id="spam" />
+										<input name="vfb-spam" id="vfb-spam" />
 									</div>
 								</li>
 								</div>
@@ -1215,7 +1342,7 @@ class Visual_Form_Builder{
 		global $wpdb, $post;
 		
 		/* Security check before moving any further */
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['visual-form-builder-submit'] == 'Submit' && $_REQUEST['spam'] == '' && is_numeric( $_REQUEST['secret'] ) && strlen( $_REQUEST['secret'] ) == 2 ) {
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['visual-form-builder-submit'] == 'Submit' && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) {
 			$nonce = $_REQUEST['_wpnonce'];
 			
 			/* Security check to verify the nonce */
@@ -1230,10 +1357,10 @@ class Visual_Form_Builder{
 			
 			/* Query to get all forms */
 			$order = sanitize_sql_orderby( 'form_id DESC' );
-			$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
+			$query = "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
 			
 			/* Build our forms as an object */
-			$forms 	= $wpdb->get_results( $query );
+			$forms = $wpdb->get_results( $query );
 			
 			/* Get sender and email details */
 			foreach ( $forms as $form ) {
@@ -1244,21 +1371,63 @@ class Visual_Form_Builder{
 				$form_from_name = $form->form_email_from_name;
 			}
 			
+			/* Sender email override query */
+			$email_query = "SELECT fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_override = fields.field_id WHERE forms.form_id = $form_id";
+			$emails = $wpdb->get_results( $email_query );
+			
+			/* Sender name override query */
+			$sender_query = "SELECT fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_name_override = fields.field_id WHERE forms.form_id = $form_id";
+			$senders = $wpdb->get_results( $sender_query );
+			
+			/* Loop through email results and assign sender email to override, if needed */
+			foreach ( $emails as $email ) {
+				if ( !empty( $email->field_key ) )
+					$form_from = $_POST[ 'vfb-' . $email->field_key ];
+			}
+			
+			/* Loop through name results and assign sender name to override, if needed */
+			foreach( $senders as $sender ) {
+				if ( !empty( $sender->field_key ) )
+					$form_from_name = $_POST[ 'vfb-' . $sender->field_key ];
+			}
+			
 			/* Prepare the beginning of the content */
 			$message = '<html><body><table rules="all" style="border-color: #666;" cellpadding="10">';
-					
+			
 			/* Loop through each form field and build the body of the message */
 			foreach ( $_POST as $key => $value ) {
-				/* Remove dashes and lowercase */
+				/* Remove prefix, dashes and lowercase */
+				$key = str_replace( 'vfb-', '', $key );
 				$key = strtolower( str_replace( '-', ' ', $key ) );
 				
 				/* If there are multiple values, build the list, otherwise it's a single value */
-				$value = is_array( $value ) ? implode( ', ', $value ) : esc_html( $value );
+				$value = is_array( $value ) ? implode( ', ', $value ) : esc_html( $value );				
 				
 				/* Hide fields that aren't necessary to the body of the message */
-				if ( !in_array( $key, array( 'spam', 'secret', 'visual form builder submit', '_wpnonce', 'form_id' ) ) )
+				if ( !in_array( $key, array( 'spam', 'secret', 'visual form builder submit', '_wpnonce', 'form_id' ) ) ) {
 					$message .= '<tr><td><strong>' . ucwords( $key ) . ': </strong></td><td>' . $value . '</td></tr>';
+					$fields[ $key ] = $value;
+				}	
 			}
+			
+			/* Get the date/time format that is saved in the options table */
+			$date_format = get_option('date_format');
+			$time_format = get_option('time_format');
+			
+			/* Setup our entries data */
+			$entry = array(
+				'form_id' => $form_id,
+				'data' => serialize( $fields ),
+				'subject' => $form_subject,
+				'sender_name' => $form_from_name,
+				'sender_email' => $form_from,
+				'emails_to' => serialize( $form_to ),
+				'date_submitted' => date( $date_format . ' ' . $time_format),
+				'ip_address' => $_SERVER['REMOTE_ADDR']
+			);
+			
+			/* Insert this data into the entries table */
+			$wpdb->insert( $this->entries_table_name, $entry );
 			
 			/* Close out the content */
 			$message .= '</table></body></html>';
@@ -1272,17 +1441,6 @@ class Visual_Form_Builder{
 			foreach ( $form_to as $email ) {
 				$mail_sent = wp_mail( $email, esc_html( $form_subject ), $message, $headers );
 			}
-			
-			/* If a successful response, append a GET var to trigger the success message */
-			if ( $mail_sent ) {
-				$success_nonce = wp_create_nonce( 'visual-form-builder-success-nonce' );
-				$sent = '?success=1&key=' . $success_nonce;
-			}
-			
-			/* Redirect to the same page with the appended success message */
-			wp_redirect( get_permalink( $post->ID ) . $sent );
-	
-			exit();			
 		}	
 	}
 }

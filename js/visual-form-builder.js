@@ -61,7 +61,25 @@ jQuery(document).ready(function($) {
 		$( '.nav-tabs' ).animate({ marginLeft: '+=' + tabsWidth[count] });
 	});
 	
+	/* Display entries form data */
+	$( '.view-entry' ).click( function( e ){
 		
+		var id = $( e.target ).attr( 'id' );
+		
+		$( e.target ).closest( 'td' ).children( '#entry-' + id ).slideToggle( 'fast' );
+		
+		return false;
+	});
+	
+	/* Hide entries form data */
+	$( '.visual-form-builder-inline-edit-cancel' ).click( function( e ){
+		
+		var id = $( e.target ).attr( 'id' );
+		
+		$( e.target ).closest( 'td' ).children( '#entry-' + id ).slideToggle( 'fast' );
+		
+		return false;
+	});
 		
 	/* Handle sorting the field items */
 	$( '#menu-to-edit' ).sortable({
@@ -122,12 +140,34 @@ jQuery(document).ready(function($) {
 				multiemail: true
 			},
 			form_email_from: {
-				required: true,
+				required: function( element ){
+					return $( '#form_email_from_override option:selected' ).val() == ''
+				},
 				email: true
 			}
 		},
 		errorPlacement: function( error, element ) {
 			error.insertAfter( element.parent() );
+		}
+	});
+	
+	/* Make Sender Name field readonly if the override is active */
+	$( '#form_email_from_name_override' ).change( function(){
+		if( $( '#form_email_from_name_override' ).val() == '' ) {
+			$( '#form-email-sender-name' ).attr( 'readonly', false );
+		}
+		else{
+			$( '#form-email-sender-name' ).attr( 'readonly', 'readonly' );
+		}
+	});
+	
+	/* Make Sender Email field readonly if the override is active */
+	$( '#form_email_from_override' ).change( function(){
+		if( $( '#form_email_from_override' ).val() == '' ) {
+			$( '#form-email-sender' ).attr( 'readonly', false );
+		}
+		else{
+			$( '#form-email-sender' ).attr( 'readonly', 'readonly' );
 		}
 	});
 	

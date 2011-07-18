@@ -9,3 +9,10 @@ label.error{color:red;display:block;}
 }
 .sender-labels{width:80px;}
 .is-field-required{color:#BC1212; vertical-align:middle;}
+.visual-form-builder-inline-edit{width:100%;}
+.visual-form-builder-inline-edit-col{padding:0 0.5em;}
+.visual-form-builder-inline-edit label{display:block;margin:0.2em 0;}
+.visual-form-builder-inline-edit .title{display:block;float:left;width:5em;font-style:italic;}
+.visual-form-builder-inline-edit .input-text-wrap{display:block;margin-left:5em;}
+.visual-form-builder-inline-edit .input-text-wrap input[type="text"]{width:100%;border:#DDD solid 1px;border-radius:3px;}
+.subsubsub{float:none;}
