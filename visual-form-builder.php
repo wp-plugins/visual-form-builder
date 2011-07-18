@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Visual Form Builder
-Description: Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.  All form entries are stored in your WordPress database and can be managed using the dashboard.
+Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Version: 1.2
 */
