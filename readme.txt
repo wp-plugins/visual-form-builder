@@ -5,7 +5,7 @@ Requires at least: 3.0
 Tested up to: 3.2.1
 Stable tag: 1.2
 
-Dynamically build forms using a simple interface. Forms include jQuery validation and a basic logic-based verification system.  All form entries are stored in your WordPress database and can be managed using the dashboard.
+Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
 == Description ==
 
