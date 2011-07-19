@@ -221,7 +221,7 @@ class Visual_Form_Builder{
 				form_email_from TEXT,
 				form_email_from_name TEXT,
 				form_email_from_override TEXT,
-				form_email_from_name_override TEXT
+				form_email_from_name_override TEXT,
 				UNIQUE KEY  (form_id)
 			);";
 		
