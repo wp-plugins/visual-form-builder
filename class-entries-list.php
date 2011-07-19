@@ -125,6 +125,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			break;
 		}
 		
+		$where = '';
+		
 		/* If the form filter dropdown is used */
 		if ( $this->current_filter_action() )
 			$where = 'WHERE forms.form_id = ' . $this->current_filter_action();
@@ -176,7 +178,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * @since 1.2
 	 */
 	function process_bulk_action() {		
-		$entry_id = $_REQUEST['entry'];
+		$entry_id = ( is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
 		
 		if ( 'delete' === $this->current_action() ) {
 			global $wpdb;
@@ -262,6 +264,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		/* Get the sorted entries */
 		$entries = $this->get_entries( $orderby, $order );
 		
+		$data = array();
+
 		/* Loop trough the entries and setup the data to be displayed for each row */
 		foreach ( $entries as $entry ) {
 			$data[] = 
