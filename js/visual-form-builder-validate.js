@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 	$( '.visual-form-builder' ).validate({
 		rules: {
-			secret:{
+			"vfb-secret":{
 				maxlength:2
 			}
 		},
@@ -14,6 +14,17 @@ jQuery(document).ready(function($) {
 			}
 		} 
 	});
+	
+	/* Custom validation method to check multiple emails */
+	$.validator.addMethod( 'phone', function( value, element ) {
+		/* Strip out all spaces, periods, dashes, parentheses, and plus signs */
+		value = value.replace(/[\+\s\(\)\.\-\ ]/g, '');
+
+		return this.optional(element) || value.length > 9 &&
+			value.match( /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/ );
+
+		}, 'Please enter a valid phone number. Most US/Canada and International formats accepted.'
+	);
 	
 	/* Display jQuery UI date picker */
 	$( '.vfb-date-picker' ).datepicker();

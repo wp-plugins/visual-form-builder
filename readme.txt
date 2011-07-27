@@ -1,15 +1,15 @@
 === Visual Form Builder ===
 Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
-Requires at least: 3.0
+Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.2.1
+Stable tag: 1.3
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
 == Description ==
 
-*Visual Form Builder* is a plugin that allows you to build simple contact forms using an easy-to-use and familiar interface.
+*Visual Form Builder* is a plugin that allows you to build contact forms using an easy-to-use and familiar interface.
 
 **Features**
 
@@ -18,7 +18,9 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Store form entries in your WordPress database and can manage them via the dashboard.
 * Send form submissions to multiple emails
 * Utilizes jQuery Form Validation
-* Save time by adding a complete address block field
+* Customized Confirmation Messages
+* Redirect to a WordPress Page or a URL
+* Standard and Advanced Fields
 * Easy date fields using the jQuery UI Date Picker
 
 == Installation ==
@@ -81,6 +83,14 @@ To use the more complex features of the Date Picker plugin, you will need to:
 
 == Changelog ==
 
+**Version 1.3**
+
+* Fix bug where jQuery validation was missing from security field
+* Update Form Items UI to make it easier and quicker to add fields
+* Add six more Form Items
+* Add Confirmation customization
+* Update CSS output for some elements
+
 **Version 1.2.1**
 
 * Fix bug where entries table does not install
@@ -104,6 +114,9 @@ To use the more complex features of the Date Picker plugin, you will need to:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.3 =
+New, faster way to add form items and ability to customize Confirmation. Fix for validation on security field.
 
 = 1.2.1 =
 Recommended update immediately! Fix for bug where entries table does not install.

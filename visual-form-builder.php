@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.2.1
+Version: 1.3
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.2.1';
+	public $vfb_db_version = '1.3';
 	
 	public function __construct(){
 		global $wpdb;
@@ -77,7 +77,8 @@ class Visual_Form_Builder{
 		}
 		
 		add_shortcode( 'vfb', array( &$this, 'form_code' ) );
-		add_action( 'init', array( &$this, 'email' ) );
+		add_action( 'init', array( &$this, 'email' ), 10 );
+		add_action( 'init', array( &$this, 'confirmation' ), 12 );
 		
 		/* Add jQuery and CSS to the front-end */
 		add_action( 'wp_head', array( &$this, 'form_css' ) );
@@ -90,6 +91,7 @@ class Visual_Form_Builder{
 	 * @since 1.2
 	 */
 	public function includes(){
+		/* Load the Entries class */
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-list.php' );
 	}
 	
@@ -102,7 +104,7 @@ class Visual_Form_Builder{
 		$text = "<p><strong>Getting Started</strong></p>
 					<ul>
 						<li>Click on the + tab, give your form a name and click Create Form.</li>
-						<li>Select form fields from the box on the left and click Create Field to add it to your form.</li>
+						<li>Select form fields from the box on the left and click a field to add it to your form.</li>
 						<li>Edit the information for each form field by clicking on the down arrow.</li>
 						<li>Drag and drop the elements to put them in order.</li>
 						<li>Click Save Form to save your changes.</li>
@@ -124,6 +126,15 @@ class Visual_Form_Builder{
 						<li><em>Date</em>: makes the element require a date. <a href='http://docs.jquery.com/Plugins/Validation/Methods/date'>Refer to documentation for various accepted formats</a>.
 						<li><em>Number</em>: makes the element require a decimal number.</li>
 						<li><em>Digits</em>: makes the element require digits only.</li>
+						<li><em>Phone</em>: makes the element require a US or International phone number. Most formats are accepted.</li>
+						<li><em>Time</em>: choose either 12- or 24-hour time format (NOTE: only available with the Time field).</li>
+					</ul>
+				<p><strong>Confirmation</strong><p>
+					<ul>
+						<li>Each form allows you to customize the confirmation by selecing either a Text Message, a WordPress Page, or to Redirect to a URL.</li>
+						<li><em>Text</em> allows you to enter a custom formatted message that will be displayed on the page after your form is submitted. HTML is allowed here.</li>
+						<li><em>Page</em> displays a dropdown of all WordPress Pages you have created. Select one to redirect the user to that page after your form is submitted.</li>
+						<li><em>Redirect</em> will only accept URLs and can be used to send the user to a different site completely, if you choose.
 					</ul>
 				<p><strong>Tips</strong></p>
 					<ul>
@@ -199,15 +210,15 @@ class Visual_Form_Builder{
 		$field_sql = "CREATE TABLE $field_table_name (
 				field_id BIGINT(20) NOT NULL AUTO_INCREMENT,
 				form_id BIGINT(20) NOT NULL,
-				field_key TINYTEXT NOT NULL,
-				field_type TINYTEXT NOT NULL,
+				field_key VARCHAR(25) NOT NULL,
+				field_type VARCHAR(25) NOT NULL,
 				field_options TEXT,
 				field_description TEXT,
-				field_name TINYTEXT NOT NULL,
+				field_name VARCHAR(255) NOT NULL,
 				field_sequence TINYINT DEFAULT '0',
-				field_validation TINYTEXT,
-				field_required TINYTEXT,
-				field_size TINYTEXT,
+				field_validation VARCHAR(25),
+				field_required VARCHAR(25),
+				field_size VARCHAR(25),
 				UNIQUE KEY  (field_id)
 			);";
 	
@@ -217,11 +228,13 @@ class Visual_Form_Builder{
 				form_key TINYTEXT NOT NULL,
 				form_title TEXT NOT NULL,
 				form_email_subject TEXT,
-				form_email_to TEXT,
-				form_email_from TEXT,
-				form_email_from_name TEXT,
-				form_email_from_override TEXT,
-				form_email_from_name_override TEXT,
+				form_email_to VARCHAR(255),
+				form_email_from VARCHAR(255),
+				form_email_from_name VARCHAR(255),
+				form_email_from_override VARCHAR(255),
+				form_email_from_name_override VARCHAR(255),
+				form_success_type VARCHAR(25) DEFAULT 'text',
+				form_success_message TEXT,
 				UNIQUE KEY  (form_id)
 			);";
 		
@@ -230,11 +243,11 @@ class Visual_Form_Builder{
 				form_id BIGINT(20) NOT NULL,
 				data TEXT NOT NULL,
 				subject TEXT,
-				sender_name TEXT,
-				sender_email TEXT,
-				emails_to TEXT,
-				date_submitted TEXT,
-				ip_address TEXT,
+				sender_name VARCHAR(255),
+				sender_email VARCHAR(25),
+				emails_to VARCHAR(255),
+				date_submitted VARCHAR(25),
+				ip_address VARCHAR(25),
 				UNIQUE KEY  (entries_id)
 			);";
 		
@@ -336,12 +349,16 @@ class Visual_Form_Builder{
 						'form_title' => $form_title
 					);
 					
+					/* Set message to display */
 					$this->message = '<div id="message" class="updated"><p>The <strong>' . $form_title . '</strong> form has been created.</p></div>';
 					
+					/* Create the form */
 					$wpdb->insert( $this->form_table_name, $newdata );
 					
+					/* Get form ID to add our first field */
 					$new_form_selected = $wpdb->insert_id;
 					
+					/* Setup the initial fieldset */
 					$initial_fieldset = array(
 						'form_id' => $wpdb->insert_id,
 						'field_key' => 'fieldset',
@@ -350,9 +367,12 @@ class Visual_Form_Builder{
 						'field_sequence' => 0
 					);
 					
+					/* Add the first fieldset to get things started */ 
 					$wpdb->insert( $this->field_table_name, $initial_fieldset );
 					
+					/* Redirect to keep the URL clean (use AJAX in the future?) */
 					wp_redirect( 'options-general.php?page=visual-form-builder&form=' . $new_form_selected );
+					exit();
 					
 				break;
 				
@@ -367,6 +387,20 @@ class Visual_Form_Builder{
 					$form_from_name = esc_html( $_REQUEST['form_email_from_name'] );
 					$form_from_override = esc_html( $_REQUEST['form_email_from_override'] );
 					$form_from_name_override = esc_html( $_REQUEST['form_email_from_name_override'] );
+					$form_success_type = esc_html( $_REQUEST['form_success_type'] );
+					
+					/* Add confirmation based on which type was selected */
+					switch ( $form_success_type ) {
+						case 'text' :
+							$form_success_message = wp_richedit_pre( $_REQUEST['form_success_message_text'] );
+						break;
+						case 'page' :
+							$form_success_message = esc_html( $_REQUEST['form_success_message_page'] );
+						break;
+						case 'redirect' :
+							$form_success_message = esc_html( $_REQUEST['form_success_message_redirect'] );
+						break;
+					}
 					
 					check_admin_referer( 'update_form-' . $form_id );
 					
@@ -378,25 +412,28 @@ class Visual_Form_Builder{
 						'form_email_from' => $form_from,
 						'form_email_from_name' => $form_from_name,
 						'form_email_from_override' => $form_from_override,
-						'form_email_from_name_override' => $form_from_name_override
+						'form_email_from_name_override' => $form_from_name_override,
+						'form_success_type' => $form_success_type,
+						'form_success_message' => $form_success_message
 					);
 					
 					$where = array(
 						'form_id' => $form_id
 					);
 					
+					/* Update form details */
 					$wpdb->update( $this->form_table_name, $newdata, $where );
 					
 					/* Loop through each field and update all at once */
 					if ( !empty( $_REQUEST['field_id'] ) ) {
 						foreach ( $_REQUEST['field_id'] as $id ) {
-							$field_name = esc_html( $_REQUEST['field_name-' . $id] );
+							$field_name = ( isset( $_REQUEST['field_name-' . $id] ) ) ? esc_html( $_REQUEST['field_name-' . $id] ) : '';
 							$field_key = sanitize_title( $field_name );
-							$field_desc = esc_html( $_REQUEST['field_description-' . $id] );
-							$field_options = serialize( esc_html( $_REQUEST['field_options-' . $id] ) );
-							$field_validation = esc_html( $_REQUEST['field_validation-' . $id] );
-							$field_required = esc_html( $_REQUEST['field_required-' . $id] );
-							$field_size = esc_html( $_REQUEST['field_size-' . $id] );
+							$field_desc = ( isset( $_REQUEST['field_description-' . $id] ) ) ? esc_html( $_REQUEST['field_description-' . $id] ) : '';
+							$field_options = ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( esc_html( $_REQUEST['field_options-' . $id] ) ) : '';
+							$field_validation = ( isset( $_REQUEST['field_validation-' . $id] ) ) ? esc_html( $_REQUEST['field_validation-' . $id] ) : '';
+							$field_required = ( isset( $_REQUEST['field_required-' . $id] ) ) ? esc_html( $_REQUEST['field_required-' . $id] ) : '';
+							$field_size = ( isset( $_REQUEST['field_size-' . $id] ) ) ? esc_html( $_REQUEST['field_size-' . $id] ) : '';
 							
 							$field_data = array(
 								'field_key' => $field_key,
@@ -409,28 +446,35 @@ class Visual_Form_Builder{
 							);
 							
 							$where = array(
-								'form_id' => absint( $_REQUEST['form_id'] ),
+								'form_id' => $_REQUEST['form_id'],
 								'field_id' => $id
 							);
 							
+							/* Update all fields */
 							$wpdb->update( $this->field_table_name, $field_data, $where );
 						}
 					}
 					
+					/* Set message to display */
 					$this->message = '<div id="message" class="updated"><p>The <strong>' . $form_title . '</strong> form has been updated.</p></div>';
 					
 				break;
 				
 				case 'delete_form' :
 					$id = absint( $_REQUEST['form'] );
+					
 					check_admin_referer( 'delete-form-' . $id );
 					
+					/* Delete form and all fields */
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->form_table_name WHERE form_id = %d", $id ) );
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE form_id = %d", $id ) );
 					
+					/* Set message to display */
 					$this->message = '<div id="message" class="updated"><p>This form has been deleted.</p></div>';
 					
+					/* Redirect to keep the URL clean (use AJAX in the future?) */
 					wp_redirect( 'options-general.php?page=visual-form-builder' );
+					exit();
 					
 				break;
 				
@@ -440,11 +484,15 @@ class Visual_Form_Builder{
 					
 					check_admin_referer( 'delete-field-' . $form_id );
 					
+					/* Delete the field */
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE field_id = %d", $field_id ) );
 					
+					/* Set message to display */
 					$this->message = '<div id="message" class="updated"><p>The field has been deleted.</p></div>';
 					
+					/* Redirect to keep the URL clean (use AJAX in the future?) */
 					wp_redirect( 'options-general.php?page=visual-form-builder&form=' . $form_id );
+					exit();
 					
 				break;
 				
@@ -454,9 +502,30 @@ class Visual_Form_Builder{
 					$field_name = esc_html( $_REQUEST['field_type'] );
 					$field_type = strtolower( esc_html( $_REQUEST['field_type'] ) );
 					
+					/* Set defaults for validation */
+					switch ( $field_type ) {
+						case 'email' :
+						case 'url' :
+						case 'phone' :
+							$field_validation = $field_type;
+						break;
+						case 'currency' :
+							$field_validation = 'number';
+						break;
+						case 'number' :
+							$field_validation = 'digits';
+						break;
+						case 'time' :
+							$field_validation = 'time-12';
+						break;
+					}
+					
 					check_admin_referer( 'create-field-' . $form_id );
 					
+					/* Get the last row's sequence */
 					$sequence_last_row = $wpdb->get_row( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = $form_id ORDER BY field_sequence DESC LIMIT 1" );
+					
+					/* If it's not the first for this form, add 1 */
 					$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row->field_sequence + 1 : 0;
 					
 					$newdata = array(
@@ -464,9 +533,11 @@ class Visual_Form_Builder{
 						'field_key' => $field_key,
 						'field_name' => $field_name,
 						'field_type' => $field_type,
-						'field_sequence' => $field_sequence
+						'field_sequence' => $field_sequence,
+						'field_validation' => $field_validation
 					);
 					
+					/* Create the field */
 					$wpdb->insert( $this->field_table_name, $newdata );
 					
 				break;
@@ -482,14 +553,15 @@ class Visual_Form_Builder{
 	public function visual_form_builder_process_sort_callback() {
 		global $wpdb;
 		
+		/* Get the order of the fields as make an array */
 		$order = explode( ',', $_REQUEST['order'] );
-		$i = 0;
 		
 		foreach ( $order as $k => $v ) {
+			/* Find the digits from each field */
 			preg_match( '/(\d+)/', $v, $matches );
 			
+			/* Update each field with it's new sequence */
 			$wpdb->update( $this->field_table_name, array( 'field_sequence' => $k ), array( 'field_id' => $matches[0] ) );
-			$i++;
 		}
 
 		die(1);
@@ -506,6 +578,7 @@ class Visual_Form_Builder{
 		/* Set variables depending on which tab is selected */
 		$form_nav_selected_id = ( isset( $_REQUEST['form'] ) ) ? $_REQUEST['form'] : '0';
 		$action = ( isset( $_REQUEST['form'] ) && $_REQUEST['form'] !== '0' ) ? 'update_form' : 'create_form';
+		$details_meta = ( isset( $_REQUEST['details'] ) ) ? $_REQUEST['details'] : 'email';
 		
 		/* Query to get all forms */
 		$order = sanitize_sql_orderby( 'form_id DESC' );
@@ -518,6 +591,7 @@ class Visual_Form_Builder{
 		foreach ( $forms as $form ) {
 			$form_id = ( $form_nav_selected_id == $form->form_id ) ? $form->form_id : '';
 			
+			/* If we are on a form, set the form name for the shortcode box */
 			if ( $form_nav_selected_id == $form->form_id )
 				$form_name = stripslashes( $form->form_title );	
 		}
@@ -564,28 +638,23 @@ class Visual_Form_Builder{
                                 <h3 class="hndle"><span>Form Items</span></h3>
                                 <div class="inside" >
                                     <div class="taxonomydiv">
-                                        <ul id="taxonomy-category-tabs" class="taxonomy-tabs add-menu-item-tabs">
-                                            <li class="tabs"><a href="#" class="nav-tab-link">Input Type</a></li>
-                                        </ul>	
-                                        <div id="input-type" class="tabs-panel tabs-panel-active">
-                                        	<ul>
-                                            	<li><input type="radio" id="form-element-fieldset" name="field_type" value="Fieldset"<?php echo $disabled; ?> /> Fieldset</li>
-                                            	<li><input type="radio" id="form-element-text" name="field_type" value="Text"<?php echo $disabled; ?> /> Text</li>
-                                                <li><input type="radio" id="form-element-textarea" name="field_type" value="Textarea"<?php echo $disabled; ?> /> Textarea</li>
-                                                <li><input type="radio" id="form-element-checkbox" name="field_type" value="Checkbox"<?php echo $disabled; ?> /> Checkbox</li>
-                                                <li><input type="radio" id="form-element-radio" name="field_type" value="Radio"<?php echo $disabled; ?> /> Radio</li>
-                                                <li><input type="radio" id="form-element-select" name="field_type" value="Select"<?php echo $disabled; ?> /> Select</li>
-                                                <li><input type="radio" id="form-element-address" name="field_type" value="Address"<?php echo $disabled; ?> /> Address</li>
-                                                <li><input type="radio" id="form-element-datepicker" name="field_type" value="Date"<?php echo $disabled; ?> /> Date Picker</li>
-                                            </ul>
-                                        </div>
-                                        
-                                        <p class="button-controls">
-                                            <span class="add-to-menu">
-                                                <img id="add-to-form" alt="" src="<?php echo admin_url( '/images/wpspin_light.gif' ); ?>" class="waiting" />
-                                                <input type="submit" id="submit-create-field" name="submit" value="Add to Form" class="button-secondary submit-add-to-menu"<?php echo $disabled; ?> />
-                                            </span>
-                                        </p>
+                                        <p><strong>Click</strong> to Add a Field <img id="add-to-form" alt="" src="<?php echo admin_url( '/images/wpspin_light.gif' ); ?>" class="waiting" /></p>
+                                        <ul>
+                                            <li><input type="submit" id="form-element-fieldset" class="button-secondary" name="field_type" value="Fieldset"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-text" class="button-secondary" name="field_type" value="Text"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-textarea" class="button-secondary" name="field_type" value="Textarea"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-checkbox" class="button-secondary" name="field_type" value="Checkbox"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-radio" class="button-secondary" name="field_type" value="Radio"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-select" class="button-secondary" name="field_type" value="Select"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-address" class="button-secondary" name="field_type" value="Address"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-datepicker" class="button-secondary" name="field_type" value="Date"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-email" class="button-secondary" name="field_type" value="Email"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-url" class="button-secondary" name="field_type" value="URL"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-currency" class="button-secondary" name="field_type" value="Currency"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-digits" class="button-secondary" name="field_type" value="Number"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-time" class="button-secondary" name="field_type" value="Time"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-phone" class="button-secondary" name="field_type" value="Phone"<?php echo $disabled; ?> /></li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -618,6 +687,7 @@ class Visual_Form_Builder{
                                     <?php
 										/* Loop through each for and build the tabs */
 										foreach ( $forms as $form ) {
+											
 											/* Control selected tab */
 											if ( $form_nav_selected_id == $form->form_id ) :
 												echo '<span class="nav-tab nav-tab-active">' . stripslashes( $form->form_title ) . '</span>';
@@ -629,20 +699,19 @@ class Visual_Form_Builder{
 												$form_email_from_override = stripslashes( $form->form_email_from_override);
 												$form_email_from_name_override = stripslashes( $form->form_email_from_name_override);
 												$form_email_to = unserialize( stripslashes( $form->form_email_to ) );
+												$form_success_type = stripslashes( $form->form_success_type );
+												$form_success_message = stripslashes( $form->form_success_message );
 												
-												$email_query = "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes'";
-												$emails = $wpdb->get_results( $email_query );
-										
+												/* Only show required text fields for the sender name override */
 												$sender_query 	= "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = '' AND field_required = 'yes'";
 												$senders = $wpdb->get_results( $sender_query );
+												
+												/* Only show required email fields for the email override */
+												$email_query = "SELECT * FROM $this->field_table_name WHERE (form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = $form_nav_selected_id AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')";
+												$emails = $wpdb->get_results( $email_query );
+											
 											else :
-												echo '<a href="' . 
-													esc_url( add_query_arg( 
-														array( 
-															'form' => $form->form_id 
-														), 
-														admin_url( 'options-general.php?page=visual-form-builder' ) 
-													) ) . '" class="nav-tab" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</a>';
+												echo '<a href="' . esc_url( add_query_arg( array( 'form' => $form->form_id ), admin_url( 'options-general.php?page=visual-form-builder' ) ) ) . '" class="nav-tab" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</a>';
 											endif;
 											
 										}
@@ -652,14 +721,7 @@ class Visual_Form_Builder{
 									?>
                                     	<span class="nav-tab menu-add-new nav-tab-active"><?php printf( '<abbr title="%s">+</abbr>', esc_html__( 'Add form' ) ); ?></span>
 									<?php else : ?>
-                                    	<a href="<?php
-											echo esc_url(add_query_arg(
-												array(
-													'form' => 0,
-												),
-												admin_url( 'options-general.php?page=visual-form-builder' )
-											));
-                                    	?>" class="nav-tab menu-add-new"><?php printf( '<abbr title="%s">+</abbr>', esc_html__( 'Add form' ) ); ?></a>
+                                    	<a href="<?php echo esc_url( add_query_arg( array( 'form' => 0 ), admin_url( 'options-general.php?page=visual-form-builder' ) ) ); ?>" class="nav-tab menu-add-new"><?php printf( '<abbr title="%s">+</abbr>', esc_html__( 'Add form' ) ); ?></a>
 									<?php endif; ?>
                                 </div>
                             </div>
@@ -679,49 +741,94 @@ class Visual_Form_Builder{
                                                 <input type="text" value="<?php echo ( isset( $form_title ) ) ? $form_title : ''; ?>" title="Enter form name here" class="menu-name regular-text menu-item-textbox" id="form-name" name="form_title" />
                                             </label>
                                             <?php 
-												/* Display sender details if we're on a form, otherwise just the form name */
+												/* Display sender details and confirmation message if we're on a form, otherwise just the form name */
 												if ( $form_nav_selected_id !== '0' ) : 
 											?>
                                             <br class="clear" />
+											
+                                            <div id="form-details-nav">
+                                            	<a href="<?php echo add_query_arg( array( 'form' => $form_nav_selected_id, 'details' => 'email' ), admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>" class="<?php echo ( 'email' == $details_meta ) ? 'current' : ''; ?>" title="Customize Email Details">Email Details</a>
+                                                <a href="<?php echo add_query_arg( array( 'form' => $form_nav_selected_id, 'details' => 'confirmation' ), admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>" class="<?php echo ( 'confirmation' == $details_meta ) ? 'current' : ''; ?>" title="Customize Confirmation Message">Confirmation</a>
+                                            </div>
                                             
-                                            <p><em>The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.</em></p>
-                                            <label for="form-email-subject" class="menu-name-label howto open-label">
-                                                <span class="sender-labels">E-mail Subject</span>
-                                                <input type="text" value="<?php echo $form_subject; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-subject" name="form_email_subject" />
-                                            </label>
-                                            <br class="clear" />
-                                            <label for="form-email-sender-name" class="menu-name-label howto open-label">
-                                                <span class="sender-labels">Sender Name</span>
-                                                <input type="text" value="<?php echo $form_email_from_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
-                                            </label>
-                                            <span>OR</span>
-                                            <select name="form_email_from_name_override" id="form_email_from_name_override">
-                                            	<option value="" <?php selected( $form_email_from_name_override, '' ); ?>>Select a required text field</option>
-                                                <?php foreach( $senders as $sender ) {
-														echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . $sender->field_name . '</option>';
-												}
+                                            <div id="email-details" class="<?php echo ( 'email' == $details_meta ) ? 'form-details-current' : 'form-details'; ?>">
+                                                <p><em>The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.</em></p>
+                                                <label for="form-email-subject" class="menu-name-label howto open-label">
+                                                    <span class="sender-labels">E-mail Subject</span>
+                                                    <input type="text" value="<?php echo $form_subject; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-subject" name="form_email_subject" />
+                                                </label>
+                                                <br class="clear" />
+                                                <label for="form-email-sender-name" class="menu-name-label howto open-label">
+                                                    <span class="sender-labels">Sender Name</span>
+                                                    <input type="text" value="<?php echo $form_email_from_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
+                                                </label>
+                                                <span>OR</span>
+                                                <select name="form_email_from_name_override" id="form_email_from_name_override">
+                                                    <option value="" <?php selected( $form_email_from_name_override, '' ); ?>>Select a required text field</option>
+                                                    <?php 
+													foreach( $senders as $sender ) {
+                                                    	echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . $sender->field_name . '</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                                <br class="clear" />
+                                                <label for="form-email-sender" class="menu-name-label howto open-label">
+                                                    <span class="sender-labels">Sender E-mail</span>
+                                                    <input type="text" value="<?php echo $form_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
+                                                </label>
+                                                <span>OR</span>
+                                                <select name="form_email_from_override" id="form_email_from_override">
+                                                    <option value="" <?php selected( $form_email_from_override, '' ); ?>>Select a required text field with email validation</option>
+                                                    <?php 
+													foreach( $emails as $email ) {
+                                                    	echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . $email->field_name . '</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                                <br class="clear" />
+                                                <label for="form-email-to" class="menu-name-label howto open-label">
+                                                    <span class="sender-labels">E-mail(s) To</span>
+                                                    <input type="text" value="<?php echo $form_email_to; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-to" name="form_email_to" />
+                                                </label>
+                                                <span><em>(multiple emails separated by commas)</em></span>
+                                            </div>
+                                            
+                                            <div id="confirmation-message" class="<?php echo ( 'confirmation' == $details_meta ) ? 'form-details-current' : 'form-details'; ?>">
+                                            	<p><em>After someone submits a form, you can control what is displayed. By default, it's a message but you can send them to another WordPress Page or a custom URL.</em></p>
+                                            	<label for="form-success-text" class="menu-name-label open-label">
+                                                    <input type="radio" value="text" id="form-success-type-text" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'text' ); ?> />
+                                                    <span>Text</span>
+                                                </label>
+                                                <label for="form-success-page" class="menu-name-label open-label">
+                                                    <input type="radio" value="page" id="form-success-type-page" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'page' ); ?>/>
+                                                    <span>Page</span>
+                                                </label>
+                                                <label for="form-success-redirect" class="menu-name-label open-label">
+                                                    <input type="radio" value="redirect" id="form-success-type-redirect" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'redirect' ); ?>/>
+                                                    <span>Redirect</span>
+                                                </label>
+                                                <br class="clear" />
+                                                
+                                                <?php
+												/* If there's no text message, make sure there is something displayed by setting a default */
+												if ( $form_success_message === '' )
+													$default_text = '<p id="form_success">Your form was successfully submitted. Thank you for contacting us.</p>';
 												?>
-                                            </select>
-                                            <br class="clear" />
-                                            <label for="form-email-sender" class="menu-name-label howto open-label">
-                                                <span class="sender-labels">Sender E-mail</span>
-                                                <input type="text" value="<?php echo $form_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
-                                            </label>
-                                            <span>OR</span>
-                                            <select name="form_email_from_override" id="form_email_from_override">
-                                            	<option value="" <?php selected( $form_email_from_override, '' ); ?>>Select a required text field with email validation</option>
-                                                <?php foreach( $emails as $email ) {
-														echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . $email->field_name . '</option>';
-												}
+                                                <textarea id="form-success-message-text" class="form-success-message<?php echo ( 'text' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_text"><?php echo $default_text; ?><?php echo ( 'text' == $form_success_type ) ? $form_success_message : ''; ?></textarea>
+                                                
+												<?php
+												/* Display all Pages */
+												wp_dropdown_pages( array(
+													'name' => 'form_success_message_page', 
+													'id' => 'form-success-message-page',
+													'show_option_none' => 'Select a Page',
+													'selected' => $form_success_message
+												));
 												?>
-                                            </select>
-                                            <br class="clear" />
-                                            <label for="form-email-to" class="menu-name-label howto open-label">
-                                                <span class="sender-labels">E-mail(s) To</span>
-                                                <input type="text" value="<?php echo $form_email_to; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-to" name="form_email_to" />
-                                            </label>
-                                            <span><em>(multiple emails separated by commas)</em></span>
-                                            	<?php endif; ?>
+                                                <input type="text" value="<?php echo ( 'redirect' == $form_success_type ) ? $form_success_message : ''; ?>" id="form-success-message-redirect" class="form-success-message regular-text<?php echo ( 'redirect' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_redirect" />
+
+                                            </div>
+                                            <?php endif; ?>
                                             <br class="clear" />
                                             <div class="publishing-action">
                                                 <input type="submit" value="<?php echo ( $action == 'create_form' ) ? 'Create Form' : 'Save Form'; ?>" class="button-primary menu-save" id="save_form" name="save_form" />
@@ -746,14 +853,16 @@ class Visual_Form_Builder{
                                	<?php else : 
 								
 								if ( !empty( $form_nav_selected_id ) && $form_nav_selected_id !== '0' ) :
+									/* Display help text for adding fields */
 									echo '<div class="post-body-plain" id="menu-instructions"><p>Select form inputs from the box at left to begin building your custom form. An initial fieldset has been automatically added to get you started.</p></div>';
 									
+									/* Display all fields for the selected form */
 									$query_fields = "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id ORDER BY field_sequence ASC";
-		
 									$fields = $wpdb->get_results( $query_fields );
 									
-									echo '<ul id="menu-to-edit" class="menu ui-sortable">';
+									echo '<ul id="menu-to-edit" class="menu ui-sortable droppable">';
 									
+									/* Loop through each field and display */
 									foreach ( $fields as $field ) :
 								?>
                                         <li id="form_item_<?php echo $field->field_id; ?>" class="form-item">
@@ -787,7 +896,9 @@ class Visual_Form_Builder{
                                                             </label>
                                                         </p>
                                                         
-                                                        <?php if ( in_array( $field->field_type, array( 'radio', 'checkbox', 'select' ) ) ) : ?>
+                                                        <?php
+															/* Display the Options input only for radio, checkbox, and select fields */
+															if ( in_array( $field->field_type, array( 'radio', 'checkbox', 'select' ) ) ) : ?>
                                                             <p class="description description-wide">
                                                             <?php
                                                                 if ( !empty( $field->field_options ) ) {
@@ -811,13 +922,19 @@ class Visual_Form_Builder{
                                                         <p class="description description-thin">
                                                             <label for="edit-form-item-validation">
                                                                 Validation<br />
-                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( $field->field_type !== 'text' ) ? ' disabled="disabled"' : ''; ?>>
+                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea' ) ) ) ? ' disabled="disabled"' : ''; ?>>
+                                                                    <?php if ( $field->field_type == 'time' ) : ?>
+                                                                    <option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>>12 Hour Format</option>
+                                                                    <option value="time-24" <?php selected( $field->field_validation, 'time-24' ); ?>>24 Hour Format</option>
+                                                                    <?php else : ?>
                                                                     <option value="" <?php selected( $field->field_validation, '' ); ?>>None</option>
                                                                     <option value="email" <?php selected( $field->field_validation, 'email' ); ?>>Email</option>
                                                                     <option value="url" <?php selected( $field->field_validation, 'url' ); ?>>URL</option>
                                                                     <option value="date" <?php selected( $field->field_validation, 'date' ); ?>>Date</option>
                                                                     <option value="number" <?php selected( $field->field_validation, 'number' ); ?>>Number</option>
                                                                     <option value="digits" <?php selected( $field->field_validation, 'digits' ); ?>>Digits</option>
+                                                                    <option value="phone" <?php selected( $field->field_validation, 'phone' ); ?>>Phone</option>
+                                                                    <?php endif; ?>
                                                                 </select>
                                                             </label>
                                                         </p>
@@ -831,7 +948,7 @@ class Visual_Form_Builder{
                                                             </label>
                                                         </p>
                                                        
-                                                        <?php if ( !in_array( $field->field_type, array( 'radio', 'checkbox' ) ) ) : ?>
+                                                        <?php if ( !in_array( $field->field_type, array( 'radio', 'checkbox', 'time' ) ) ) : ?>
                                                             <p class="description description-wide">
                                                                 <label for="edit-form-item-size">
                                                                     Size<br />
@@ -876,6 +993,42 @@ class Visual_Form_Builder{
 	}
 	
 	/**
+	 * Handle confirmation when form is submitted
+	 * 
+	 * @since 1.3
+	 */
+	function confirmation(){
+		global $wpdb;
+		
+		$form_id = ( isset( $_REQUEST['form_id'] ) ) ? $_REQUEST['form_id'] : '';
+		
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && in_array( $_REQUEST['visual-form-builder-submit'], array( 'Submit', 'submit' ) ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
+			/* Get forms */
+			$order = sanitize_sql_orderby( 'form_id DESC' );
+			$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
+			
+			$forms 	= $wpdb->get_results( $query );
+			
+			foreach ( $forms as $form ) {
+				/* If text, return output and format the HTML for display */
+				if ( 'text' == $form->form_success_type )
+					return html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) );
+				/* If page, redirect to the permalink */
+				elseif ( 'page' == $form->form_success_type ) {
+					$page = get_permalink( $form->form_success_message );
+					wp_redirect( $page );
+					exit();
+				}
+				/* If redirect, redirect to the URL */
+				elseif ( 'redirect' == $form->form_success_type ) {
+					wp_redirect( $form->form_success_message );
+					exit();
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Output form via shortcode
 	 * 
 	 * @since 1.0
@@ -896,7 +1049,7 @@ class Visual_Form_Builder{
 		
 		/* If form is submitted, show success message, otherwise the form */
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && in_array( $_REQUEST['visual-form-builder-submit'], array( 'Submit', 'submit' ) ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
-			$output = '<p id="form_success">Your form was successfully submitted. Thank you for contacting us.</p>';
+			$output = $this->confirmation();
 		}
 		else {
 			/* Get forms */
@@ -920,9 +1073,8 @@ class Visual_Form_Builder{
 				foreach ( $fields as $field ) {
 					if ( $field->field_type == 'fieldset' ) {
 						/* Close each fieldset */
-						if ( $open_fieldset == true ) {
-							$output .= '</ul></fieldset>';
-						}
+						if ( $open_fieldset == true )
+							$output .= '</ul><br /></fieldset>';
 						
 						$output .= '<fieldset><div class="legend"><h3>' . $field->field_name . '</h3></div><ul>';
 						$open_fieldset = true;
@@ -931,20 +1083,26 @@ class Visual_Form_Builder{
 						/* If field is required, build the span and add setup the 'required' class */
 						$required_span = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
 						$required = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
-			
-						$output .= '<li><label for="' . $field->field_key . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+						$validation = ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
+						
+						$output .= '<li><label for="vfb-' . $field->field_key . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
 					}
 					
 					switch ( $field->field_type ) {
-						case 'text':
+						case 'text' :
+						case 'email' :
+						case 'url' :
+						case 'currency' :
+						case 'number' :
+						case 'phone' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" /><label>' . $field->field_description . '</label></span>';
 							else
-								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . '" />';
+								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" />';
 						break;
 						
-						case 'textarea':
+						case 'textarea' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . $field->field_description . '</label></span>';
@@ -982,8 +1140,8 @@ class Visual_Form_Builder{
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
 								$output .= '<span>
-												<input type="radio" name="vfb-'. $field->field_key . '" value="'. $value . '" class="radio ' . $required . '" />'. 
-											' <label for="' . $field->field_key . '" class="choice">' . $value . '</label>' .
+												<input type="radio" name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '-' . $option . '" value="'. $value . '" class="radio' . $required . '" />'. 
+											' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . $value . '</label>' .
 											'</span>';
 							}
 							
@@ -999,11 +1157,12 @@ class Visual_Form_Builder{
 							$options = explode( ',', unserialize( $field->field_options ) );
 							
 							$output .= '<div>';
-							
+
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
-								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '[]" id="vfb-'. $field->field_key . '" value="'. trim( $value ) . '" class="checkbox ' . $required . '" />'. 
-									' <label for="' . $field->field_key . '" class="choice">' . trim( $value ) . '</label></span>';
+								
+								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '[]" id="vfb-'. $field->field_key . '-' . $option . '" value="'. trim( $value ) . '" class="checkbox' . $required . '" />'. 
+									' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . trim( $value ) . '</label></span>';
 							}
 							
 							$output .= '</div>';
@@ -1014,11 +1173,12 @@ class Visual_Form_Builder{
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . $field->field_description . '</label></span>';
-							
+								
+								$countries = array( "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 							$output .= '<div>
 								<span class="full">
 					
-									<input type="text" name="vfb-address" maxlength="150" id="vfb-address" class="text medium" />
+									<input type="text" name="vfb-address" maxlength="150" id="vfb-address" class="text medium' . $required . '" />
 									<label>Address</label>
 								</span>
 								<span class="full">
@@ -1027,259 +1187,27 @@ class Visual_Form_Builder{
 								</span>
 								<span class="left">
 					
-									<input type="text" name="vfb-city" maxlength="150" id="vfb-city" class="text medium" />
+									<input type="text" name="vfb-city" maxlength="150" id="vfb-city" class="text medium' . $required . '" />
 									<label>City</label>
 								</span>
 								<span class="right">
-									<input type="text" name="vfb-state" maxlength="150" id="vfb-state" class="text medium" />
+									<input type="text" name="vfb-state" maxlength="150" id="vfb-state" class="text medium' . $required . '" />
 									<label>State / Province / Region</label>
 								</span>
 								<span class="left">
 					
-									<input type="text" name="vfb-zip" maxlength="150" id="vfb-zip" class="text medium" />
+									<input type="text" name="vfb-zip" maxlength="150" id="vfb-zip" class="text medium' . $required . '" />
 									<label>Postal / Zip Code</label>
 								</span>
 								<span class="right">
-									<select class="select" name="vfb-country" id="vfb-country">
-									<option selected="selected" value=""></option>
-									<option value="Afghanistan">Afghanistan</option>
-									<option value="Albania">Albania</option>
-					
-									<option value="Algeria">Algeria</option>
-									<option value="Andorra">Andorra</option>
-									<option value="Angola">Angola</option>
-									<option value="Antigua and Barbuda">Antigua and Barbuda</option>
-									<option value="Argentina">Argentina</option>
-									<option value="Armenia">Armenia</option>
-					
-									<option value="Aruba">Aruba</option>
-									<option value="Australia">Australia</option>
-									<option value="Austria">Austria</option>
-									<option value="Azerbaijan">Azerbaijan</option>
-									<option value="Bahamas">Bahamas</option>
-									<option value="Bahrain">Bahrain</option>
-					
-									<option value="Bangladesh">Bangladesh</option>
-									<option value="Barbados">Barbados</option>
-									<option value="Belarus">Belarus</option>
-									<option value="Belgium">Belgium</option>
-									<option value="Belize">Belize</option>
-									<option value="Benin">Benin</option>
-					
-									<option value="Bermuda">Bermuda</option>
-									<option value="Bhutan">Bhutan</option>
-									<option value="Bolivia">Bolivia</option>
-									<option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
-									<option value="Botswana">Botswana</option>
-									<option value="Brazil">Brazil</option>
-					
-									<option value="Brunei">Brunei</option>
-									<option value="Bulgaria">Bulgaria</option>
-									<option value="Burkina Faso">Burkina Faso</option>
-									<option value="Burundi">Burundi</option>
-									<option value="Cambodia">Cambodia</option>
-									<option value="Cameroon">Cameroon</option>
-					
-									<option value="Canada">Canada</option>
-									<option value="Cape Verde">Cape Verde</option>
-									<option value="Central African Republic">Central African Republic</option>
-									<option value="Chad">Chad</option>
-									<option value="Chile">Chile</option>
-									<option value="China">China</option>
-					
-									<option value="Colombia">Colombia</option>
-									<option value="Comoros">Comoros</option>
-									<option value="Democratic Republic of the Congo">Democratic Republic of the Congo</option>
-									<option value="Republic of the Congo">Republic of the Congo</option>
-									<option value="Cook Islands">Cook Islands</option>
-									<option value="Costa Rica">Costa Rica</option>
-					
-									<option value="C&ocirc;te d&lsquo;Ivoire">C&ocirc;te d&lsquo;Ivoire</option>
-									<option value="Croatia">Croatia</option>
-									<option value="Cuba">Cuba</option>
-									<option value="Cyprus">Cyprus</option>
-									<option value="Czech Republic">Czech Republic</option>
-									<option value="Denmark">Denmark</option>
-					
-									<option value="Djibouti">Djibouti</option>
-									<option value="Dominica">Dominica</option>
-									<option value="Dominican Republic">Dominican Republic</option>
-									<option value="East Timor">East Timor</option>
-									<option value="Ecuador">Ecuador</option>
-									<option value="Egypt">Egypt</option>
-					
-									<option value="El Salvador">El Salvador</option>
-									<option value="Equatorial Guinea">Equatorial Guinea</option>
-									<option value="Eritrea">Eritrea</option>
-									<option value="Estonia">Estonia</option>
-									<option value="Ethiopia">Ethiopia</option>
-									<option value="Faroe Islands">Faroe Islands</option>
-					
-									<option value="Fiji">Fiji</option>
-									<option value="Finland">Finland</option>
-									<option value="France">France</option>
-									<option value="Gabon">Gabon</option>
-									<option value="Gambia">Gambia</option>
-									<option value="Georgia">Georgia</option>
-					
-									<option value="Germany">Germany</option>
-									<option value="Ghana">Ghana</option>
-									<option value="Gibraltar">Gibraltar</option>
-									<option value="Greece">Greece</option>
-									<option value="Grenada">Grenada</option>
-									<option value="Guatemala">Guatemala</option>
-					
-									<option value="Guinea">Guinea</option>
-									<option value="Guinea-Bissau">Guinea-Bissau</option>
-									<option value="Guyana">Guyana</option>
-									<option value="Haiti">Haiti</option>
-									<option value="Honduras">Honduras</option>
-									<option value="Hong Kong">Hong Kong</option>
-					
-									<option value="Hungary">Hungary</option>
-									<option value="Iceland">Iceland</option>
-									<option value="India">India</option>
-									<option value="Indonesia">Indonesia</option>
-									<option value="Iran">Iran</option>
-									<option value="Iraq">Iraq</option>
-					
-									<option value="Ireland">Ireland</option>
-									<option value="Israel">Israel</option>
-									<option value="Italy">Italy</option>
-									<option value="Jamaica">Jamaica</option>
-									<option value="Japan">Japan</option>
-									<option value="Jordan">Jordan</option>
-					
-									<option value="Kazakhstan">Kazakhstan</option>
-									<option value="Kenya">Kenya</option>
-									<option value="Kiribati">Kiribati</option>
-									<option value="North Korea">North Korea</option>
-									<option value="South Korea">South Korea</option>
-									<option value="Kuwait">Kuwait</option>
-					
-									<option value="Kyrgyzstan">Kyrgyzstan</option>
-									<option value="Laos">Laos</option>
-									<option value="Latvia">Latvia</option>
-									<option value="Lebanon">Lebanon</option>
-									<option value="Lesotho">Lesotho</option>
-									<option value="Liberia">Liberia</option>
-					
-									<option value="Libya">Libya</option>
-									<option value="Liechtenstein">Liechtenstein</option>
-									<option value="Lithuania">Lithuania</option>
-									<option value="Luxembourg">Luxembourg</option>
-									<option value="Macedonia">Macedonia</option>
-									<option value="Madagascar">Madagascar</option>
-					
-									<option value="Malawi">Malawi</option>
-									<option value="Malaysia">Malaysia</option>
-									<option value="Maldives">Maldives</option>
-									<option value="Mali">Mali</option>
-									<option value="Malta">Malta</option>
-									<option value="Marshall Islands">Marshall Islands</option>
-					
-									<option value="Mauritania">Mauritania</option>
-									<option value="Mauritius">Mauritius</option>
-									<option value="Mexico">Mexico</option>
-									<option value="Micronesia">Micronesia</option>
-									<option value="Moldova">Moldova</option>
-									<option value="Monaco">Monaco</option>
-					
-									<option value="Mongolia">Mongolia</option>
-									<option value="Montenegro">Montenegro</option>
-									<option value="Morocco">Morocco</option>
-									<option value="Mozambique">Mozambique</option>
-									<option value="Myanmar">Myanmar</option>
-									<option value="Namibia">Namibia</option>
-					
-									<option value="Nauru">Nauru</option>
-									<option value="Nepal">Nepal</option>
-									<option value="Netherlands">Netherlands</option>
-									<option value="Netherlands Antilles">Netherlands Antilles</option>
-									<option value="New Zealand">New Zealand</option>
-									<option value="Nicaragua">Nicaragua</option>
-					
-									<option value="Niger">Niger</option>
-									<option value="Nigeria">Nigeria</option>
-									<option value="Norway">Norway</option>
-									<option value="Oman">Oman</option>
-									<option value="Pakistan">Pakistan</option>
-									<option value="Palau">Palau</option>
-					
-									<option value="Palestine">Palestine</option>
-									<option value="Panama">Panama</option>
-									<option value="Papua New Guinea">Papua New Guinea</option>
-									<option value="Paraguay">Paraguay</option>
-									<option value="Peru">Peru</option>
-									<option value="Philippines">Philippines</option>
-					
-									<option value="Poland">Poland</option>
-									<option value="Portugal">Portugal</option>
-									<option value="Puerto Rico">Puerto Rico</option>
-									<option value="Qatar">Qatar</option>
-									<option value="Romania">Romania</option>
-									<option value="Russia">Russia</option>
-					
-									<option value="Rwanda">Rwanda</option>
-									<option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
-									<option value="Saint Lucia">Saint Lucia</option>
-									<option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
-									<option value="Samoa">Samoa</option>
-									<option value="San Marino">San Marino</option>
-					
-									<option value="Sao Tome and Principe">Sao Tome and Principe</option>
-									<option value="Saudi Arabia">Saudi Arabia</option>
-									<option value="Senegal">Senegal</option>
-									<option value="Serbia and Montenegro">Serbia and Montenegro</option>
-									<option value="Seychelles">Seychelles</option>
-									<option value="Sierra Leone">Sierra Leone</option>
-					
-									<option value="Singapore">Singapore</option>
-									<option value="Slovakia">Slovakia</option>
-									<option value="Slovenia">Slovenia</option>
-									<option value="Solomon Islands">Solomon Islands</option>
-									<option value="Somalia">Somalia</option>
-									<option value="South Africa">South Africa</option>
-					
-									<option value="Spain">Spain</option>
-									<option value="Sri Lanka">Sri Lanka</option>
-									<option value="Sudan">Sudan</option>
-									<option value="Suriname">Suriname</option>
-									<option value="Swaziland">Swaziland</option>
-									<option value="Sweden">Sweden</option>
-					
-									<option value="Switzerland">Switzerland</option>
-									<option value="Syria">Syria</option>
-									<option value="Taiwan">Taiwan</option>
-									<option value="Tajikistan">Tajikistan</option>
-									<option value="Tanzania">Tanzania</option>
-									<option value="Thailand">Thailand</option>
-					
-									<option value="Togo">Togo</option>
-									<option value="Tonga">Tonga</option>
-									<option value="Trinidad and Tobago">Trinidad and Tobago</option>
-									<option value="Tunisia">Tunisia</option>
-									<option value="Turkey">Turkey</option>
-									<option value="Turkmenistan">Turkmenistan</option>
-					
-									<option value="Tuvalu">Tuvalu</option>
-									<option value="Uganda">Uganda</option>
-									<option value="Ukraine">Ukraine</option>
-									<option value="United Arab Emirates">United Arab Emirates</option>
-									<option value="United Kingdom">United Kingdom</option>
-									<option value="United States">United States</option>
-					
-									<option value="Uruguay">Uruguay</option>
-									<option value="Uzbekistan">Uzbekistan</option>
-									<option value="Vanuatu">Vanuatu</option>
-									<option value="Vatican City">Vatican City</option>
-									<option value="Venezuela">Venezuela</option>
-									<option value="Vietnam">Vietnam</option>
-					
-									<option value="Yemen">Yemen</option>
-									<option value="Zambia">Zambia</option>
-									<option value="Zimbabwe">Zimbabwe</option>
-									</select>
+								<select class="select' . $required . '" name="vfb-country" id="vfb-country">
+								<option selected="selected" value=""></option>';
+								
+								foreach ( $countries as $country ) {
+									$output .= "<option value='$country'>$country</option>";
+								}
+								
+								$output .= '</select>
 									<label>Country</label>
 								</span>
 							</div>';
@@ -1295,13 +1223,48 @@ class Visual_Form_Builder{
 								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" />';
 							
 						break;
+						
+						case 'time' :
+							if ( !empty( $field->field_description ) )
+								$output .= '<span><label>' . $field->field_description . '</label></span>';
+
+							/* Get the time format (12 or 24) */
+							$time_format = str_replace( 'time-', '', $validation );
+							/* Set whether we start with 0 or 1 and how many total hours */
+							$hour_start = ( $time_format == '12' ) ? 1 : 0;
+							$hour_total = ( $time_format == '12' ) ? 12 : 23;
+							
+							/* Hour */
+							$output .= '<span class="time"><select name="vfb-'. $field->field_key . '[hour]" id="vfb-'. $field->field_key . '" class="select' . $required . '">';
+							for ( $i = $hour_start; $i <= $hour_total; $i++ ) {
+								/* Add the leading zero */
+								$hour = ( $i < 10 ) ? "0$i" : $i;
+								$output .= "<option value='$hour'>$hour</option>";
+							}
+							$output .= '</select><label>HH</label></span>';
+							
+							/* Minute */
+							$output .= '<span class="time"><select name="vfb-'. $field->field_key . '[min]" id="vfb-'. $field->field_key . '" class="select' . $required . '">';
+							for ( $i = 0; $i <= 55; $i+=5 ) {
+								/* Add the leading zero */
+								$min = ( $i < 10 ) ? "0$i" : $i;
+								$output .= "<option value='$min'>$min</option>";
+							}
+							$output .= '</select><label>MM</label></span>';
+							
+							/* AM/PM */
+							if ( $time_format == '12' )
+								$output .= '<span class="time"><select name="vfb-'. $field->field_key . '[ampm]" id="vfb-'. $field->field_key . '" class="select' . $required . '"><option value="AM">AM</option><option value="PM">PM</option></select><label>AM/PM</label></span>';							
+						break;					
 					}
 				
 					$output .= '</li>';
 				}
 				
-				$output .= '</ul></fieldset>';
+				/* Close user-added fields */
+				$output .= '</ul><br /></fieldset>';
 				
+				/* Output our security test */
 				$output .= '<fieldset>
 							<div class="legend">
 								<h3>Verification</h3>
@@ -1343,7 +1306,7 @@ class Visual_Form_Builder{
 		global $wpdb, $post;
 		
 		/* Security check before moving any further */
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['visual-form-builder-submit'] == 'Submit' && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) {
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['visual-form-builder-submit'] == 'Submit' && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) :
 			$nonce = $_REQUEST['_wpnonce'];
 			
 			/* Security check to verify the nonce */
@@ -1372,25 +1335,26 @@ class Visual_Form_Builder{
 				$form_from_name = $form->form_email_from_name;
 			}
 			
-			/* Sender email override query */
-			$email_query = "SELECT fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_override = fields.field_id WHERE forms.form_id = $form_id";
-			$emails = $wpdb->get_results( $email_query );
-			
 			/* Sender name override query */
 			$sender_query = "SELECT fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_name_override = fields.field_id WHERE forms.form_id = $form_id";
 			$senders = $wpdb->get_results( $sender_query );
-			
-			/* Loop through email results and assign sender email to override, if needed */
-			foreach ( $emails as $email ) {
-				if ( !empty( $email->field_key ) )
-					$form_from = $_POST[ 'vfb-' . $email->field_key ];
-			}
+
+			/* Sender email override query */
+			$email_query = "SELECT fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_override = fields.field_id WHERE forms.form_id = $form_id";
+			$emails = $wpdb->get_results( $email_query );
 			
 			/* Loop through name results and assign sender name to override, if needed */
 			foreach( $senders as $sender ) {
 				if ( !empty( $sender->field_key ) )
 					$form_from_name = $_POST[ 'vfb-' . $sender->field_key ];
 			}
+
+			/* Loop through email results and assign sender email to override, if needed */
+			foreach ( $emails as $email ) {
+				if ( !empty( $email->field_key ) )
+					$form_from = $_POST[ 'vfb-' . $email->field_key ];
+			}
+			
 			
 			/* Prepare the beginning of the content */
 			$message = '<html><body><table rules="all" style="border-color: #666;" cellpadding="10">';
@@ -1401,9 +1365,16 @@ class Visual_Form_Builder{
 				$key = str_replace( 'vfb-', '', $key );
 				$key = strtolower( str_replace( '-', ' ', $key ) );
 				
-				/* If there are multiple values, build the list, otherwise it's a single value */
-				$value = is_array( $value ) ? implode( ', ', $value ) : esc_html( $value );				
-				
+				/* If time field, build proper output */
+				if ( is_array( $value ) && array_key_exists( 'hour', $value )  && array_key_exists( 'min', $value ) )
+					$value = ( array_key_exists( 'ampm', $value ) ) ? substr_replace( implode( ':', $value ), ' ', 5, 1 ) : implode( ':', $value );
+				/* If multiple values, build the list */
+				elseif ( is_array( $value ) )
+					$value = implode( ', ', $value );
+				/* Lastly, handle single values */
+				else
+					$value = esc_html( $value );
+			
 				/* Hide fields that aren't necessary to the body of the message */
 				if ( !in_array( $key, array( 'spam', 'secret', 'visual form builder submit', '_wpnonce', 'form_id' ) ) ) {
 					$message .= '<tr><td><strong>' . ucwords( $key ) . ': </strong></td><td>' . $value . '</td></tr>';
@@ -1442,7 +1413,11 @@ class Visual_Form_Builder{
 			foreach ( $form_to as $email ) {
 				$mail_sent = wp_mail( $email, esc_html( $form_subject ), $message, $headers );
 			}
-		}	
+		elseif ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
+			/* If any of the security checks fail, provide some user feedback */
+			if ( $_REQUEST['vfb-spam'] !== '' || !is_numeric( $_REQUEST['vfb-secret'] ) || strlen( $_REQUEST['vfb-secret'] ) !== 2 )
+				wp_die( 'Ooops! Looks like you have failed the security validation for this form. Please go back and try again.' );
+		endif;
 	}
 }
 

@@ -22,9 +22,6 @@ jQuery(document).ready(function($) {
 			tabsWidth[i] = Math.abs( $(this).outerWidth() ) + 6;
 	});
 	
-	/* Hide the left arrow on load */
-	$( '.nav-tabs-arrow-left' ).hide();
-	
 	var count = 0;
 	
 	/* Move tabs to the right */
@@ -111,11 +108,8 @@ jQuery(document).ready(function($) {
 		}
 	});
 	
-	/* Hide the spinner on load */
-	$('img.waiting').hide();
-	
 	/* Show/hide the spinner image when creating a field */
-	$( '#submit-create-field' ).click( function(e){
+	$( '#form-items' ).submit( function(e){
 		$.ajax({
 			url: ajaxurl,
 			async: false,
@@ -126,6 +120,31 @@ jQuery(document).ready(function($) {
 		});
 	});
 	
+	/* Display the selected confirmation type on load */
+	var confirmation = $( '.form-success-type:checked' ).val();
+	$( '#form-success-message-' + confirmation ).show();
+
+	/* Control the Confirmation Message tabs */
+	$( '.form-success-type' ).change(function(){
+		var type = $( this ).val();
+
+		if ( 'text' == type ) {
+			$( '#form-success-message-text' ).show();
+			$( '#form-success-message-page' ).hide();
+			$( '#form-success-message-redirect' ).hide();
+		}
+		else if ( 'page' == type ) {
+			$( '#form-success-message-text' ).hide();
+			$( '#form-success-message-page' ).show();
+			$( '#form-success-message-redirect' ).hide();
+		}
+		else if ( 'redirect' == type ) {
+			$( '#form-success-message-text' ).hide();
+			$( '#form-success-message-page' ).hide();
+			$( '#form-success-message-redirect' ).show();
+		}
+	});
+	
 	/* Validate the sender details section */
 	$( '#visual-form-builder-update' ).validate({
 		rules: {
@@ -133,7 +152,9 @@ jQuery(document).ready(function($) {
 				required: true
 			},
 			form_email_from_name: {
-				required: true
+				required : function( element ){
+					return $( '#form_email_from_name_override option:selected' ).val() == ''
+				}
 			},
 			form_email_to: {
 				required: true,
@@ -144,7 +165,10 @@ jQuery(document).ready(function($) {
 					return $( '#form_email_from_override option:selected' ).val() == ''
 				},
 				email: true
-			}
+			},
+			form_success_message_redirect: {
+				url: true
+			},
 		},
 		errorPlacement: function( error, element ) {
 			error.insertAfter( element.parent() );

@@ -29,6 +29,7 @@ form.visual-form-builder li{width:auto !important;}
 	width:48%;
 }
 .visual-form-builder span.right input, .visual-form-builder span.right select, .visual-form-builder span.left input, .visual-form-builder span.left select{width:100%;}
+.visual-form-builder span.time{float:left;margin:0 0.3em 0 0;}
 .visual-form-builder li div label, .visual-form-builder li span label{font-size:90%;}
 .visual-form-builder fieldset{
 	background-color:#eeeeee;
@@ -43,7 +44,9 @@ form.visual-form-builder li{width:auto !important;}
 	padding:0 6px;
 	color:#990000;
 	border-bottom:1px dotted #CCCCCC;
+	font-size:inherit;
 }
+.visual-form-builder .legend h3{font-size:20px;}
 .visual-form-builder label, label.desc{
 	display:block;
 	margin:0;

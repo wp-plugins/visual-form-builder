@@ -271,11 +271,11 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			$data[] = 
 				array(
 					'entry_id' => $entry->entries_id,
-					'form' => $entry->form_title,
-					'subject' => $entry->subject,
-					'sender_name' => $entry->sender_name,
-					'sender_email' => $entry->sender_email,
-					'emails_to' => implode( ',', unserialize( $entry->emails_to ) ),
+					'form' => stripslashes( $entry->form_title ),
+					'subject' => stripslashes( $entry->subject ),
+					'sender_name' => stripslashes( $entry->sender_name ),
+					'sender_email' => stripslashes( $entry->sender_email ),
+					'emails_to' => implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ),
 					'date' => $entry->date_submitted,
 					'ip_address' => $entry->ip_address,
 					'data' => unserialize( $entry->data )

@@ -12,5 +12,6 @@
 	$wpdb->query( "DROP TABLE IF EXISTS $fields_table" );
 	$wpdb->query( "DROP TABLE IF EXISTS $entries_table" );
 	
+	delete_option( 'vfb_db_version' );
 	delete_option( 'visual-form-builder-screen-options' );
 ?>
