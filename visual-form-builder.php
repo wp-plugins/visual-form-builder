@@ -210,7 +210,7 @@ class Visual_Form_Builder{
 		$field_sql = "CREATE TABLE $field_table_name (
 				field_id BIGINT(20) NOT NULL AUTO_INCREMENT,
 				form_id BIGINT(20) NOT NULL,
-				field_key VARCHAR(25) NOT NULL,
+				field_key VARCHAR(255) NOT NULL,
 				field_type VARCHAR(25) NOT NULL,
 				field_options TEXT,
 				field_description TEXT,
