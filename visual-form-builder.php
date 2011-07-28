@@ -1012,7 +1012,7 @@ class Visual_Form_Builder{
 			foreach ( $forms as $form ) {
 				/* If text, return output and format the HTML for display */
 				if ( 'text' == $form->form_success_type )
-					return html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) );
+					return stripslashes( html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) ) );
 				/* If page, redirect to the permalink */
 				elseif ( 'page' == $form->form_success_type ) {
 					$page = get_permalink( $form->form_success_message );
