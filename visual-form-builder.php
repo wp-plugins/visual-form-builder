@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.3
+Version: 1.3.1
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.3';
+	public $vfb_db_version = '1.3.1';
 	
 	public function __construct(){
 		global $wpdb;
@@ -62,13 +62,13 @@ class Visual_Form_Builder{
 			/* Add a database version to help with upgrades and run SQL install */
 			if ( !get_option( 'vfb_db_version' ) ) {
 				update_option( 'vfb_db_version', $this->vfb_db_version );
-				add_action( 'plugins_loaded', array( &$this, 'install_db' ) );
+				$this->install_db();
 			}
 			
 			/* If database version doesn't match, update and run SQL install */
 			if ( get_option( 'vfb_db_version' ) != $this->vfb_db_version ) {
 				update_option( 'vfb_db_version', $this->vfb_db_version );
-				add_action( 'plugins_loaded', array( &$this, 'install_db' ) );
+				$this->install_db();
 			}
 			
 			/* Load the jQuery and CSS we need if we're on our plugin page */
@@ -879,20 +879,20 @@ class Visual_Form_Builder{
                                                     <?php if ( $field->field_type == 'fieldset' ) : ?>
                                                     	<p class="description description-wide">
                                                             <label for="edit-form-item-name-<?php echo $field->field_id; ?>">Legend<br />
-                                                                <input type="text" value="<?php echo $field->field_name; ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+                                                                <input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
                                                             </label>
                                                     	</p>
                                                     <?php else: ?>
                                                         <p class="description description-wide">
                                                             <label for="edit-form-item-name-<?php echo $field->field_id; ?>">
                                                                 Name<br />
-                                                                <input type="text" value="<?php echo $field->field_name; ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+                                                                <input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
                                                             </label>
                                                         </p>
                                                         <p class="description description-wide">
                                                             <label for="edit-form-item-description-<?php echo $field->field_id; ?>">
                                                                 Description<br />
-                                                                <input type="text" value="<?php echo $field->field_description; ?>" name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" />
+                                                                <input type="text" value="<?php echo stripslashes( $field->field_description ); ?>" name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" />
                                                             </label>
                                                         </p>
                                                         
@@ -910,7 +910,7 @@ class Visual_Form_Builder{
                                                             ?>
                                                                 <label for="edit-form-item-options-<?php echo $field->field_id; ?>">
                                                                     Options (separated by commas)<br />
-                                                                    <input type="text" value="<?php echo $opts_vals; ?>" name="field_options-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-options-<?php echo $field->field_id; ?>" />
+                                                                    <input type="text" value="<?php echo stripslashes( $opts_vals ); ?>" name="field_options-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-options-<?php echo $field->field_id; ?>" />
                                                                 </label>
                                                             </p>
                                                         <?php
@@ -1076,7 +1076,7 @@ class Visual_Form_Builder{
 						if ( $open_fieldset == true )
 							$output .= '</ul><br /></fieldset>';
 						
-						$output .= '<fieldset><div class="legend"><h3>' . $field->field_name . '</h3></div><ul>';
+						$output .= '<fieldset><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul>';
 						$open_fieldset = true;
 					}
 					else {
@@ -1105,7 +1105,7 @@ class Visual_Form_Builder{
 						case 'textarea' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 								
 							$output .= '<textarea name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="textarea ' . $field->field_size . $required . '"></textarea>';
 								
@@ -1113,7 +1113,7 @@ class Visual_Form_Builder{
 						
 						case 'select':
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 									
 							$output .= '<select name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="select ' . $field->field_size . $required . '">';
 							
@@ -1131,7 +1131,7 @@ class Visual_Form_Builder{
 						case 'radio':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 							
 							$options = explode( ',', unserialize( $field->field_options ) );
 							
@@ -1140,8 +1140,8 @@ class Visual_Form_Builder{
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
 								$output .= '<span>
-												<input type="radio" name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '-' . $option . '" value="'. $value . '" class="radio' . $required . '" />'. 
-											' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . $value . '</label>' .
+												<input type="radio" name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '-' . $option . '" value="'. stripslashes( $value ) . '" class="radio' . $required . '" />'. 
+											' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . stripslashes( $value ) . '</label>' .
 											'</span>';
 							}
 							
@@ -1152,7 +1152,7 @@ class Visual_Form_Builder{
 						case 'checkbox':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 							
 							$options = explode( ',', unserialize( $field->field_options ) );
 							
@@ -1161,8 +1161,8 @@ class Visual_Form_Builder{
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
 								
-								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '[]" id="vfb-'. $field->field_key . '-' . $option . '" value="'. trim( $value ) . '" class="checkbox' . $required . '" />'. 
-									' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . trim( $value ) . '</label></span>';
+								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '[]" id="vfb-'. $field->field_key . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="checkbox' . $required . '" />'. 
+									' <label for="vfb-' . $field->field_key . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label></span>';
 							}
 							
 							$output .= '</div>';
@@ -1172,7 +1172,7 @@ class Visual_Form_Builder{
 						case 'address':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 								
 								$countries = array( "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 							$output .= '<div>
@@ -1218,7 +1218,7 @@ class Visual_Form_Builder{
 						case 'date':
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" /><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
 							else
 								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . '" />';
 							
@@ -1226,7 +1226,7 @@ class Visual_Form_Builder{
 						
 						case 'time' :
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . $field->field_description . '</label></span>';
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 
 							/* Get the time format (12 or 24) */
 							$time_format = str_replace( 'time-', '', $validation );
