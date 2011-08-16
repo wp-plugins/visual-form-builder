@@ -59,14 +59,14 @@ jQuery(document).ready(function($) {
 	});
 	
 	/* Display entries form data */
-	$( '.view-entry' ).click( function( e ){
+	/*$( '.view-entry' ).click( function( e ){
 		
 		var id = $( e.target ).attr( 'id' );
 		
 		$( e.target ).closest( 'td' ).children( '#entry-' + id ).slideToggle( 'fast' );
 		
 		return false;
-	});
+	});*/
 	
 	/* Hide entries form data */
 	$( '.visual-form-builder-inline-edit-cancel' ).click( function( e ){

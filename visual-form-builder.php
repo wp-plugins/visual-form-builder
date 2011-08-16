@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.3.1
+Version: 1.4
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.3.1';
+	public $vfb_db_version = '1.4';
 	
 	public function __construct(){
 		global $wpdb;
@@ -44,7 +44,8 @@ class Visual_Form_Builder{
 			add_action( 'admin_menu', array( &$this, 'save' ) );
 			add_action( 'wp_ajax_visual_form_builder_process_sort', array( &$this, 'visual_form_builder_process_sort_callback' ) );
 			add_action( 'admin_init', array( &$this, 'add_visual_form_builder_contextual_help' ) );
-			
+			add_action( 'admin_init', array( &$this, 'export_entries' ) );
+
 			/* Load the includes files */
 			add_action( 'plugins_loaded', array( &$this, 'includes' ) );
 			
@@ -91,8 +92,11 @@ class Visual_Form_Builder{
 	 * @since 1.2
 	 */
 	public function includes(){
-		/* Load the Entries class */
+		/* Load the Entries List class */
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-list.php' );
+		
+		/* Load the Entries Details class */
+		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-detail.php' );
 	}
 	
 	/**
@@ -191,6 +195,24 @@ class Visual_Form_Builder{
 			update_option( 'visual-form-builder-screen-options', $updated_options );
 		}
 	}
+	
+	/**
+	 * Runs the export_entries function in the class-entries-list.php file
+	 * 
+	 * @since 1.4
+	 */
+	public function export_entries() {
+		$entries = new VisualFormBuilder_Entries_List();
+		
+		/* If exporting all, don't pass the IDs */
+		if ( 'export-all' === $entries->current_action() )
+			$entries->export_entries();
+		/* If exporting selected, pick up the ID array and pass them */
+		elseif ( 'export-selected' === $entries->current_action() ) {
+			$entry_id = ( is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
+			$entries->export_entries( $entry_id );
+		}
+	}
 
 	
 	/**
@@ -204,6 +226,10 @@ class Visual_Form_Builder{
 		$field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
 		$entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
+		
+		/* Explicitly set the character set and collation when creating the tables */
+		$charset = ( defined( 'DB_CHARSET' && '' !== DB_CHARSET ) ) ? DB_CHARSET : 'utf8';
+		$collate = ( defined( 'DB_COLLATE' && '' !== DB_COLLATE ) ) ? DB_COLLATE : 'utf8_general_ci';
 		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); 
 				
@@ -220,9 +246,8 @@ class Visual_Form_Builder{
 				field_required VARCHAR(25),
 				field_size VARCHAR(25),
 				UNIQUE KEY  (field_id)
-			);";
-	
-	
+			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
+
 		$form_sql = "CREATE TABLE $form_table_name (
 				form_id BIGINT(20) NOT NULL AUTO_INCREMENT,
 				form_key TINYTEXT NOT NULL,
@@ -236,7 +261,7 @@ class Visual_Form_Builder{
 				form_success_type VARCHAR(25) DEFAULT 'text',
 				form_success_message TEXT,
 				UNIQUE KEY  (form_id)
-			);";
+			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
 		$entries_sql = "CREATE TABLE $entries_table_name (
 				entries_id BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -249,7 +274,7 @@ class Visual_Form_Builder{
 				date_submitted VARCHAR(25),
 				ip_address VARCHAR(25),
 				UNIQUE KEY  (entries_id)
-			);";
+			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
 		/* Create or Update database tables */
 		dbDelta( $field_sql );
@@ -287,6 +312,7 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'jquery-ui-core ', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( 'visual-form-builder' ) . '/js/visual-form-builder-validate.js' , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'visual-form-builder-quicktags', plugins_url( 'visual-form-builder' ) . '/js/js_quicktags.js' );
 	}
 	
 	/**
@@ -500,7 +526,7 @@ class Visual_Form_Builder{
 					$form_id = absint( $_REQUEST['form_id'] );
 					$field_key = sanitize_title( $_REQUEST['field_name'] );
 					$field_name = esc_html( $_REQUEST['field_type'] );
-					$field_type = strtolower( esc_html( $_REQUEST['field_type'] ) );
+					$field_type = strtolower( sanitize_title( $_REQUEST['field_type'] ) );
 					
 					/* Set defaults for validation */
 					switch ( $field_type ) {
@@ -611,12 +637,18 @@ class Visual_Form_Builder{
 				if ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ) : 
 				
 					$entries_list = new VisualFormBuilder_Entries_List();
-					$entries_list->prepare_items();
+					$entries_detail = new VisualFormBuilder_Entries_Detail();
+					
+					if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'view' ) ) ) :
+						$entries_detail->entries_detail();
+					else :
+						$entries_list->prepare_items();
 			?>
                 <form id="entries-filter" method="post" action="">
                     <?php $entries_list->display(); ?>
                 </form>
             <?php
+			endif;
 				/* Display the Forms */
 				else:	
 					echo ( isset( $this->message ) ) ? $this->message : ''; ?>          
@@ -654,6 +686,8 @@ class Visual_Form_Builder{
                                             <li><input type="submit" id="form-element-digits" class="button-secondary" name="field_type" value="Number"<?php echo $disabled; ?> /></li>
                                             <li><input type="submit" id="form-element-time" class="button-secondary" name="field_type" value="Time"<?php echo $disabled; ?> /></li>
                                             <li><input type="submit" id="form-element-phone" class="button-secondary" name="field_type" value="Phone"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-html" class="button-secondary" name="field_type" value="HTML"<?php echo $disabled; ?> /></li>
+                                            <li><input type="submit" id="form-element-file" class="button-secondary" name="field_type" value="File Upload"<?php echo $disabled; ?> /></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -868,8 +902,8 @@ class Visual_Form_Builder{
                                         <li id="form_item_<?php echo $field->field_id; ?>" class="form-item">
                                                 <dl class="menu-item-bar">
                                                     <dt class="menu-item-handle<?php echo ( $field->field_type == 'fieldset' ) ? ' fieldset' : ''; ?>">
-                                                        <span class="item-title"><?php echo stripslashes( $field->field_name ); ?><?php echo ( $field->field_required == 'yes' ) ? ' <span class="is-field-required">*</span>' : ''; ?></span>                                          <span class="item-controls">
-                                                            <span class="item-type"><?php echo strtoupper( $field->field_type ); ?></span>
+                                                        <span class="item-title"><?php echo stripslashes( htmlspecialchars( $field->field_name ) ); ?><?php echo ( $field->field_required == 'yes' ) ? ' <span class="is-field-required">*</span>' : ''; ?></span>                                          <span class="item-controls">
+                                                            <span class="item-type"><?php echo strtoupper( str_replace( '-', ' ', $field->field_type ) ); ?></span>
                                                             <a href="#" title="Edit Field Item" id="edit-<?php echo $field->field_id; ?>" class="item-edit">Edit Field Item</a>
                                                         </span>
                                                     </dt>
@@ -886,7 +920,7 @@ class Visual_Form_Builder{
                                                         <p class="description description-wide">
                                                             <label for="edit-form-item-name-<?php echo $field->field_id; ?>">
                                                                 Name<br />
-                                                                <input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+                                                                <input type="text" value="<?php echo stripslashes( htmlspecialchars( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
                                                             </label>
                                                         </p>
                                                         <p class="description description-wide">
@@ -922,7 +956,7 @@ class Visual_Form_Builder{
                                                         <p class="description description-thin">
                                                             <label for="edit-form-item-validation">
                                                                 Validation<br />
-                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea' ) ) ) ? ' disabled="disabled"' : ''; ?>>
+                                                               <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea', 'html', 'file-upload' ) ) ) ? ' disabled="disabled"' : ''; ?>>
                                                                     <?php if ( $field->field_type == 'time' ) : ?>
                                                                     <option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>>12 Hour Format</option>
                                                                     <option value="time-24" <?php selected( $field->field_validation, 'time-24' ); ?>>24 Hour Format</option>
@@ -1066,7 +1100,7 @@ class Visual_Form_Builder{
 			
 			foreach ( $forms as $form ) :
 						
-				$output = '<form id="' . $form->form_key . '" class="visual-form-builder" method="post">
+				$output = '<form id="' . $form->form_key . '" class="visual-form-builder" method="post" enctype="multipart/form-data">
 							<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
 				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 				
@@ -1100,13 +1134,14 @@ class Visual_Form_Builder{
 								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" /><label>' . $field->field_description . '</label></span>';
 							else
 								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" />';
+
 						break;
 						
 						case 'textarea' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
-								
+	
 							$output .= '<textarea name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="textarea ' . $field->field_size . $required . '"></textarea>';
 								
 						break;
@@ -1255,7 +1290,28 @@ class Visual_Form_Builder{
 							/* AM/PM */
 							if ( $time_format == '12' )
 								$output .= '<span class="time"><select name="vfb-'. $field->field_key . '[ampm]" id="vfb-'. $field->field_key . '" class="select' . $required . '"><option value="AM">AM</option><option value="PM">PM</option></select><label>AM/PM</label></span>';							
-						break;					
+						break;
+						
+						case 'html' :
+							
+							if ( !empty( $field->field_description ) )
+								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+
+							$output .= '<script type="text/javascript">edToolbar("vfb-' . $field->field_key . '");</script>';
+							$output .= '<textarea name="vfb-'. $field->field_key . '" id="vfb-'. $field->field_key . '" class="textarea vfbEditor ' . $field->field_size . $required . '"></textarea>';
+								
+						break;
+						
+						case 'file-upload' :
+							
+							if ( !empty( $field->field_description ) )
+								$output .= '<span><input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" /><label>' . $field->field_description . '</label></span>';
+							else
+								$output .= '<input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '" id="vfb-' . esc_html( $field->field_key )  . '" value="" class="text ' . $field->field_size . $required . $validation . '" />';
+						
+									
+						break;
+
 					}
 				
 					$output .= '</li>';
@@ -1355,12 +1411,12 @@ class Visual_Form_Builder{
 					$form_from = $_POST[ 'vfb-' . $email->field_key ];
 			}
 			
-			
 			/* Prepare the beginning of the content */
 			$message = '<html><body><table rules="all" style="border-color: #666;" cellpadding="10">';
 			
 			/* Loop through each form field and build the body of the message */
 			foreach ( $_POST as $key => $value ) {
+				
 				/* Remove prefix, dashes and lowercase */
 				$key = str_replace( 'vfb-', '', $key );
 				$key = strtolower( str_replace( '-', ' ', $key ) );
@@ -1382,9 +1438,32 @@ class Visual_Form_Builder{
 				}	
 			}
 			
-			/* Get the date/time format that is saved in the options table */
-			$date_format = get_option('date_format');
-			$time_format = get_option('time_format');
+			/* Prepare the attachments */
+			if ( isset( $_FILES ) ) {
+				foreach ( $_FILES as $k => $v ) {
+					if ( $v['size'] > 0 ) {
+						/* Options array for the wp_handle_upload function. 'test_upload' => false */
+						$upload_overrides = array( 'test_form' => false ); 
+						
+						/* We need to include the file that runs the wp_handle_upload function */
+						require_once( ABSPATH . 'wp-admin/includes/file.php' );
+						
+						/* Handle the upload using WP's wp_handle_upload function. Takes the posted file and an options array */
+						$uploaded_file = wp_handle_upload( $v, $upload_overrides );
+						
+						/* If the wp_handle_upload call returned a local path for the image */
+						if ( isset( $uploaded_file['file'] ) ) {
+							$attachments[$k] = $uploaded_file['file'];
+							
+							$key = str_replace( 'vfb-', '', $k );
+							$key = strtolower( str_replace( '-', ' ', $key ) );
+							$fields[$key] = $uploaded_file['url'];
+							
+							$message .= '<tr><td><strong>' . ucwords( $key ) . ': </strong></td><td><a href="' . $uploaded_file['url'] . '">' . $uploaded_file['url'] . '</a></td></tr>';
+						}
+					}
+				}
+			}
 			
 			/* Setup our entries data */
 			$entry = array(
@@ -1394,7 +1473,7 @@ class Visual_Form_Builder{
 				'sender_name' => $form_from_name,
 				'sender_email' => $form_from,
 				'emails_to' => serialize( $form_to ),
-				'date_submitted' => date( $date_format . ' ' . $time_format),
+				'date_submitted' => date_i18n( 'Y-m-d G:i:s' ),
 				'ip_address' => $_SERVER['REMOTE_ADDR']
 			);
 			
@@ -1411,7 +1490,7 @@ class Visual_Form_Builder{
 			
 			/* Send the mail */
 			foreach ( $form_to as $email ) {
-				$mail_sent = wp_mail( $email, esc_html( $form_subject ), $message, $headers );
+				$mail_sent = wp_mail( $email, esc_html( $form_subject ), $message, $headers, $attachments );
 			}
 		elseif ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 			/* If any of the security checks fail, provide some user feedback */

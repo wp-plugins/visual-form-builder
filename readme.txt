@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.3.1
+Stable tag: 1.4
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -16,12 +16,14 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Setup and organize your form using a drag-and-drop interface
 * Automatically includes a basic logic-based verification system
 * Store form entries in your WordPress database and can manage them via the dashboard.
+* Export entries to a CSV file
 * Send form submissions to multiple emails
 * Utilizes jQuery Form Validation
 * Customized Confirmation Messages
 * Redirect to a WordPress Page or a URL
 * Standard and Advanced Fields
 * Easy date fields using the jQuery UI Date Picker
+* File uploads
 
 == Installation ==
 
@@ -36,7 +38,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 = How do I build my form? =
 
 1. Click on the + tab, give your form a name and click Create Form.
-1. Select form fields from the box on the left and click Create Field to add it to your form.
+1. Click the form fields from the box on the left to add it to your form.
 1. Edit the information for each form field by clicking on the down arrow.
 1. Drag and drop the elements to put them in order.
 1. Click Save Form to save your changes.
@@ -75,6 +77,23 @@ To use the more complex features of the Date Picker plugin, you will need to:
 1. Using the above example ID, paste the following into your javascript file: `$( '#start-date' ).datepicker();`
 1. Add and customize the [jQuery UI Date Picker configuration options](http://jqueryui.com/demos/datepicker)
 
+= How do I export my entries to a CSV? =
+
+There are two ways to export your entries to a CSV: Export All or Export Selected.
+
+To Export All:
+
+1. Go to the Entries screen
+1. Select the `Export All` option under the `Bulk Actions` dropdown
+1. Click Apply and save the file
+
+To Export Selected:
+
+1. Go to the Entries screen
+1. Check boxes next to the entries you wish to export
+1. Select the `Export Selected` option under the `Bulk Actions` dropdown
+1. CLick Apply and save the file
+
 == Screenshots ==
 
 1. Visual Form Builder page
@@ -82,6 +101,15 @@ To use the more complex features of the Date Picker plugin, you will need to:
 3. Entries management screen
 
 == Changelog ==
+
+**Version 1.4**
+
+* Fix bug where database charset wasn't being set and causing character encoding issues
+* Fix date submitted to match local date and time settings
+* Fix Textarea CSS to respond to large size
+* Add File Upload and HTML Form Items
+* Add Entries Export feature
+* Update View Entries to full page view instead of jQuery show/hide quick view
 
 **Version 1.3.1**
 
@@ -120,6 +148,9 @@ To use the more complex features of the Date Picker plugin, you will need to:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.4 =
+Export entries to a CSV, file uploads, and various bug fixes.
 
 = 1.3.1 =
 Recommended update immediately! Fix for bug where confirmation screen does not install.
