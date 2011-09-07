@@ -1,0 +1,55 @@
+label.error{color:red;display:block;}
+#visual-form-builder-update input.error, #visual-form-builder-update textarea.error{border:1px solid red;}
+.menu-item-handle.fieldset, #form-element-fieldset{
+	background-image: -moz-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	background-image: -o-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #E3E3E3), color-stop(1, #CCCCCC));
+	background-image: linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
+	box-shadow:0 1px 0 #e3e3e3 inset;
+}
+.sender-labels{width:80px;}
+.is-field-required{color:#BC1212; vertical-align:middle;}
+.visual-form-builder-inline-edit{width:100%;}
+.visual-form-builder-inline-edit-col{padding:0 0.5em;}
+.visual-form-builder-inline-edit label{display:block;margin:0.2em 0;}
+.visual-form-builder-inline-edit .title{display:block;float:left;width:5em;font-style:italic;}
+.visual-form-builder-inline-edit .input-text-wrap{display:block;margin-left:5em;}
+.visual-form-builder-inline-edit .input-text-wrap input[type="text"]{width:100%;border:#DDD solid 1px;border-radius:3px;}
+.subsubsub{float:none;}
+.nav-tabs-arrow-left{display:none;}
+#form-items input{width:104px;float:left;margin:0 5px 10px 0;}
+#form-element-text{background:url(sprite.png) 0 -89px no-repeat transparent;}
+#form-element-textarea{background:url(sprite.png) 0 -173px no-repeat transparent;}
+#form-element-checkbox{background:url(sprite.png) 0 -259px no-repeat transparent;}
+#form-element-radio{background:url(sprite.png) 0 -51px no-repeat transparent;}
+#form-element-select{background:url(sprite.png) 0 -7px no-repeat transparent;}
+#form-element-address{background:url(sprite.png) 0 -129px no-repeat transparent;}
+#form-element-datepicker{background:url(sprite.png) 0 -215px no-repeat transparent;}
+#form-element-email{background:url(sprite.png) 0 -304px no-repeat transparent;}
+#form-element-url{background:url(sprite.png) 0 -356px no-repeat transparent;}
+#form-element-currency{background:url(sprite.png) 0 -405px no-repeat transparent;}
+#form-element-digits{background:url(sprite.png) 0 -452px no-repeat transparent;}
+#form-element-time{background:url(sprite.png) 0 -489px no-repeat transparent;}
+#form-element-phone{background:url(sprite.png) 0 -529px no-repeat transparent;}
+#form-element-html{background:url(sprite.png) 0 -559px no-repeat transparent;}
+#form-element-file{background:url(sprite.png) 0 -587px no-repeat transparent;}
+#form-details-nav{font-size:1.0em;font-weight:bold;padding-top:10px;}
+#form-details-nav a{padding:5px 10px;text-decoration:none;}
+#form-details-nav a.current{
+	background-color:#777;
+	background-image: -ms-linear-gradient(bottom, #6d6d6d, #808080); /* IE10 */
+	background-image: -moz-linear-gradient(bottom, #6d6d6d, #808080); /* Firefox */
+	background-image: -o-linear-gradient(bottom, #6d6d6d, #808080); /* Opera */
+	background-image: -webkit-gradient(linear, left bottom, left top, from(#6d6d6d), to(#808080)); /* old Webkit */
+	background-image: -webkit-linear-gradient(bottom, #6d6d6d, #808080); /* new Webkit */
+	background-image: linear-gradient(bottom, #6d6d6d, #808080); /* proposed W3C Markup */
+	color:white;
+	border-radius:5px;
+	height:40px;
+	text-shadow:0 -1px 0 #333333;
+	border-color: #dfdfdf;
+}
+.form-details, #form-success-message-text, #form-success-message-page, #form-success-message-redirect{display:none;}
+.form-details-current, .active{display:block;}
+#confirmation-message textarea{font-family:Consolas,Monaco,monospace;width:75%;height:10em;margin-top:10px;}
+#form-success-message-page, #form-success-message-redirect{margin-top:10px;}
