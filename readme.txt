@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.4
+Stable tag: 1.5
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -102,6 +102,12 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.5**
+
+* Fix bug where multiple forms on same page could not be submitted individually
+* Fix bug where Entries form filter did not work
+* Update admin CSS to use it's own file instead of one loaded form WordPress
+
 **Version 1.4**
 
 * Fix bug where database charset wasn't being set and causing character encoding issues
@@ -148,6 +154,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.5 =
+Fix for submitting multiple forms on a single page. Other bug fixes and improvements.
 
 = 1.4 =
 Export entries to a CSV, file uploads, and various bug fixes.

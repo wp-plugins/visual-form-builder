@@ -128,10 +128,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		$where = '';
 
 		/* If the form filter dropdown is used */
-		if ( $this->current_filter_action() && absint( $this->current_filter_action ) )
+		if ( $this->current_filter_action() )
 			$where = 'WHERE forms.form_id = ' . $this->current_filter_action();
-		
-			
+
 		$sql_order = sanitize_sql_orderby( "$order_col $order" );
 		$query = "SELECT forms.form_title, entries.* FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id $where ORDER BY $sql_order";
 		

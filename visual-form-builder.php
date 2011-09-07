@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.4
+Version: 1.5
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.4';
+	public $vfb_db_version = '1.5';
 	
 	public function __construct(){
 		global $wpdb;
@@ -55,10 +55,6 @@ class Visual_Form_Builder{
 			
 			/* Adds a Settings link to the Plugins page */
 			add_filter( 'plugin_action_links', array( &$this, 'visual_form_builder_plugin_action_links' ), 10, 2 );
-			
-			/* Load the nav-menu CSS if we're on our plugin page */
-			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'visual-form-builder' )
-				wp_admin_css( 'nav-menu' );
 			
 			/* Add a database version to help with upgrades and run SQL install */
 			if ( !get_option( 'vfb_db_version' ) ) {
@@ -290,6 +286,7 @@ class Visual_Form_Builder{
 	 */
 	public function form_admin_css(){
 		wp_enqueue_style( 'visual-form-builder-style', plugins_url( 'visual-form-builder' ) . '/css/visual-form-builder-admin.css' );
+		wp_enqueue_style( 'visual-form-builder-main', plugins_url( 'visual-form-builder' ) . '/css/nav-menu.css' );
 	}
 	
 	/**
@@ -331,9 +328,9 @@ class Visual_Form_Builder{
 	 * @since 1.8 
 	 * @return $links array Links to add to plugin name
 	 */
-	public function visual_form_builder_plugin_action_links($links, $file){
-		if ( $file == plugin_basename(__FILE__) )
-			$links[] = '<a href="options-general.php?page=visual-form-builder">'.__('Settings').'</a>';
+	public function visual_form_builder_plugin_action_links( $links, $file ) {
+		if ( $file == plugin_basename( __FILE__ ) )
+			$links[] = '<a href="options-general.php?page=visual-form-builder">' . __( 'Settings' ) . '</a>';
 	
 		return $links;
 	}
@@ -346,7 +343,7 @@ class Visual_Form_Builder{
 	 * @uses add_options_page() Creates a menu item under the Settings menu.
 	 */
 	public function add_admin() {  
-		add_options_page( __('Visual Form Builder', 'visual-form-builder'), __('Visual Form Builder', 'visual-form-builder'), 'create_users', 'visual-form-builder', array( &$this, 'admin' ) );
+		add_options_page( __( 'Visual Form Builder', 'visual-form-builder' ), __( 'Visual Form Builder', 'visual-form-builder' ), 'create_users', 'visual-form-builder', array( &$this, 'admin' ) );
 	}
 	
 	
@@ -648,7 +645,8 @@ class Visual_Form_Builder{
                     <?php $entries_list->display(); ?>
                 </form>
             <?php
-			endif;
+				endif;
+				
 				/* Display the Forms */
 				else:	
 					echo ( isset( $this->message ) ) ? $this->message : ''; ?>          
@@ -1082,7 +1080,7 @@ class Visual_Form_Builder{
 		$open_fieldset = false;
 		
 		/* If form is submitted, show success message, otherwise the form */
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && in_array( $_REQUEST['visual-form-builder-submit'], array( 'Submit', 'submit' ) ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && in_array( $_REQUEST['visual-form-builder-submit'], array( 'Submit', 'submit' ) ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
 			$output = $this->confirmation();
 		}
 		else {
