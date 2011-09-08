@@ -1,18 +1,20 @@
 jQuery(document).ready(function($) {
-	$( '.visual-form-builder' ).validate({
-		rules: {
-			"vfb-secret":{
-				maxlength:2
-			}
-		},
-		errorPlacement: function(error, element) {
-			if ( element.is( ':radio' ) || element.is( ':checkbox' ) ) {
-				error.appendTo( element.parent().parent() );
-			}
-			else {
-				error.insertAfter( element );
-			}
-		} 
+	$( '.visual-form-builder' ).each( function() {
+		$( this ).validate({
+			rules: {
+				"vfb-secret":{
+					maxlength:2
+				}
+			},
+			errorPlacement: function(error, element) {
+				if ( element.is( ':radio' ) || element.is( ':checkbox' ) ) {
+					error.appendTo( element.parent().parent() );
+				}
+				else {
+					error.insertAfter( element );
+				}
+			} 
+		})
 	});
 	
 	/* Custom validation method to check multiple emails */

@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.5
+Stable tag: 1.5.1
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -102,6 +102,10 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.5.1**
+
+* Fix bug where missing jQuery prevented multiple form fix from working
+
 **Version 1.5**
 
 * Fix bug where multiple forms on same page could not be submitted individually
@@ -154,6 +158,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.5.1 =
+Fix bug where missing jQuery prevented multiple form fix from working.
 
 = 1.5 =
 Fix for submitting multiple forms on a single page. Other bug fixes and improvements.

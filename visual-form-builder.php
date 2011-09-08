@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.5
+Version: 1.5.1
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.5';
+	public $vfb_db_version = '1.5.1';
 	
 	public function __construct(){
 		global $wpdb;
