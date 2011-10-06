@@ -1,5 +1,5 @@
 label.error{color:red;display:block;}
-#visual-form-builder-update input.error, #visual-form-builder-update textarea.error{border:1px solid red;}
+#visual-form-builder-update input.error, #visual-form-builder-update textarea.error, #visual-form-builder-update select.error{border:1px solid red;}
 .menu-item-handle.fieldset, #form-element-fieldset{
 	background-image: -moz-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
 	background-image: -o-linear-gradient(top, #E3E3E3 0%, #CCCCCC 100%);
@@ -51,5 +51,5 @@ label.error{color:red;display:block;}
 }
 .form-details, #form-success-message-text, #form-success-message-page, #form-success-message-redirect{display:none;}
 .form-details-current, .active{display:block;}
-#confirmation-message textarea{font-family:Consolas,Monaco,monospace;width:75%;height:10em;margin-top:10px;}
+#confirmation-message textarea, #notification textarea{font-family:Consolas,Monaco,monospace;width:75%;height:10em;margin-top:10px;}
 #form-success-message-page, #form-success-message-redirect{margin-top:10px;}

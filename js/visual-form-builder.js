@@ -58,16 +58,6 @@ jQuery(document).ready(function($) {
 		$( '.nav-tabs' ).animate({ marginLeft: '+=' + tabsWidth[count] });
 	});
 	
-	/* Display entries form data */
-	/*$( '.view-entry' ).click( function( e ){
-		
-		var id = $( e.target ).attr( 'id' );
-		
-		$( e.target ).closest( 'td' ).children( '#entry-' + id ).slideToggle( 'fast' );
-		
-		return false;
-	});*/
-	
 	/* Hide entries form data */
 	$( '.visual-form-builder-inline-edit-cancel' ).click( function( e ){
 		
@@ -169,6 +159,11 @@ jQuery(document).ready(function($) {
 			form_success_message_redirect: {
 				url: true
 			},
+			form_notification_email: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' )
+				}
+			}
 		},
 		errorPlacement: function( error, element ) {
 			error.insertAfter( element.parent() );
@@ -192,6 +187,35 @@ jQuery(document).ready(function($) {
 		}
 		else{
 			$( '#form-email-sender' ).attr( 'readonly', 'readonly' );
+		}
+	});
+	
+	
+	/* Show/Hide display of Notification fields  */ 
+	if( $( '#form-notification-setting' ).is( ':checked' ) ) {
+		$( '#notification-email' ).show();
+	}
+	else {
+		$( '#notification-email' ).hide();
+	}
+	
+	/* Enable/Disable Notification fields */
+	$( '#form-notification-setting' ).change( function(){
+		var checked = $(this).is(':checked');
+		
+		if( checked ) {
+			$( '#notification-email' ).show();
+			$( '#form-notification-email' ).attr( 'disabled', false );
+			$( '#form-notification-subject' ).attr( 'disabled', false );
+			$( '#form-notification-message' ).attr( 'disabled', false );
+			$( '#form-notification-entry' ).attr( 'disabled', false );
+		}
+		else{
+			$( '#notification-email' ).hide();
+			$( '#form-notification-email' ).attr( 'disabled', 'disabled' );
+			$( '#form-notification-subject' ).attr( 'disabled', 'disabled' );
+			$( '#form-notification-message' ).attr( 'disabled', 'disabled' );
+			$( '#form-notification-entry' ).attr( 'disabled', 'disabled' );
 		}
 	});
 	

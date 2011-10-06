@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.5.1
+Stable tag: 1.6
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -21,6 +21,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Utilizes jQuery Form Validation
 * Customized Confirmation Messages
 * Redirect to a WordPress Page or a URL
+* Setup Auto-responders
 * Standard and Advanced Fields
 * Easy date fields using the jQuery UI Date Picker
 * File uploads
@@ -102,6 +103,13 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.6**
+
+* Fix bug where multiple address blocks could not be used
+* Add internationalization support
+* Add auto-respond feature to separately notify your users after form submission
+* Update jQuery Validation to 1.8.1
+
 **Version 1.5.1**
 
 * Fix bug where missing jQuery prevented multiple form fix from working
@@ -158,6 +166,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.6 =
+Added auto-responder feature, internationalization support, and fixed validation problems for IE users.
 
 = 1.5.1 =
 Fix bug where missing jQuery prevented multiple form fix from working.

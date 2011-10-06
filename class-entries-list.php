@@ -64,7 +64,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		foreach ( $item['data'] as $k => $v ) {
 			$data .= '<label><span class="title">' . ucwords( $k ) . '</span><span class="input-text-wrap"><input class="ptitle" type="text" value="' . $v . '" readonly="readonly" /></span></label>'; 
 		}
-		$data .= '</div></fieldset><p class="submit"><a id="' . $item['entry_id'] . '" class="button-secondary alignleft visual-form-builder-inline-edit-cancel">Cancel</a></p>';
+		$data .= '</div></fieldset><p class="submit"><a id="' . $item['entry_id'] . '" class="button-secondary alignleft visual-form-builder-inline-edit-cancel">' . __( 'Cancel' , 'visual-form-builder') . '</a></p>';
 		
 		/* Hide the data intially */
 		$hidden_div = '<div id="entry-' . $item['entry_id'] . '" class="hidden">' . $data . '</div>';
@@ -89,13 +89,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function get_columns(){		
 		$columns = array(
 			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
-			'form' => 'Form',
-			'subject' => 'Email Subject',
-			'sender_name' => 'Sender Name',
-			'sender_email' => 'Sender Email',
-			'emails_to' => 'Emailed To',
-			'ip_address' => 'IP Address',
-			'date' => 'Date Submitted'
+			'form' => __( 'Form' , 'visual-form-builder'),
+			'subject' => __( 'Email Subject' , 'visual-form-builder'),
+			'sender_name' => __( 'Sender Name' , 'visual-form-builder'),
+			'sender_email' => __( 'Sender Email' , 'visual-form-builder'),
+			'emails_to' => __( 'Emailed To' , 'visual-form-builder'),
+			'ip_address' => __( 'IP Address' , 'visual-form-builder'),
+			'date' => __( 'Date Submitted' , 'visual-form-builder')
 		);
 		
 		return $columns;
@@ -165,9 +165,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function get_bulk_actions() {
 		$actions = array(
-			'delete' => 'Delete',
-			'export-all' => 'Export All',
-			'export-selected' => 'Export Selected'
+			'delete' => __( 'Delete' , 'visual-form-builder'),
+			'export-all' => __( 'Export All' , 'visual-form-builder'),
+			'export-selected' => __( 'Export Selected' , 'visual-form-builder')
 		);
 		
 		return $actions;
@@ -211,35 +211,35 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			/* Setup our default columns */
 			$cols = array(
 				'entries_id' => array(
-					'header' => 'Entries ID',
+					'header' => __( 'Entries ID' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'form_title' => array(
-					'header' => 'Form',
+					'header' => __( 'Form' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'date_submitted' => array(
-					'header' => 'Date Submitted',
+					'header' => __( 'Date Submitted' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'ip_address' => array(
-					'header' => 'IP Address',
+					'header' => __( 'IP Address' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'subject' => array(
-					'header' => 'Email Subject',
+					'header' => __( 'Email Subject' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'sender_name' => array(
-					'header' => 'Sender Name',
+					'header' => __( 'Sender Name' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'sender_email' => array(
-					'header' => 'Sender Email',
+					'header' => __( 'Sender Email' , 'visual-form-builder'),
 					'data' => array()
 					),
 				'emails_to' => array(
-					'header' => 'Emailed To',
+					'header' => __( 'Emailed To' , 'visual-form-builder'),
 					'data' => array()
 					)
 			);
@@ -366,14 +366,14 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		if ( 'top' == $which ) {
 			echo '<div class="alignleft actions">
 				<select id="form-filter" name="form-filter">
-				<option value="-1"' . selected( $this->current_filter_action(), -1 ) . '>View all forms</option>';
+				<option value="-1"' . selected( $this->current_filter_action(), -1 ) . '>' . __( 'View all forms' , 'visual-form-builder') . '</option>';
 			
 			foreach ( $cols as $form ) {
 				echo '<option value="' . $form->form_id . '"' . selected( $this->current_filter_action(), $form->form_id ) . '>' . $form->form_title . '</option>';
 			}
 			
 			echo '</select>
-				<input type="submit" value="Filter" class="button-secondary" />
+				<input type="submit" value="' . __( 'Filter' , 'visual-form-builder') . '" class="button-secondary" />
 				</div>';
 		}
 	}

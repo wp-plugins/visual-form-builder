@@ -37,31 +37,31 @@ class VisualFormBuilder_Entries_Detail{
 				<div id="side-info-column" class="inner-sidebar">
 					<div id="side-sortables">
 						<div id="submitdiv" class="postbox">
-							<h3><span>Details</span></h3>
+							<h3><span>' . __( 'Details' , 'visual-form-builder') . '</span></h3>
 							<div class="inside">
 							<div id="submitbox" class="submitbox">
 								<div id="minor-publishing">
 									<div id="misc-publishing-actions">
 										<div class="misc-pub-section">
-											<span><strong>Form Title: </strong>' . stripslashes( $entry->form_title ) . '</span>
+											<span><strong>' . __( 'Form Title' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->form_title ) . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>Date Submitted: </strong>' . $entry->date_submitted . '</span>
+											<span><strong>' . __( 'Date Submitted' , 'visual-form-builder') . ': </strong>' . $entry->date_submitted . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>IP Address: </strong>' . $entry->ip_address . '</span>
+											<span><strong>' . __( 'IP Address' , 'visual-form-builder') . ': </strong>' . $entry->ip_address . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>Email Subject: </strong>' . stripslashes( $entry->subject ) . '</span>
+											<span><strong>' . __( 'Email Subject' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->subject ) . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>Sender Name: </strong>' . stripslashes( $entry->sender_name ) . '</span>
+											<span><strong>' . __( 'Sender Name' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->sender_name ) . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>Sender Email: </strong><a href="mailto:' . stripslashes( $entry->sender_email ) . '">' . stripslashes( $entry->sender_email ) . '</a></span>
+											<span><strong>' . __( 'Sender Email' , 'visual-form-builder') . ': </strong><a href="mailto:' . stripslashes( $entry->sender_email ) . '">' . stripslashes( $entry->sender_email ) . '</a></span>
 										</div>
 										<div class="misc-pub-section misc-pub-section-last">
-											<span><strong>Emailed To: </strong>' . preg_replace('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', '<a href="mailto:$1">$1</a>', implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ) ) . '</span>
+											<span><strong>' . __( 'Emailed To' , 'visual-form-builder') . ': </strong>' . preg_replace('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', '<a href="mailto:$1">$1</a>', implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ) ) . '</span>
 										</div>
 										<div class="clear"></div>
 									</div>
@@ -81,12 +81,11 @@ class VisualFormBuilder_Entries_Detail{
 			echo '<div>
 					<div id="post-body-content">
 						<div class="postbox">
-							<h3><span>' . $entry->form_title . ' : Entry #' . $entry->entries_id . '</span></h3>
+							<h3><span>' . $entry->form_title . ' : ' . __( 'Entry' , 'visual-form-builder') .' #' . $entry->entries_id . '</span></h3>
 							<div class="inside">';
 
 			foreach ( $data as $k => $v ) {
 				echo '<h4>' . ucwords( $k ) . '</h4>';
-				//echo '<pre>' . $v . '</pre>';
 				echo $v;
 			}
 			
