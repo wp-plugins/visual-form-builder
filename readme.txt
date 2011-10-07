@@ -21,7 +21,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Utilizes jQuery Form Validation
 * Customized Confirmation Messages
 * Redirect to a WordPress Page or a URL
-* Setup Auto-responders
+* Confirmation Email Receipt to User
 * Standard and Advanced Fields
 * Easy date fields using the jQuery UI Date Picker
 * File uploads
