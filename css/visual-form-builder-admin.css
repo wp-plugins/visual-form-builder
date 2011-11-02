@@ -33,6 +33,7 @@ label.error{color:red;display:block;}
 #form-element-phone{background:url(sprite.png) 0 -529px no-repeat transparent;}
 #form-element-html{background:url(sprite.png) 0 -559px no-repeat transparent;}
 #form-element-file{background:url(sprite.png) 0 -587px no-repeat transparent;}
+#form-element-instructions{background:url(sprite.png) 0 -621px no-repeat transparent;}
 #form-details-nav{font-size:1.0em;font-weight:bold;padding-top:10px;}
 #form-details-nav a{padding:5px 10px;text-decoration:none;}
 #form-details-nav a.current{

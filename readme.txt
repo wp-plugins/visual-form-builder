@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.6
+Stable tag: 1.7
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -25,11 +25,61 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Standard and Advanced Fields
 * Easy date fields using the jQuery UI Date Picker
 * File uploads
+* One-click form duplication. Copy a form you've already built to save time
+
+**Field Types**
+
+* Fieldset
+* Text input (single line)
+* Textarea (multiple lines)
+* Checkbox
+* Radio (multiple choice)
+* Select dropdown
+* Address (street, city, state, zip, country)
+* Date (uses jQuery UI Date Picker)
+* Email
+* URL
+* Currency
+* Number
+* Time (12 or 24 hour format)
+* Phone (US and International formats)
+* HTML
+* File Upload
+* Instructions (plain or HTML-formatted text)
+
+**Entries**
+
+* Manage submitted entries in WordPress dashboard
+* Bulk Export to CSV
+* Bulk Delete
+* Advanced Filtering
+* Collect submitted data as well as date submitted and IP Address
+
+**Customized Confirmation Messages**
+
+* Control what is displayed after a user submits a form
+* Display HTML-formatted text
+* Redirect to a WordPress Page
+* Redirect to a custom URL
+
+**Notification Emails**
+
+* Send a customized email to the user after a user submits a form
+* Additional HTML-formatted text to be included in the body of the email
+* Automatically include a copy of the user's entry
+
+**SPAM Protection**
+
+* Automatically included on every form
+* Uses a simple, yet effective, logic-based verification system
+* [WordPress Nonce](http://codex.wordpress.org/WordPress_Nonces)
+
 
 == Installation ==
 
 1. Upload `visual-form-builder` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Go to <em>Settings > Visual Form Builder</em>
 1. Create and configure a form (for help, refer to the FAQ or the Help on the plugin page)
 1. Copy the form shortcode from the Shortcode box on the plugin page
 1. Create a new page and add the shortcode to the content.
@@ -105,6 +155,13 @@ To Export Selected:
 
 **Version 1.6**
 
+* Add Instructions Form Item
+* Add Duplicate Form feature
+* Add Sender Name and Sender Email customization fields to Notifications
+* Update CSS
+
+**Version 1.6**
+
 * Fix bug where multiple address blocks could not be used
 * Add internationalization support
 * Add auto-respond feature to separately notify your users after form submission
@@ -166,6 +223,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.7 =
+Added Instructions Form Item, Duplicate Form feature, and more customizations to the Notifications.
 
 = 1.6 =
 Added auto-responder feature, internationalization support, and fixed validation problems for IE users.

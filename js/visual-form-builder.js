@@ -120,18 +120,15 @@ jQuery(document).ready(function($) {
 
 		if ( 'text' == type ) {
 			$( '#form-success-message-text' ).show();
-			$( '#form-success-message-page' ).hide();
-			$( '#form-success-message-redirect' ).hide();
+			$( '#form-success-message-page, #form-success-message-redirect' ).hide();
 		}
 		else if ( 'page' == type ) {
-			$( '#form-success-message-text' ).hide();
 			$( '#form-success-message-page' ).show();
-			$( '#form-success-message-redirect' ).hide();
+			$( '#form-success-message-text, #form-success-message-redirect' ).hide();
 		}
 		else if ( 'redirect' == type ) {
-			$( '#form-success-message-text' ).hide();
-			$( '#form-success-message-page' ).hide();
 			$( '#form-success-message-redirect' ).show();
+			$( '#form-success-message-text, #form-success-message-page' ).hide();
 		}
 	});
 	
@@ -159,6 +156,17 @@ jQuery(document).ready(function($) {
 			form_success_message_redirect: {
 				url: true
 			},
+			form_notification_email_name: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' )
+				}
+			},
+			form_notification_email_from: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' )
+				},
+				email: true
+			},
 			form_notification_email: {
 				required: function( element ){
 					return $( '#form-notification-setting' ).is( ':checked' )
@@ -172,7 +180,7 @@ jQuery(document).ready(function($) {
 	
 	/* Make Sender Name field readonly if the override is active */
 	$( '#form_email_from_name_override' ).change( function(){
-		if( $( '#form_email_from_name_override' ).val() == '' ) {
+		if ( $( '#form_email_from_name_override' ).val() == '' ) {
 			$( '#form-email-sender-name' ).attr( 'readonly', false );
 		}
 		else{
@@ -182,7 +190,7 @@ jQuery(document).ready(function($) {
 	
 	/* Make Sender Email field readonly if the override is active */
 	$( '#form_email_from_override' ).change( function(){
-		if( $( '#form_email_from_override' ).val() == '' ) {
+		if ( $( '#form_email_from_override' ).val() == '' ) {
 			$( '#form-email-sender' ).attr( 'readonly', false );
 		}
 		else{
@@ -192,7 +200,7 @@ jQuery(document).ready(function($) {
 	
 	
 	/* Show/Hide display of Notification fields  */ 
-	if( $( '#form-notification-setting' ).is( ':checked' ) ) {
+	if ( $( '#form-notification-setting' ).is( ':checked' ) ) {
 		$( '#notification-email' ).show();
 	}
 	else {
@@ -203,19 +211,13 @@ jQuery(document).ready(function($) {
 	$( '#form-notification-setting' ).change( function(){
 		var checked = $(this).is(':checked');
 		
-		if( checked ) {
+		if ( checked ) {
 			$( '#notification-email' ).show();
-			$( '#form-notification-email' ).attr( 'disabled', false );
-			$( '#form-notification-subject' ).attr( 'disabled', false );
-			$( '#form-notification-message' ).attr( 'disabled', false );
-			$( '#form-notification-entry' ).attr( 'disabled', false );
+			$( '#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry' ).attr( 'disabled', false );
 		}
 		else{
 			$( '#notification-email' ).hide();
-			$( '#form-notification-email' ).attr( 'disabled', 'disabled' );
-			$( '#form-notification-subject' ).attr( 'disabled', 'disabled' );
-			$( '#form-notification-message' ).attr( 'disabled', 'disabled' );
-			$( '#form-notification-entry' ).attr( 'disabled', 'disabled' );
+			$( '#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry' ).attr( 'disabled', 'disabled' );
 		}
 	});
 	
