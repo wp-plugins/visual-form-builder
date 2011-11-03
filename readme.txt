@@ -1,6 +1,6 @@
 === Visual Form Builder ===
 Contributors: mmuro
-Tags: form, forms, form to email, email form, email, input, validation, jquery, shortcode
+Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
 Stable tag: 1.7
