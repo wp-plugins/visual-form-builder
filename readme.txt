@@ -153,7 +153,7 @@ To Export Selected:
 
 == Changelog ==
 
-**Version 1.6**
+**Version 1.7**
 
 * Add Instructions Form Item
 * Add Duplicate Form feature
