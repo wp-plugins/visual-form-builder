@@ -534,9 +534,18 @@ body.js .item-order {
 	-webkit-border-bottom-left-radius: 3px;
 	-khtml-border-bottom-left-radius: 3px;
 	border-bottom-left-radius: 3px;
+	background:url("arrows.png") no-repeat scroll 8px 10px transparent;
 }
 
 .item-edit:hover {
+	background:url("arrows.png") no-repeat scroll 8px 10px transparent;
+}
+
+.item-edit.opened{
+	background:url("arrows.png") no-repeat scroll 8px -25px transparent;
+}
+.item-edit.opened:hover{
+	background:url("arrows.png") no-repeat scroll 8px -149px transparent;
 }
 
 /* Menu editing */
@@ -702,4 +711,29 @@ body.js .item-order {
 
 #nav-menus-frame, .button-controls, #menu-item-url-wrap, #menu-item-name-wrap {
 	display: block;
+}
+
+.option .widefat{
+	width:345px;
+	margin:0 6px 7px 0;
+}
+
+.addOption, .deleteOption, .addEmail, .deleteEmail{
+	background:url('sprite.png') -12px -650px no-repeat transparent;
+	text-indent:-9999px;
+	width:16px;
+	height:16px;
+	display:inline-block;
+}
+.deleteOption, .deleteEmail{
+	background-position:-12px -677px;
+}
+.addEmail, .deleteEmail{margin-top:5px;}
+
+.ui-state-disabled .menu-item-handle{cursor:default;}
+.ui-state-disabled .menu-item-handle{
+	background-image: -moz-linear-gradient(top, #fff 0%, #bbb 100%);
+	background-image: -o-linear-gradient(top, #fff 0%, #bbb 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(1, #bbb));
+	background-image: linear-gradient(top, #fff 0%, #bbb 100%);
 }

@@ -54,3 +54,8 @@ label.error{color:red;display:block;}
 .form-details-current, .active{display:block;}
 #confirmation-message textarea, #notification textarea{font-family:Consolas,Monaco,monospace;width:75%;height:10em;margin-top:10px;}
 #form-success-message-page, #form-success-message-redirect{margin-top:10px;}
+.post-body-plain ol li{list-style:decimal;}
+#promote-vfb li{padding-left:20px;}
+#promote-vfb #twitter{background:url(sprite.png) -10px -746px no-repeat transparent;}
+#promote-vfb #star{background:url(sprite.png) -10px -710px no-repeat transparent;}
+#promote-vfb #paypal{background:url(sprite.png) -10px -773px no-repeat transparent;}

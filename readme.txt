@@ -1,5 +1,6 @@
 === Visual Form Builder ===
 Contributors: mmuro
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.2.1
@@ -9,25 +10,29 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 
 == Description ==
 
-*Visual Form Builder* is a plugin that allows you to build contact forms using an easy-to-use and familiar interface.
+*Visual Form Builder* is a plugin that allows you to build and manage all kinds of forms for your website in a single place.  Building a fully functional form takes only a few minutes and you don't have to write one bit of PHP, CSS, or HTML!
 
-**Features**
+= Features =
 
-* Setup and organize your form using a drag-and-drop interface
-* Automatically includes a basic logic-based verification system
-* Store form entries in your WordPress database and can manage them via the dashboard.
+* Add fields with one click
+* Drag-and-drop reordering
+* Simple, yet effective, logic-based anti-SPAM system
+* Automatically stores form entries in your WordPress database
+* Manage form entries in the WordPress dashboard
 * Export entries to a CSV file
 * Send form submissions to multiple emails
-* Utilizes jQuery Form Validation
+* jQuery Form Validation
 * Customized Confirmation Messages
 * Redirect to a WordPress Page or a URL
 * Confirmation Email Receipt to User
 * Standard and Advanced Fields
-* Easy date fields using the jQuery UI Date Picker
-* File uploads
+* Required Fields
+* Shortcode works on any Post or Page
+* Embed Multiple Forms on a Post/Page
 * One-click form duplication. Copy a form you've already built to save time
+* Use your own CSS (if you want)
 
-**Field Types**
+= Field Types =
 
 * Fieldset
 * Text input (single line)
@@ -47,7 +52,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * File Upload
 * Instructions (plain or HTML-formatted text)
 
-**Entries**
+= Entries =
 
 * Manage submitted entries in WordPress dashboard
 * Bulk Export to CSV
@@ -55,20 +60,20 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Advanced Filtering
 * Collect submitted data as well as date submitted and IP Address
 
-**Customized Confirmation Messages**
+= Customized Confirmation Messages =
 
 * Control what is displayed after a user submits a form
 * Display HTML-formatted text
 * Redirect to a WordPress Page
 * Redirect to a custom URL
 
-**Notification Emails**
+= Notification Emails =
 
 * Send a customized email to the user after a user submits a form
 * Additional HTML-formatted text to be included in the body of the email
 * Automatically include a copy of the user's entry
 
-**SPAM Protection**
+= SPAM Protection =
 
 * Automatically included on every form
 * Uses a simple, yet effective, logic-based verification system
@@ -153,6 +158,14 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.8**
+
+* Add Dynamic Add/Delete for Options for Radio, Select, and Checkbox fields
+* Add Dynamic Add/Delete for Email(s) To field
+* Add CSS Classes configuration option
+* Update Instructions field to allow for images
+* Submit button text value now customizable
+
 **Version 1.7**
 
 * Add Instructions Form Item
@@ -223,6 +236,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.8 =
+Submit button text now customizable (click Save Form to access). Added dynamic add/delete for Radio, Select, Checkboxes, and Email(s) To fields.
 
 = 1.7 =
 Added Instructions Form Item, Duplicate Form feature, and more customizations to the Notifications.

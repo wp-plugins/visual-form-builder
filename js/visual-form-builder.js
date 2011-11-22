@@ -1,7 +1,104 @@
 jQuery(document).ready(function($) {
+	/* Dynamically add options for Select, Radio, and Checkbox */
+	$( '.addOption' ).live( 'click', function( e ) {
+		/* Get how many options we already have */		
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+		
+		/* Add one to how many options */
+		var newNum = num + 1;
+		
+		/* Get this div's ID */
+		var id = $( this ).closest( 'div' ).attr( 'id' );
+		
+		/* Get this div's for attribute, which matches the input's ID */
+		var label_for = $( this ).closest( 'div' ).children( 'label' ).attr( 'for' );
+		
+		/* Strip out the last number (i.e. count) from the for to make a new ID */
+		var new_id = label_for.replace( new RegExp( /(\d+)$/g ), '' );
+		var div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
+		
+		/* Clone this div and change the ID */
+		var newElem = $( '#' + id ).clone().attr( 'id', div_id + newNum);
+
+		/* Change the IDs of the for and input to match */
+		newElem.children( 'label' ).attr( 'for', new_id + newNum );
+		newElem.find( 'input' ).attr( 'id', new_id + newNum );
+		
+		/* Insert our cloned option after the last one */
+		$( '#' + div_id + num ).after( newElem );
+		
+		return false;
+	});
+	
+	/* Dynamically delete options for Select, Radio, and Checkbox */
+	$( '.deleteOption' ).live( 'click', function() {
+		/* Get how many options we already have */
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+		
+		/* If there's only one option left, don't let someone delete it */
+		if ( num - 1 == 0 ) {
+			alert( 'You must have at least one option.' );
+		}
+		else {
+			$( this ).closest( 'div' ).remove();
+		}
+		
+		return false;
+	});
+	
+	/* Dynamically add values for the E-mail(s) To field */
+	$( '.addEmail' ).live( 'click', function( e ) {
+		/* Get how many options we already have */		
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+		
+		/* Add one to how many options */
+		var newNum = num + 1;
+		
+		/* Get this div's ID */
+		var id = $( this ).closest( 'div' ).attr( 'id' );
+		
+		/* Get this div's for attribute, which matches the input's ID */
+		var label_for = $( this ).closest( 'div' ).children( 'label' ).attr( 'for' );
+		
+		/* Strip out the last number (i.e. count) from the for to make a new ID */
+		var new_id = label_for.replace( new RegExp( /(\d+)$/g ), '' );
+		var div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
+		
+		/* Clone this div and change the ID */
+		var newElem = $( '#' + id ).clone().attr( 'id', div_id + newNum);
+
+		/* Change the IDs of the for and input to match */
+		newElem.children( 'label' ).attr( 'for', new_id + newNum );
+		newElem.find( 'input' ).attr( 'id', new_id + newNum );
+		
+		/* Insert our cloned option after the last one */
+		$( '#' + div_id + num ).after( newElem );
+		
+		return false;
+	});
+	
+	/* Dynamically delete values for the E-mail(s) To field */
+	$( '.deleteEmail' ).live( 'click', function() {
+		/* Get how many options we already have */
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+		
+		/* If there's only one option left, don't let someone delete it */
+		if ( num - 1 == 0 ) {
+			alert( 'You must have at least one option.' );
+		}
+		else {
+			$( this ).closest( 'div' ).remove();
+		}
+		
+		return false;
+	});
+	
 	/* Field item details box toggle */
 	$( '.item-edit' ).click( function( e ){
 		$( e.target ).closest( 'li' ).children( '.menu-item-settings' ).slideToggle( 'fast' );
+		
+		$( this ).toggleClass( 'opened' );
+		
 		return false;
 	});
 	
@@ -57,21 +154,12 @@ jQuery(document).ready(function($) {
 		/* Slide div back to the left, one tab at a time */
 		$( '.nav-tabs' ).animate({ marginLeft: '+=' + tabsWidth[count] });
 	});
-	
-	/* Hide entries form data */
-	$( '.visual-form-builder-inline-edit-cancel' ).click( function( e ){
-		
-		var id = $( e.target ).attr( 'id' );
-		
-		$( e.target ).closest( 'td' ).children( '#entry-' + id ).slideToggle( 'fast' );
-		
-		return false;
-	});
 		
 	/* Handle sorting the field items */
 	$( '#menu-to-edit' ).sortable({
 		handle: '.menu-item-handle',
 		placeholder: 'sortable-placeholder',
+		items: 'li:not(.ui-state-disabled)',
 		stop: function( event, ui ){
 			opts = {
 				url: ajaxurl,
@@ -143,9 +231,9 @@ jQuery(document).ready(function($) {
 					return $( '#form_email_from_name_override option:selected' ).val() == ''
 				}
 			},
-			form_email_to: {
+			'form_email_to[]': {
 				required: true,
-				multiemail: true
+				email: true
 			},
 			form_email_from: {
 				required: function( element ){
@@ -244,4 +332,5 @@ jQuery(document).ready(function($) {
 		
 		}, 'One or more email addresses are invalid'
 	);
+
 });
