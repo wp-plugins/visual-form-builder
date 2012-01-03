@@ -11,7 +11,7 @@ if( !class_exists( 'WP_List_Table' ) ) {
  * @since 1.2
  */
 class VisualFormBuilder_Entries_List extends WP_List_Table {
-		
+
 	function __construct(){
 		global $status, $page, $wpdb;
 		
@@ -25,7 +25,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'singular'  => 'entry',
 			'plural'    => 'entries',
 			'ajax'      => false
-		) );	
+		) );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		}
 		
 		$where = '';
-
+		
 		/* If the form filter dropdown is used */
 		if ( $this->current_filter_action() )
 			$where = 'WHERE forms.form_id = ' . $this->current_filter_action();
@@ -260,11 +260,11 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 						case 'subject':
 						case 'sender_name':
 						case 'sender_email':
-							$cols[$key]['data'][$row] = $value;
+							$cols[ $key ][ 'data' ][ $row ] = $value;
 						break;
 						
 						case 'emails_to':
-							$cols[$key]['data'][$row] = implode( ',', maybe_unserialize( $value ) );
+							$cols[ $key ][ 'data' ][ $row ] = implode( ',', maybe_unserialize( $value ) );
 						break;
 						
 						case 'data':
@@ -273,26 +273,58 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 							
 							/* Loop through our submitted data */
 							foreach ( $fields as $field_key => $field_value ) {
-								
-								/* Replace quotes for the header */
-								$header = str_replace( '"', '""', ucwords( $field_key ) );
-								
-								/* Replace all spaces for each form field name */
-								$field_key = preg_replace( '/(\s)/i', '', $field_key );
-								
-								/* Find new field names and make a new column with a header */
-								if ( !array_key_exists( $field_key, $cols ) ) {
-									$cols[$field_key] = array(
-										'header' => $header,
-										'data' => array()
-										);									
+								if ( !is_array( $field_value ) ) {
+									/* Replace quotes for the header */
+									$header = str_replace( '"', '""', ucwords( $field_key ) );
+									
+									/* Replace all spaces for each form field name */
+									$field_key = preg_replace( '/(\s)/i', '', $field_key );
+									
+									/* Find new field names and make a new column with a header */
+									if ( !array_key_exists( $field_key, $cols ) ) {
+										$cols[$field_key] = array(
+											'header' => $header,
+											'data' => array()
+											);									
+									}
+									
+									/* Get rid of single quote entity */
+									$field_value = str_replace( '&#039;', "'", $field_value );
+									
+									/* Load data, row by row */
+									$cols[ $field_key ][ 'data' ][ $row ] = str_replace( '"', '""', stripslashes( html_entity_decode( $field_value ) ) );
 								}
-								
-								/* Get rid of single quote entity */
-								$field_value = str_replace( '&#039;', "'", $field_value );
-								
-								/* Load data, row by row */
-								$cols[$field_key]['data'][$row] = str_replace( '"', '""', stripslashes( html_entity_decode( $field_value ) ) );
+								else {
+									/* Cast each array as an object */
+									$obj = (object) $field_value;
+									
+									switch ( $obj->type ) {
+										case 'fieldset' :
+										case 'section' :
+										case 'submit' :
+										break;
+										
+										default :
+											/* Replace quotes for the header */
+											$header = str_replace( '"', '""', $obj->name );
+											
+											/* Find new field names and make a new column with a header */
+											if ( !array_key_exists( $obj->name, $cols ) ) {
+												$cols[$field_key] = array(
+													'header' => $header,
+													'data' => array()
+													);									
+											}
+											
+											/* Get rid of single quote entity */
+											$obj->value = str_replace( '&#039;', "'", $obj->value );
+											
+											/* Load data, row by row */
+											$cols[ $obj->name ][ 'data' ][ $row ] = str_replace( '"', '""', stripslashes( html_entity_decode( $obj->value ) ) );
+
+										break;
+									}
+								}
 							}
 						break;
 					}

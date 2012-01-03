@@ -27,13 +27,15 @@ class VisualFormBuilder_Entries_Detail{
 		
 		echo '<p>' . sprintf( '<a href="?page=%s&view=%s" class="view-entry">&laquo; Back to Entries</a>', $_REQUEST['page'], $_REQUEST['view'] ) . '</p>';
 		
-		
+		/* Get the date/time format that is saved in the options table */
+		$date_format = get_option('date_format');
+		$time_format = get_option('time_format');
 		
 		/* Loop trough the entries and setup the data to be displayed for each row */
 		foreach ( $entries as $entry ) {
 			$data = unserialize( $entry->data );
 			
-			echo '<div id="poststuff" class="metabox-holder has-right-sidebar">
+			echo '<h3><span>' . $entry->form_title . ' : ' . __( 'Entry' , 'visual-form-builder') .' #' . $entry->entries_id . '</span></h3><div id="poststuff" class="metabox-holder has-right-sidebar">
 				<div id="side-info-column" class="inner-sidebar">
 					<div id="side-sortables">
 						<div id="submitdiv" class="postbox">
@@ -46,7 +48,7 @@ class VisualFormBuilder_Entries_Detail{
 											<span><strong>' . __( 'Form Title' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->form_title ) . '</span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Date Submitted' , 'visual-form-builder') . ': </strong>' . $entry->date_submitted . '</span>
+											<span><strong>' . __( 'Date Submitted' , 'visual-form-builder') . ': </strong>' . date( "$date_format $time_format", strtotime( $entry->date_submitted ) ) . '</span>
 										</div>
 										<div class="misc-pub-section">
 											<span><strong>' . __( 'IP Address' , 'visual-form-builder') . ': </strong>' . $entry->ip_address . '</span>
@@ -69,7 +71,7 @@ class VisualFormBuilder_Entries_Detail{
 								
 								<div id="major-publishing-actions">
 									<div id="delete-action">'
-								. sprintf( '<a class="submitdelete deletion" href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $entry_id ) .
+								. sprintf( '<a class="submitdelete deletion entry-delete" href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $entry_id ) .
 									'</div>
 									<div class="clear"></div>
 								</div>
@@ -79,16 +81,78 @@ class VisualFormBuilder_Entries_Detail{
 					</div>
 				</div>';
 			echo '<div>
-					<div id="post-body-content">
-						<div class="postbox">
+					<div id="post-body-content">';
+			
+			$count = 0;
+			$open_fieldset = $open_section = false;
+			
+			foreach ( $data as $k => $v ) {
+				if ( !is_array( $v ) ) {
+					if ( $count == 0 ) {
+						echo '<div class="postbox">
 							<h3><span>' . $entry->form_title . ' : ' . __( 'Entry' , 'visual-form-builder') .' #' . $entry->entries_id . '</span></h3>
 							<div class="inside">';
+					}
+					
+					echo '<h4>' . ucwords( $k ) . '</h4>';
+					echo $v;
+					//echo '</div></div>';
+					$count++;
+				}
+				else {
+					/* Cast each array as an object */
+					$obj = (object) $v;
 
-			foreach ( $data as $k => $v ) {
-				echo '<h4>' . ucwords( $k ) . '</h4>';
-				echo $v;
+					/* Close each section */
+					if ( $open_section == true ) {
+						/* If this field's parent does NOT equal our section ID */
+						if ( $sec_id && $sec_id !== $obj->parent_id ) {
+							echo '</div>';
+							$open_section = false;
+						}
+					}
+					
+					if ( $obj->type == 'fieldset' ) {
+						/* Close each fieldset */
+						if ( $open_fieldset == true )
+							echo '</div>';
+						
+						echo '<div class="vfb-details"><h2>' . $obj->name . '</h2>';
+					
+						$open_fieldset = true;
+					}
+					elseif ( $obj->type == 'section' ) {
+						/* Close each fieldset */
+						if ( $open_section == true )
+							echo '</div>';
+						
+						echo '<div class="vfb-details section"><h3 class="section-heading">' . $obj->name . '</h3>';
+						
+						/* Save section ID for future comparison */
+						$sec_id = $obj->id;
+						$open_section = true;
+					}
+					
+					switch ( $obj->type ) {
+						case 'fieldset' :
+						case 'section' :
+						case 'submit' :
+						break;
+						
+						default :
+							echo '<div class="postbox">
+								<h3><span>' . $obj->name . '</span></h3>
+								<div class="inside">' .
+								$obj->value .
+								'</div></div>';
+						break;
+					}
+				}
 			}
 			
+			if ( $count > 0 )
+				echo '</div></div>';
+		
 			echo '</div></div></div></div>';
 		}
 		
