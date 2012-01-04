@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
-Tested up to: 3.3
-Stable tag: 1.9
+Tested up to: 3.3.1
+Stable tag: 1.9.1
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -173,6 +173,10 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.9.1**
+
+* Bug fix for Sender Name, Email, and Notification Email overrides
+
 **Version 1.9**
 
 * Add ability for fields to be nested underneath Fieldsets and Sections
@@ -260,6 +264,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.9.1 =
+Recommend update! Bug fix for Sender Name, Email, and Notification Email overrides.
 
 = 1.9 =
 Added Section Form Item, ability to nest fields under Fieldsets and Sections. Improve adding/deleting fields.

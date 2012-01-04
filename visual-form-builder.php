@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.9
+Version: 1.9.1
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.9';
+	public $vfb_db_version = '1.9.1';
 	
 	public function __construct(){
 		global $wpdb;
@@ -1911,13 +1911,13 @@ class Visual_Form_Builder{
 			/* Loop through email results and assign sender email to override, if needed */
 			foreach ( $emails as $email ) {
 				if ( !empty( $email->field_key ) )
-					$form_from = $_POST[ 'vfb-' . $email->field_key . '-' . $sender->field_id ];
+					$form_from = $_POST[ 'vfb-' . $email->field_key . '-' . $email->field_id ];
 			}
 			
 			/* Loop through email results and assign as blind carbon copy, if needed */
 			foreach ( $notification as $notify ) {
 				if ( !empty( $notify->field_key ) )
-					$copy_email = $_POST[ 'vfb-' . $notify->field_key . '-' . $sender->field_id ];
+					$copy_email = $_POST[ 'vfb-' . $notify->field_key . '-' . $notify->field_id ];
 			}
 
 			/* Query to get all forms */
