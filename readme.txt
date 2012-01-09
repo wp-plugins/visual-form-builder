@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -25,7 +25,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Customized Confirmation Messages
 * Redirect to a WordPress Page or a URL
 * Confirmation Email Receipt to User
-* Standard and Advanced Fields
+* Standard Fields
 * Required Fields
 * Shortcode works on any Post or Page
 * Embed Multiple Forms on a Post/Page
@@ -173,6 +173,10 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 1.9.2**
+
+* Bug fix for copied forms with nested fields
+
 **Version 1.9.1**
 
 * Bug fix for Sender Name, Email, and Notification Email overrides
@@ -264,6 +268,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.9.2 =
+Bug fix for copied form with nested fields.
 
 = 1.9.1 =
 Recommend update! Bug fix for Sender Name, Email, and Notification Email overrides.

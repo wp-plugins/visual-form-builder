@@ -3,7 +3,7 @@
 Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
-Version: 1.9.1
+Version: 1.9.2
 */
 
 /*
@@ -27,7 +27,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	public $vfb_db_version = '1.9.1';
+	public $vfb_db_version = '1.9.2';
 	
 	public function __construct(){
 		global $wpdb;
@@ -660,6 +660,10 @@ class Visual_Form_Builder{
 						);
 						
 						$wpdb->insert( $this->field_table_name, $data );
+
+						/* If a parent field, save the old ID and the new ID to update new parent ID */
+						if ( in_array( $field->field_type, array( 'fieldset', 'section' ) ) )
+							$parents[ $field->field_id ] = $wpdb->insert_id;
 						
 						if ( $override == $field->field_id )
 							$wpdb->update( $this->form_table_name, array( 'form_email_from_override' => $wpdb->insert_id ), array( 'form_id' => $new_form_selected ) );
@@ -668,6 +672,10 @@ class Visual_Form_Builder{
 							$wpdb->update( $this->form_table_name, array( 'form_notification_email' => $wpdb->insert_id ), array( 'form_id' => $new_form_selected ) );
 					}
 					
+					/* Loop through our parents and update them to their new IDs */
+					foreach ( $parents as $k => $v ) {
+						$wpdb->update( $this->field_table_name, array( 'field_parent' => $v ), array( 'form_id' => $new_form_selected, 'field_parent' => $k ) );	
+					}
 					
 					/* Set message to display */
 					$this->message = '<div id="message" class="updated"><p>This form has been copied.</p></div>';
