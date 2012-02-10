@@ -34,56 +34,55 @@ class VisualFormBuilder_Entries_Detail{
 		/* Loop trough the entries and setup the data to be displayed for each row */
 		foreach ( $entries as $entry ) {
 			$data = unserialize( $entry->data );
-			
-			echo '<h3><span>' . $entry->form_title . ' : ' . __( 'Entry' , 'visual-form-builder') .' #' . $entry->entries_id . '</span></h3><div id="poststuff" class="metabox-holder has-right-sidebar">
+?>
+<h3><span><?php echo stripslashes( $entry->form_title ); ?> : <?php echo __( 'Entry' , 'visual-form-builder'); ?> # <?php echo $entry->entries_id; ?></span></h3>
+            <div id="poststuff" class="metabox-holder has-right-sidebar">
 				<div id="side-info-column" class="inner-sidebar">
 					<div id="side-sortables">
 						<div id="submitdiv" class="postbox">
-							<h3><span>' . __( 'Details' , 'visual-form-builder') . '</span></h3>
+							<h3><span><?php echo __( 'Details' , 'visual-form-builder'); ?></span></h3>
 							<div class="inside">
 							<div id="submitbox" class="submitbox">
 								<div id="minor-publishing">
 									<div id="misc-publishing-actions">
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Form Title' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->form_title ) . '</span>
+											<span><strong><?php echo  __( 'Form Title' , 'visual-form-builder'); ?>: </strong><?php echo stripslashes( $entry->form_title ); ?></span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Date Submitted' , 'visual-form-builder') . ': </strong>' . date( "$date_format $time_format", strtotime( $entry->date_submitted ) ) . '</span>
+											<span><strong><?php echo  __( 'Date Submitted' , 'visual-form-builder'); ?>: </strong><?php echo date( "$date_format $time_format", strtotime( $entry->date_submitted ) ); ?></span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'IP Address' , 'visual-form-builder') . ': </strong>' . $entry->ip_address . '</span>
+											<span><strong><?php echo __( 'IP Address' , 'visual-form-builder'); ?>: </strong><?php echo $entry->ip_address; ?></span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Email Subject' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->subject ) . '</span>
+											<span><strong><?php echo __( 'Email Subject' , 'visual-form-builder'); ?>: </strong><?php echo stripslashes( $entry->subject ); ?></span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Sender Name' , 'visual-form-builder') . ': </strong>' . stripslashes( $entry->sender_name ) . '</span>
+											<span><strong><?php echo __( 'Sender Name' , 'visual-form-builder'); ?>: </strong><?php echo stripslashes( $entry->sender_name ); ?></span>
 										</div>
 										<div class="misc-pub-section">
-											<span><strong>' . __( 'Sender Email' , 'visual-form-builder') . ': </strong><a href="mailto:' . stripslashes( $entry->sender_email ) . '">' . stripslashes( $entry->sender_email ) . '</a></span>
+											<span><strong><?php echo __( 'Sender Email' , 'visual-form-builder'); ?>: </strong><a href="mailto:<?php echo stripslashes( $entry->sender_email ); ?>"><?php echo stripslashes( $entry->sender_email ); ?></a></span>
 										</div>
 										<div class="misc-pub-section misc-pub-section-last">
-											<span><strong>' . __( 'Emailed To' , 'visual-form-builder') . ': </strong>' . preg_replace('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', '<a href="mailto:$1">$1</a>', implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ) ) . '</span>
+											<span><strong><?php echo __( 'Emailed To' , 'visual-form-builder'); ?>: </strong><?php echo preg_replace('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', '<a href="mailto:$1">$1</a>', implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ) ); ?></span>
 										</div>
 										<div class="clear"></div>
 									</div>
 								</div>
 								
 								<div id="major-publishing-actions">
-									<div id="delete-action">'
-								. sprintf( '<a class="submitdelete deletion entry-delete" href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $entry_id ) .
-									'</div>
+									<div id="delete-action"><?php echo sprintf( '<a class="submitdelete deletion entry-delete" href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $entry_id ); ?></div>
 									<div class="clear"></div>
 								</div>
 							</div>
 							</div>
 						</div>
 					</div>
-				</div>';
-			echo '<div>
-					<div id="post-body-content">';
-			
-			$count = 0;
+				</div>
+			<div>
+				<div id="post-body-content">
+        <?php
+        	$count = 0;
 			$open_fieldset = $open_section = false;
 			
 			foreach ( $data as $k => $v ) {

@@ -301,6 +301,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 									switch ( $obj->type ) {
 										case 'fieldset' :
 										case 'section' :
+										case 'instructions' :
 										case 'submit' :
 										break;
 										
@@ -310,7 +311,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 											
 											/* Find new field names and make a new column with a header */
 											if ( !array_key_exists( $obj->name, $cols ) ) {
-												$cols[$field_key] = array(
+												$cols[$obj->name] = array(
 													'header' => $header,
 													'data' => array()
 													);									

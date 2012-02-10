@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 1.9.2
+Stable tag: 2.0
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -173,6 +173,15 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 2.0**
+
+* Fix bug for misspelled languages folder
+* Fix bug for slashes appearing in email and admin
+* Fix bug for misaligned rows in CSV export
+* Update admin notices functionality
+* Update the way Addresses were handled during email
+* Add Hungarian translation
+
 **Version 1.9.2**
 
 * Bug fix for copied forms with nested fields
@@ -268,6 +277,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.0 =
+Bug fix misaligned rows in CSV export, misspelled languages folder, and slashes appearing in emails and admin. Other minor improvements.
 
 = 1.9.2 =
 Bug fix for copied form with nested fields.
