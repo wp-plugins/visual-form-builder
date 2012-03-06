@@ -2,9 +2,9 @@
 Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
-Requires at least: 3.1
+Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 2.0
+Stable tag: 2.1
 
 Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -31,6 +31,7 @@ Dynamically build forms using a simple interface. Forms include jQuery validatio
 * Embed Multiple Forms on a Post/Page
 * One-click form duplication. Copy a form you've already built to save time
 * Use your own CSS (if you want)
+* Multiple field layout options. Arrange your fields in two, three, or a mixture of columns.
 
 = Field Types =
 
@@ -131,14 +132,7 @@ If you want to customize the jQuery date picker CSS, follow these steps:
 
 The jQuery UI Date Picker is a complex and highly configurable plugin.  By default, Visual Form Builder's date field will use the default options and configuration.
 
-To use the more complex features of the Date Picker plugin, you will need to:
-
-1. Add a text field using Visual Form Builder
-1. Save the form and use the shortcode to add it to a page
-1. Use your browser to view the HTML source code
-1. Find the text field you want to use and copy the ID (ex: start-date)
-1. Using the above example ID, paste the following into your javascript file: `$( '#start-date' ).datepicker();`
-1. Add and customize the [jQuery UI Date Picker configuration options](http://jqueryui.com/demos/datepicker)
+To use the more complex features of the Date Picker plugin, [follow this tutorial](http://matthewmuro.com/2012/02/23/how-to-customize-the-date-picker/).
 
 = How do I translate the field validation text to my language? =
 
@@ -172,6 +166,17 @@ To Export Selected:
 3. Entries management screen
 
 == Changelog ==
+
+**Version 2.1**
+
+* Add Accepts option to File Upload field
+* Add Small size to field options
+* Add Options Layout to Radio and Checkbox fields
+* Add Field Layout to field options
+* Add Bulgarian translation
+* Update jQuery in admin
+* Verification fields now customizable
+* Verification field now can be set to not required
 
 **Version 2.0**
 
@@ -277,6 +282,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.1 =
+Please note this version requires WordPress 3.3.  Please update your WordPress install before upgrading to Visual Form Builder 2.1.
 
 = 2.0 =
 Bug fix misaligned rows in CSV export, misspelled languages folder, and slashes appearing in emails and admin. Other minor improvements.
