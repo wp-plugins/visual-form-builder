@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.0
+Version: 2.1
 */
 
 /*
@@ -28,7 +28,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.0';
+	protected $vfb_db_version = '2.1';
 	
 	public function __construct(){
 		global $wpdb;
@@ -48,7 +48,7 @@ class Visual_Form_Builder{
 			add_action( 'wp_ajax_visual_form_builder_create_field', array( &$this, 'create_field_callback' ) );
 			add_action( 'wp_ajax_visual_form_builder_delete_field', array( &$this, 'delete_field_callback' ) );
 			
-			add_action( 'admin_init', array( &$this, 'add_visual_form_builder_contextual_help' ) );
+			add_action( 'load-settings_page_visual-form-builder', array( &$this, 'add_contextual_help' ) );
 			add_action( 'admin_init', array( &$this, 'export_entries' ) );
 			
 			/* Load i18n */
@@ -136,17 +136,25 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 1.0
 	 */
-	public function add_visual_form_builder_contextual_help(){
-		$text = "<p><strong>Getting Started</strong></p>
-					<ul>
+	public function add_contextual_help(){
+		$screen = get_current_screen();
+
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-getting-started',
+			'title' => 'Getting Started',
+			'content' => '<ul>
 						<li>Click on the + tab, give your form a name and click Create Form.</li>
 						<li>Select form fields from the box on the left and click a field to add it to your form.</li>
 						<li>Edit the information for each form field by clicking on the down arrow.</li>
 						<li>Drag and drop the elements to put them in order.</li>
 						<li>Click Save Form to save your changes.</li>
-					</ul>
-				<p><strong>Form Item Configuration</strong></p>
-					<ul>
+					</ul>'
+		) );
+		
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-item-config',
+			'title' => 'Form Item Configuration',
+			'content' => "<ul>
 						<li><em>Name</em> will change the display name of your form input.</li>
 						<li><em>Description</em> will be displayed below the associated input.</li>
 						<li><em>Validation</em> allows you to select from several of jQuery's Form Validation methods for text inputs. For more about the types of validation, read the <em>Validation</em> section below.</li>
@@ -154,10 +162,15 @@ class Visual_Form_Builder{
 						<li><em>Options</em> will only be active for Radio and Checkboxes.  This field contols how many options are available for the associated input.</li>
 						<li><em>Size</em> controls the width of Text, Textarea, Select, and Date Picker input fields.  The default is set to Medium but if you need a longer text input, select Large.</li>
 						<li><em>CSS Classes</em> allow you to add custom CSS to a field.  This option allows you to fine tune the look of the form.</li>
-					</ul>
-				<p><strong>Validation</strong></p>
+					</ul>"
+		) );
+
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-validation',
+			'title' => 'Validation',
+			'content' => "<p>Visual Form Builder uses the <a href='http://docs.jquery.com/Plugins/Validation/Validator'>jQuery Form Validation plugin</a> to perform clientside form validation.</p>
 					<ul>
-						<li>Visual Form Builder uses the <a href='http://docs.jquery.com/Plugins/Validation/Validator'>jQuery Form Validation plugin</a> to perform clientside form validation.</li>
+						
 						<li><em>Email</em>: makes the element require a valid email.</li>
 						<li><em>URL</em>: makes the element require a valid url.</li>
 						<li><em>Date</em>: makes the element require a date. <a href='http://docs.jquery.com/Plugins/Validation/Methods/date'>Refer to documentation for various accepted formats</a>.
@@ -165,33 +178,44 @@ class Visual_Form_Builder{
 						<li><em>Digits</em>: makes the element require digits only.</li>
 						<li><em>Phone</em>: makes the element require a US or International phone number. Most formats are accepted.</li>
 						<li><em>Time</em>: choose either 12- or 24-hour time format (NOTE: only available with the Time field).</li>
-					</ul>
-				<p><strong>Confirmation</strong></p>
+					</ul>"
+		) );
+
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-confirmation',
+			'title' => 'Confirmation',
+			'content' => "<p>Each form allows you to customize the confirmation by selecing either a Text Message, a WordPress Page, or to Redirect to a URL.</p>
 					<ul>
-						<li>Each form allows you to customize the confirmation by selecing either a Text Message, a WordPress Page, or to Redirect to a URL.</li>
 						<li><em>Text</em> allows you to enter a custom formatted message that will be displayed on the page after your form is submitted. HTML is allowed here.</li>
 						<li><em>Page</em> displays a dropdown of all WordPress Pages you have created. Select one to redirect the user to that page after your form is submitted.</li>
 						<li><em>Redirect</em> will only accept URLs and can be used to send the user to a different site completely, if you choose.</li>
-					</ul>
-				<p><strong>Notification</strong></p>
+					</ul>"
+		) );
+
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-notification',
+			'title' => 'Notification',
+			'content' => "<p>Send a customized notification email to the user when the form has been successfully submitted.</p>
 					<ul>
-						<li>Send a customized notification email to the user when the form has been successfully submitted.</li>
 						<li><em>Sender Name</em>: the name that will be displayed on the email.</li>
 						<li><em>Sender Email</em>: the email that will be used as the Reply To email.</li>
 						<li><em>Send To</em>: the email where the notification will be sent. This must be a required text field with email validation.</li>
 						<li><em>Subject</em>: the subject of the email.</li>
 						<li><em>Message</em>: additional text that can be displayed in the body of the email. HTML tags are allowed.</li>
 						<li><em>Include a Copy of the User's Entry</em>: appends a copy of the user's submitted entry to the notification email.</li>
-					</ul>
-				<p><strong>Tips</strong></p>
-					<ul>
+					</ul>"
+		) );
+
+		$screen->add_help_tab( array(
+			'id' => 'vfb-help-tab-tips',
+			'title' => 'Tips',
+			'content' => "<ul>
 						<li>Fieldsets, a way to group form fields, are an essential piece of this plugin's HTML. As such, at least one fieldset is required and must be first in the order. Subsequent fieldsets may be placed wherever you would like to start your next grouping of fields.</li>
 						<li>Security verification is automatically included on very form. It's a simple logic question and should keep out most, if not all, spam bots.</li>
 						<li>There is a hidden spam field, known as a honey pot, that should also help deter potential abusers of your form.</li>
 						<li>Nesting is allowed underneath fieldsets and sections.  Sections can be nested underneath fieldsets.  Nesting is not required, however, it does make reorganizing easier.</li>
-					</ul>";
-		
-    	add_contextual_help( 'settings_page_visual-form-builder', $text ); 
+					</ul>"
+		) );
 	}
 	
 	/**
@@ -284,13 +308,14 @@ class Visual_Form_Builder{
 				field_type VARCHAR(25) NOT NULL,
 				field_options TEXT,
 				field_description TEXT,
-				field_name VARCHAR(255) NOT NULL,
+				field_name TEXT NOT NULL,
 				field_sequence BIGINT(20) DEFAULT '0',
 				field_parent BIGINT(20) DEFAULT '0',
 				field_validation VARCHAR(25),
 				field_required VARCHAR(25),
 				field_size VARCHAR(25) DEFAULT 'medium',
 				field_css VARCHAR(255),
+				field_layout VARCHAR(255),
 				UNIQUE KEY  (field_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 
@@ -299,7 +324,7 @@ class Visual_Form_Builder{
 				form_key TINYTEXT NOT NULL,
 				form_title TEXT NOT NULL,
 				form_email_subject TEXT,
-				form_email_to VARCHAR(255),
+				form_email_to TEXT,
 				form_email_from VARCHAR(255),
 				form_email_from_name VARCHAR(255),
 				form_email_from_override VARCHAR(255),
@@ -323,7 +348,7 @@ class Visual_Form_Builder{
 				subject TEXT,
 				sender_name VARCHAR(255),
 				sender_email VARCHAR(25),
-				emails_to VARCHAR(255),
+				emails_to TEXT,
 				date_submitted DATETIME,
 				ip_address VARCHAR(25),
 				UNIQUE KEY  (entries_id)
@@ -332,7 +357,7 @@ class Visual_Form_Builder{
 		/* Create or Update database tables */
 		dbDelta( $field_sql );
 		dbDelta( $form_sql );
-		dbDelta( $entries_sql );	
+		dbDelta( $entries_sql );
 	}
 
 	/**
@@ -367,6 +392,7 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-ui-core ', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( 'visual-form-builder' ) . '/js/visual-form-builder-validate.js' , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-quicktags', plugins_url( 'visual-form-builder' ) . '/js/js_quicktags.js' );
+		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder' ) . '/js/jquery.metadata.js' , array( 'jquery', 'jquery-form-validation' ), '', true );
 	}
 	
 	/**
@@ -450,13 +476,42 @@ class Visual_Form_Builder{
 					/* Add the first fieldset to get things started */ 
 					$wpdb->insert( $this->field_table_name, $initial_fieldset );
 					
+					$verification_fieldset = array(
+						'form_id' => $new_form_selected,
+						'field_key' => 'verification',
+						'field_type' => 'verification',
+						'field_name' => 'Verification',
+						'field_description' => '(This is for preventing spam)',
+						'field_sequence' => 1
+					);
+					
+					/* Insert the submit field */ 
+					$wpdb->insert( $this->field_table_name, $verification_fieldset );
+					
+					$verify_fieldset_parent_id = $wpdb->insert_id;
+					
+					$secret = array(
+						'form_id' => $new_form_selected,
+						'field_key' => 'secret',
+						'field_type' => 'secret',
+						'field_name' => 'Please enter any two digits with no spaces (Example: 12)',
+						'field_size' => 'medium',
+						'field_required' => 'yes',
+						'field_parent' => $verify_fieldset_parent_id,
+						'field_sequence' => 2
+					);
+					
+					/* Insert the submit field */ 
+					$wpdb->insert( $this->field_table_name, $secret );
+					
 					/* Make the submit last in the sequence */
 					$submit = array(
 						'form_id' => $new_form_selected,
 						'field_key' => 'submit',
 						'field_type' => 'submit',
 						'field_name' => 'Submit',
-						'field_sequence' => 1
+						'field_parent' => $verify_fieldset_parent_id,
+						'field_sequence' => 3
 					);
 					
 					/* Insert the submit field */ 
@@ -537,13 +592,14 @@ class Visual_Form_Builder{
 					if ( !empty( $_REQUEST['field_id'] ) ) {
 						foreach ( $_REQUEST['field_id'] as $id ) {
 							$field_name = ( isset( $_REQUEST['field_name-' . $id] ) ) ? esc_html( $_REQUEST['field_name-' . $id] ) : '';
-							$field_key = sanitize_title( $field_name );
+							$field_key = sanitize_title( $field_name, $id );
 							$field_desc = ( isset( $_REQUEST['field_description-' . $id] ) ) ? esc_html( $_REQUEST['field_description-' . $id] ) : '';
 							$field_options = ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( array_map( 'esc_html', $_REQUEST['field_options-' . $id] ) ) : '';
 							$field_validation = ( isset( $_REQUEST['field_validation-' . $id] ) ) ? esc_html( $_REQUEST['field_validation-' . $id] ) : '';
 							$field_required = ( isset( $_REQUEST['field_required-' . $id] ) ) ? esc_html( $_REQUEST['field_required-' . $id] ) : '';
 							$field_size = ( isset( $_REQUEST['field_size-' . $id] ) ) ? esc_html( $_REQUEST['field_size-' . $id] ) : '';
 							$field_css = ( isset( $_REQUEST['field_css-' . $id] ) ) ? esc_html( $_REQUEST['field_css-' . $id] ) : '';
+							$field_layout = ( isset( $_REQUEST['field_layout-' . $id] ) ) ? esc_html( $_REQUEST['field_layout-' . $id] ) : '';
 							
 							$field_data = array(
 								'field_key' => $field_key,
@@ -554,6 +610,7 @@ class Visual_Form_Builder{
 								'field_required' => $field_required,
 								'field_size' => $field_size,
 								'field_css' => $field_css,
+								'field_layout' => $field_layout,
 								'field_sequence' => $field_sequence
 							);
 							
@@ -569,32 +626,73 @@ class Visual_Form_Builder{
 						}
 						
 						/* Check if a submit field type exists for backwards compatibility upgrades */
-						$is_submit = $wpdb->get_var( "SELECT field_type FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = $form_id" );
+						$is_verification = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'verification' AND form_id = $form_id" );
+						$is_secret = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = $form_id" );
+						$is_submit = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = $form_id" );
 						
-						/* Force the submit sequence to be the last one */
+						/* Decrement sequence */
 						$field_sequence--;
+						
+						/* If this form doesn't have a verification field, add one */
+						if ( $is_verification == NULL ) {
+							/* Adjust the sequence */
+							$verification_fieldset = array(
+								'form_id' => $form_id,
+								'field_key' => 'verification',
+								'field_type' => 'verification',
+								'field_name' => 'Verification',
+								'field_sequence' => $field_sequence
+							);
+							
+							/* Insert the verification fieldset */ 
+							$wpdb->insert( $this->field_table_name, $verification_fieldset );
+							
+							$verification_id = $wpdb->insert_id;
+						}
+						
+						/* If the verification field was inserted, use that ID as a parent otherwise set no parent */
+						$verify_fieldset_parent_id = ( $verification_id !== false ) ? $verification_id : 0;
+						
+						/* If this form doesn't have a secret field, add one */
+						if ( $is_secret == NULL ) {
+							
+							/* Adjust the sequence */
+							$secret = array(
+								'form_id' => $form_id,
+								'field_key' => 'secret',
+								'field_type' => 'secret',
+								'field_name' => 'Please enter any two digits with no spaces (Example: 12)',
+								'field_size' => 'medium',
+								'field_required' => 'yes',
+								'field_parent' => $verify_fieldset_parent_id,
+								'field_sequence' => ++$field_sequence
+							);
+							
+							/* Insert the submit field */ 
+							$wpdb->insert( $this->field_table_name, $secret );
+						}
 						
 						/* If this form doesn't have a submit field, add one */
 						if ( $is_submit == NULL ) {
+							
 							/* Make the submit last in the sequence */
 							$submit = array(
 								'form_id' => $form_id,
 								'field_key' => 'submit',
 								'field_type' => 'submit',
 								'field_name' => 'Submit',
-								'field_sequence' => $field_sequence
+								'field_parent' => $verify_fieldset_parent_id,
+								'field_sequence' => ++$field_sequence
 							);
 							
 							/* Insert the submit field */ 
 							$wpdb->insert( $this->field_table_name, $submit );
 						}
 						else {
-							$data = array( 
-								'field_sequence' => $field_sequence
-							);
-							
+							/* Only update the Submit's parent ID if the Verification field is new */
+							$data = ( $is_verification == NULL ) ? array( 'field_parent' => $verify_fieldset_parent_id, 'field_sequence' => ++$field_sequence ) : array( 'field_sequence' => $field_sequence	);
 							$where = array(
-								'form_id' => $_REQUEST['form_id'],
+								'form_id' => $form_id,
 								'field_id' => $is_submit
 							);
 										
@@ -677,6 +775,7 @@ class Visual_Form_Builder{
 							'field_required' => $field->field_required,
 							'field_size' => $field->field_size,
 							'field_css' => $field->field_css,
+							'field_layout' => $field->field_layout,
 							'field_parent' => $field->field_parent
 						);
 						
@@ -739,6 +838,7 @@ class Visual_Form_Builder{
 		global $wpdb;
 		
 		$data = array();
+		$field_options = '';
 		
 		foreach ( $_REQUEST['data'] as $k ) {
 			$data[ $k['name'] ] = $k['value'];
@@ -766,41 +866,46 @@ class Visual_Form_Builder{
 				case 'time' :
 					$field_validation = 'time-12';
 				break;
+				case 'file-upload' :
+					$field_options = serialize( array( 'png|jpe?g|gif' ) );
+				break;
 			}
 			
 			check_ajax_referer( 'create-field-' . $data['form_id'], 'nonce' );
 			
-			/* Get the last row's sequence that isn't a Submit */
-			$sequence_last_row = $wpdb->get_row( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = $form_id AND field_type != 'submit' ORDER BY field_sequence DESC LIMIT 1" );
+			/* Get the last row's sequence that isn't a Verification */
+			$sequence_last_row = $wpdb->get_row( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = $form_id AND field_type = 'verification' ORDER BY field_sequence DESC LIMIT 1" );
 			
 			/* If it's not the first for this form, add 1 */
-			$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row->field_sequence + 1 : 0;
-			
+			$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row->field_sequence : 0;
+
 			$newdata = array(
 				'form_id' => absint( $data['form_id'] ),
 				'field_key' => $field_key,
 				'field_name' => $field_name,
 				'field_type' => $field_type,
+				'field_options' => $field_options,
 				'field_sequence' => $field_sequence,
 				'field_validation' => $field_validation
 			);
 			
 			/* Create the field */
 			$wpdb->insert( $this->field_table_name, $newdata );
+			$insert_id = $wpdb->insert_id;
+			$update_these = array( 'verification', 'secret', 'submit' );
 			
-			/* Move submit to the end */
-			$submit_data = array( 
-				'field_sequence' => $field_sequence + 1
-			);
+			foreach ( $update_these as $update ) {
+				$where = array(
+					'form_id' => absint( $data['form_id'] ),
+					'field_type' => $update
+				);
+				
+				$wpdb->update( $this->field_table_name, array( 'field_sequence' => $field_sequence + 1 ), $where );
+				$field_sequence++;
+			}
 			
-			$submit_where = array(
-				'form_id' => $newdata[ 'form_id' ],
-				'field_type' => 'submit'
-			);
-							
-			$wpdb->update( $this->field_table_name, $submit_data, $submit_where );
 			
-			echo $this->field_output( $data['form_id'], $wpdb->insert_id );
+			echo $this->field_output( $data['form_id'], $insert_id );
 		}
 		
 		die(1);
@@ -886,7 +991,7 @@ class Visual_Form_Builder{
 			$last = $field->field_id;
 			$parent = $field->field_parent;
 	?>
-			<li id="form_item_<?php echo $field->field_id; ?>" class="form-item<?php echo ( $field->field_type == 'submit' ) ? ' ui-state-disabled' : ''; ?><?php echo ( !in_array( $field->field_type, array( 'fieldset', 'section' ) ) ) ? ' ui-nestedSortable-no-nesting' : ''; ?>">
+			<li id="form_item_<?php echo $field->field_id; ?>" class="form-item<?php echo ( in_array( $field->field_type, array( 'submit', 'secret', 'verification' ) ) ) ? ' ui-state-disabled' : ''; ?><?php echo ( !in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) ) ? ' ui-nestedSortable-no-nesting' : ''; ?>">
 					<dl class="menu-item-bar">
 						<dt class="menu-item-handle<?php echo ( $field->field_type == 'fieldset' ) ? ' fieldset' : ''; ?>">
 							<span class="item-title"><?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?><?php echo ( $field->field_required == 'yes' ) ? ' <span class="is-field-required">*</span>' : ''; ?></span>
@@ -898,16 +1003,22 @@ class Visual_Form_Builder{
 					</dl>
 		
 					<div id="form-item-settings-<?php echo $field->field_id; ?>" class="menu-item-settings field-type-<?php echo $field->field_type; ?>" style="display: none;">
-						<?php if ( $field->field_type == 'fieldset' || $field->field_type == 'section' ) : ?>
+						<?php if ( in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) ) : ?>
 						
 							<p class="description description-wide">
-								<label for="edit-form-item-name-<?php echo $field->field_id; ?>"><?php echo ( $field->field_type == 'fieldset' ) ? 'Legend' : 'Name'; ?><br />
+								<label for="edit-form-item-name-<?php echo $field->field_id; ?>"><?php echo ( in_array( $field->field_type, array( 'fieldset', 'verification' ) ) ) ? 'Legend' : 'Name'; ?><br />
 									<input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
 								</label>
 							</p>
+                            <p class="description description-wide">
+                                <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
+                                    <?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
+                                    <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
+                                </label>
+                            </p>
 						
 						<?php elseif( $field->field_type == 'instructions' ) : ?>
-						
+							<!-- Instructions -->
 							<p class="description description-wide">
 								<label for="edit-form-item-name-<?php echo $field->field_id; ?>">
 										<?php _e( 'Name' , 'visual-form-builder'); ?><br />
@@ -983,12 +1094,41 @@ class Visual_Form_Builder{
 									unset( $opts_vals );
 									endif;
 								?>
-								
+                                
+								<?php
+									/* Display the Options input only for radio, checkbox, select, and autocomplete fields */
+									if ( in_array( $field->field_type, array( 'file-upload' ) ) ) :
+								?>
+                                	<!-- File Upload Accepts -->
+									<p class="description description-wide">
+                                        <?php
+										$opts_vals = array( '' );
+										
+										/* If the options field isn't empty, unserialize and build array */
+										if ( !empty( $field->field_options ) ) {
+											if ( is_serialized( $field->field_options ) )
+												$opts_vals = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : unserialize( $field->field_options );
+										}
+
+										/* Loop through the options */
+										foreach ( $opts_vals as $options ) {
+									?>
+										<label for="edit-form-item-options-<?php echo $field->field_id; ?>">
+											<?php _e( 'Accepted File Extensions' , 'visual-form-builder'); ?>
+                                            <input type="text" value="<?php echo stripslashes( $options ); ?>" name="field_options-<?php echo $field->field_id; ?>[]" class="widefat" id="edit-form-item-options-<?php echo $field->field_id; ?>" />
+										</label>
+                                    </p>
+                                <?php
+										}
+									/* Unset the options for any following radio, checkboxes, or selects */
+									unset( $opts_vals );
+									endif;
+								?>
 								<!-- Validation -->
 								<p class="description description-thin">
 									<label for="edit-form-item-validation">
-										Validation<br />
-									   <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea', 'html', 'file-upload' ) ) ) ? ' disabled="disabled"' : ''; ?>>
+										<?php _e( 'Validation' , 'visual-form-builder'); ?><br />
+									   <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea', 'html', 'file-upload', 'secret' ) ) ) ? ' disabled="disabled"' : ''; ?>>
 											<?php if ( $field->field_type == 'time' ) : ?>
 											<option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>><?php _e( '12 Hour Format' , 'visual-form-builder'); ?></option>
 											<option value="time-24" <?php selected( $field->field_validation, 'time-24' ); ?>><?php _e( '24 Hour Format' , 'visual-form-builder'); ?></option>
@@ -1018,28 +1158,66 @@ class Visual_Form_Builder{
 							   
 								<?php if ( !in_array( $field->field_type, array( 'radio', 'checkbox', 'time' ) ) ) : ?>
 									<!-- Size -->
-									<p class="description description-wide">
+									<p class="description description-thin">
 										<label for="edit-form-item-size">
 											<?php _e( 'Size' , 'visual-form-builder'); ?><br />
 											<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>">
+                                            	<option value="small" <?php selected( $field->field_size, 'small' ); ?>><?php _e( 'Small' , 'visual-form-builder'); ?></option>
 												<option value="medium" <?php selected( $field->field_size, 'medium' ); ?>><?php _e( 'Medium' , 'visual-form-builder'); ?></option>
 												<option value="large" <?php selected( $field->field_size, 'large' ); ?>><?php _e( 'Large' , 'visual-form-builder'); ?></option>
 											</select>
 										</label>
 									</p>
+
+								<?php elseif ( in_array( $field->field_type, array( 'radio', 'checkbox', 'time' ) ) ) : ?>
+									<!-- Options Layout -->
+									<p class="description description-thin">
+										<label for="edit-form-item-size">
+											<?php _e( 'Options Layout' , 'visual-form-builder'); ?><br />
+											<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>"<?php echo ( $field->field_type == 'time' ) ? ' disabled="disabled"' : ''; ?>>
+												<option value="" <?php selected( $field->field_size, '' ); ?>><?php _e( 'One Column' , 'visual-form-builder'); ?></option>
+                                                <option value="two-column" <?php selected( $field->field_size, 'two-column' ); ?>><?php _e( 'Two Columns' , 'visual-form-builder'); ?></option>
+												<option value="three-column" <?php selected( $field->field_size, 'three-column' ); ?>><?php _e( 'Three Columns' , 'visual-form-builder'); ?></option>
+                                                <option value="auto-column" <?php selected( $field->field_size, 'auto-column' ); ?>><?php _e( 'Auto Width' , 'visual-form-builder'); ?></option>
+											</select>
+										</label>
+									</p>
+                                
 								<?php endif; ?>
-								
+									<!-- Field Layout -->
+									<p class="description description-thin">
+										<label for="edit-form-item-layout">
+											<?php _e( 'Field Layout' , 'visual-form-builder'); ?><br />
+											<select name="field_layout-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-layout-<?php echo $field->field_id; ?>">
+                                            	
+												<option value="" <?php selected( $field->field_layout, '' ); ?>><?php _e( 'Default' , 'visual-form-builder'); ?></option>
+                                                <optgroup label="------------">
+                                                <option value="left-half" <?php selected( $field->field_layout, 'left-half' ); ?>><?php _e( 'Left Half' , 'visual-form-builder'); ?></option>
+                                                <option value="right-half" <?php selected( $field->field_layout, 'right-half' ); ?>><?php _e( 'Right Half' , 'visual-form-builder'); ?></option>
+                                                </optgroup>
+                                                <optgroup label="------------">
+												<option value="left-third" <?php selected( $field->field_layout, 'left-third' ); ?>><?php _e( 'Left Third' , 'visual-form-builder'); ?></option>
+                                                <option value="middle-third" <?php selected( $field->field_layout, 'middle-third' ); ?>><?php _e( 'Middle Third' , 'visual-form-builder'); ?></option>
+                                                <option value="right-third" <?php selected( $field->field_layout, 'right-third' ); ?>><?php _e( 'Right Third' , 'visual-form-builder'); ?></option>
+                                                </optgroup>
+                                                <optgroup label="------------">
+                                                <option value="left-two-thirds" <?php selected( $field->field_layout, 'left-two-thirds' ); ?>><?php _e( 'Left Two Thirds' , 'visual-form-builder'); ?></option>
+                                                <option value="right-two-thirds" <?php selected( $field->field_layout, 'right-two-thirds' ); ?>><?php _e( 'Right Two Thirds' , 'visual-form-builder'); ?></option>
+                                                </optgroup>
+											</select>
+										</label>
+									</p>
 								<p class="description description-wide">
-								<label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-									<?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
-									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
-								</label>
+                                    <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
+                                        <?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
+                                        <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
+                                    </label>
 								</p>
-								
+
 							<?php endif; ?>
 						<?php endif; ?>
 						
-						<?php if ( $field->field_type !== 'submit' ) : ?>
+						<?php if ( !in_array( $field->field_type, array( 'verification', 'secret', 'submit' ) ) ) : ?>
 							<div class="menu-item-actions description-wide submitbox">
 								<a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=delete_field&amp;form=' . $form_nav_selected_id . '&amp;field=' . $field->field_id ), 'delete-field-' . $form_nav_selected_id ) ); ?>" class="item-delete submitdelete deletion"><?php _e( 'Remove' , 'visual-form-builder'); ?></a>
 							</div>
@@ -1596,6 +1774,8 @@ class Visual_Form_Builder{
 
 			/* Setup count for fieldset and ul/section class names */
 			$count = 1;
+			
+			$verification = '';
 
 			foreach ( $forms as $form ) :
 						
@@ -1604,12 +1784,18 @@ class Visual_Form_Builder{
 				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 
 				foreach ( $fields as $field ) {
+					/* If field is required, build the span and add setup the 'required' class */
+					$required_span = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
+					$required = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
+					$validation = ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
+					$css = ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
+					$layout = ( !empty( $field->field_layout ) ) ? " $field->field_layout" : '';
 					
 					/* Close each section */
 					if ( $open_section == true ) {
 						/* If this field's parent does NOT equal our section ID */
 						if ( $sec_id && $sec_id !== $field->field_parent ) {
-							$output .= '</div>';
+							$output .= '</div><div class="vfb-clear"></div>';
 							$open_section = false;
 						}
 					}
@@ -1619,7 +1805,7 @@ class Visual_Form_Builder{
 						if ( $open_fieldset == true )
 							$output .= '</ul><br /></fieldset>';
 						
-						$output .= '<fieldset class="fieldset ' . $field->field_key . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
+						$output .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
 						$open_fieldset = true;
 						$count++;
 					}
@@ -1630,13 +1816,46 @@ class Visual_Form_Builder{
 						$sec_id = $field->field_id;
 						$open_section = true;
 					}
-					elseif ( $field->field_type !== 'submit' ) {
-						/* If field is required, build the span and add setup the 'required' class */
-						$required_span = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
-						$required = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
-						$validation = ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
-						$css = ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
-						$output .= '<li class="item item-' . $field->field_type . '"><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+					elseif ( !in_array( $field->field_type, array( 'verification', 'secret', 'submit' ) ) ) {
+						
+						$columns_choice = ( in_array( $field->field_type, array( 'radio', 'checkbox' ) ) ) ? " $field->field_size" : '';
+						
+						if ( $field->field_type !== 'hidden' ) {
+							$output .= '<li class="item item-' . $field->field_type . $columns_choice . $layout . '"><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+						}
+					}
+					elseif ( in_array( $field->field_type, array( 'verification', 'secret' ) ) ) {
+						
+						if ( $field->field_type == 'verification' )
+							$verification .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . $page . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
+						
+						if ( $field->field_type == 'secret' ) {
+							/* Default logged in values */
+							$logged_in_display = '';
+							$logged_in_value = '';
+
+							/* If the user is logged in, fill the field in for them */
+							if ( is_user_logged_in() ) {
+								/* Hide the secret field if logged in */
+								$logged_in_display = ' style="display:none;"';
+								$logged_in_value = 14;
+								
+								/* Get logged in user details */
+								$user = wp_get_current_user();
+								$user_identity = ! empty( $user->ID ) ? $user->display_name : '';
+								
+								/* Display a message for logged in users */
+								$verification .= '<li class="item">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. Verification not required.', 'visual-form-builder' ), admin_url( 'profile.php' ), $user_identity ) . '</li>';
+							}
+							
+							$validation = ' {digits:true,maxlength:2,minlength:2}';
+							$verification .= '<li class="item item-' . $field->field_type . '"' . $logged_in_display . '><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+							
+							if ( !empty( $field->field_description ) )
+								$verification .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+							else
+								$verification .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
+						}
 					}
 					
 					
@@ -1665,7 +1884,7 @@ class Visual_Form_Builder{
 								
 						break;
 						
-						case 'select':
+						case 'select' :
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
 									
@@ -1675,14 +1894,14 @@ class Visual_Form_Builder{
 							
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
-								$output .= '<option value="' . $value . '">'. $value. '</option>';
+								$output .= '<option value="' . trim( stripslashes( $value ) ) . '">'. trim( stripslashes( $value ) ) . '</option>';
 							}
 							
 							$output .= '</select>';
 							
 						break;
 						
-						case 'radio':
+						case 'radio' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
@@ -1694,8 +1913,8 @@ class Visual_Form_Builder{
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
 								$output .= '<span>
-												<input type="radio" name="vfb-'. $field->field_key . '-' . $field->field_id . '" id="vfb-'. $field->field_key . '-' . $field->field_id . '-' . $option . '" value="'. stripslashes( $value ) . '" class="radio' . $required . $css . '" />'. 
-											' <label for="vfb-' . $field->field_key . '-' . $field->field_id . '-' . $option . '" class="choice">' . stripslashes( $value ) . '</label>' .
+												<input type="radio" name="vfb-'. $field->field_key . '-' . $field->field_id . '" id="vfb-'. $field->field_key . '-' . $field->field_id . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="radio' . $required . $css . '" />'. 
+											' <label for="vfb-' . $field->field_key . '-' . $field->field_id . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label>' .
 											'</span>';
 							}
 							
@@ -1703,7 +1922,7 @@ class Visual_Form_Builder{
 							
 						break;
 						
-						case 'checkbox':
+						case 'checkbox' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
@@ -1723,7 +1942,7 @@ class Visual_Form_Builder{
 						
 						break;
 						
-						case 'address':
+						case 'address' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
@@ -1768,7 +1987,7 @@ class Visual_Form_Builder{
 
 						break;
 						
-						case 'date':
+						case 'date' :
 							
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
@@ -1823,10 +2042,13 @@ class Visual_Form_Builder{
 						
 						case 'file-upload' :
 							
+							$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : unserialize( $field->field_options );
+							$accept = ( !empty( $options[0] ) ) ? "{accept:'$options[0]'}" : '';
+
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
 							else
-								$output .= '<input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $css . '" />';
+								$output .= '<input type="file" size="35" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" />';
 						
 									
 						break;
@@ -1848,14 +2070,15 @@ class Visual_Form_Builder{
 					}
 
 					/* Closing </li> */
-					$output .= ( !in_array( $field->field_type , array( 'submit', 'fieldset', 'section' ) ) ) ? '</li>' : '';
+					$output .= ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit', 'fieldset', 'section' ) ) ) ? '</li>' : '';
 				}
 				
 				/* Close user-added fields */
 				$output .= '</ul><br /></fieldset>';
 				
-				/* Output our security test */
-				$output .= '<fieldset class="fieldset verification">
+				/* Make sure the verification displays even if they have not updated their form */
+				if ( $verification == '' ) {
+					$verification = '<fieldset class="fieldset verification">
 							<div class="legend">
 								<h3>' . __( 'Verification' , 'visual-form-builder') . '</h3>
 							</div>
@@ -1865,22 +2088,23 @@ class Visual_Form_Builder{
 									<div>
 										<input type="text" name="vfb-secret" id="vfb-secret" class="text medium" />
 									</div>
-								</li>
-								<div style="display:none;">
-								<li>
+								</li>';
+				}
+				
+				/* Output our security test */
+				$output .= $verification . '<li style="display:none;">
 									<label for="vfb-spam">' . __( 'This box is for spam protection' , 'visual-form-builder') . ' - <strong>' . __( 'please leave it blank' , 'visual-form-builder') . '</strong>:</label>
 									<div>
 										<input name="vfb-spam" id="vfb-spam" />
 									</div>
 								</li>
-								</div>
+
 								<li class="item item-submit">
-									<input type="submit" name="visual-form-builder-submit" value="' . $submit . '" class="submit" id="sendmail" />
+									<input type="submit" name="visual-form-builder-submit" value="' . $submit . '" class="submit" id="sendmail" />' . $total_page . '
 								</li>
 							</ul>
 						</fieldset></form>';
-			
-			
+
 			endforeach;
 		}
 		
@@ -1897,7 +2121,8 @@ class Visual_Form_Builder{
 		global $wpdb, $post;
 		
 		/* Security check before moving any further */
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) :
+		//if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) :
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' ) :
 			$nonce = $_REQUEST['_wpnonce'];
 			
 			/* Security check to verify the nonce */
@@ -2066,7 +2291,8 @@ class Visual_Form_Builder{
 					else
 						$value = html_entity_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES, 'UTF-8' );
 					
-					if ( $field->field_type !== 'submit' ) {
+					//if ( $field->field_type !== 'submit' ) {
+					if ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit' ) ) ) {
 						if ( $field->field_type == 'fieldset' )
 							$message .= '<tr style="background-color:#393E40;color:white;font-size:14px;"><td colspan="2">' . stripslashes( $field->field_name ) . '</td></tr>';
 						elseif ( $field->field_type == 'section' )
@@ -2103,7 +2329,7 @@ class Visual_Form_Builder{
 			$wpdb->insert( $this->entries_table_name, $entry );
 
 			/* Close out the content */
-			$message .= '</table></body></html>';
+			$message .= '<tr><td class="footer" height="61" align="left" valign="middle"><p style="font-size: 12px; font-weight: normal; margin: 0; line-height: 16px; padding: 0;">This email was built and sent using <a href="http://wordpress.org/extend/plugins/visual-form-builder/" style="font-size: 12px;">Visual Form Builder</a>.</p></td></tr></table></body></html>';
 			
 			/* Initialize header filter vars */
 			$this->header_from_name = stripslashes( $form_from_name );
