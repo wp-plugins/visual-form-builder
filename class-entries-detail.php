@@ -136,6 +136,8 @@ class VisualFormBuilder_Entries_Detail{
 						case 'fieldset' :
 						case 'section' :
 						case 'submit' :
+						case 'verification' :
+						case 'secret' :
 						break;
 						
 						default :

@@ -3,6 +3,7 @@ form.visual-form-builder{
 	margin:20px 0;
 }
 form.visual-form-builder li{width:auto !important;}
+.visual-form-builder ul li{list-style:none;}
 .visual-form-builder ul{
 	list-style:none;
 	margin:0 14px;
@@ -56,12 +57,16 @@ form.visual-form-builder li{width:auto !important;}
 .visual-form-builder.left-label .desc, .visual-form-builder.right-label .desc{
 	float:left;
 	margin:0 15px 0 0;
-	/*width:31%;*/
-	width:20%;
+	width:31%;
+	/*width:20%;*/
 }
 .visual-form-builder.right-label .desc{
 	padding-top:2px;
 	text-align:right;
+}
+.visual-form-builder.left-label li div, .visual-form-builder.right-label li div{
+	float:left;
+	width:65%;
 }
 label.desc{font-weight:bold;}
 .visual-form-builder label.choice{
@@ -84,6 +89,7 @@ input.text, textarea.textarea, select.select{
 input.small, select.small{width:25%;}
 input.medium, select.medium{width:50%;}
 input.large, select.large, textarea.textarea{width:100%;}
+.visual-form-builder.left-label .textarea, .visual-form-builder.right-label .textarea{float:left;width:65%;}
 textarea.medium{height:5.5em;}
 textarea.medium{height:10em;}
 textarea.large{height:20em;}

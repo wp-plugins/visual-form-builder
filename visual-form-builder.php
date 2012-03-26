@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.1
+Version: 2.2
 */
 
 /*
@@ -28,7 +28,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.1';
+	protected $vfb_db_version = '2.2';
 	
 	public function __construct(){
 		global $wpdb;
@@ -47,12 +47,10 @@ class Visual_Form_Builder{
 			add_action( 'wp_ajax_visual_form_builder_process_sort', array( &$this, 'process_sort_callback' ) );
 			add_action( 'wp_ajax_visual_form_builder_create_field', array( &$this, 'create_field_callback' ) );
 			add_action( 'wp_ajax_visual_form_builder_delete_field', array( &$this, 'delete_field_callback' ) );
+			add_action( 'wp_ajax_visual_form_builder_form_settings', array( &$this, 'form_settings_callback' ) );
 			
 			add_action( 'load-settings_page_visual-form-builder', array( &$this, 'add_contextual_help' ) );
 			add_action( 'admin_init', array( &$this, 'export_entries' ) );
-			
-			/* Load i18n */
-			load_plugin_textdomain( 'visual-form-builder', false , basename( dirname( __FILE__ ) ) . '/languages' );
 
 			/* Load the includes files */
 			add_action( 'plugins_loaded', array( &$this, 'includes' ) );
@@ -83,6 +81,9 @@ class Visual_Form_Builder{
 			/* Display update messages */
 			add_action('admin_notices', array( &$this, 'admin_notices' ) );
 		}
+		
+		/* Load i18n */
+		load_plugin_textdomain( 'visual-form-builder', false , basename( dirname( __FILE__ ) ) . '/languages' );
 		
 		add_shortcode( 'vfb', array( &$this, 'form_code' ) );
 		add_action( 'init', array( &$this, 'email' ), 10 );
@@ -338,6 +339,7 @@ class Visual_Form_Builder{
 				form_notification_subject VARCHAR(255),
 				form_notification_message TEXT,
 				form_notification_entry VARCHAR(25),
+				form_label_alignment VARCHAR(25),
 				UNIQUE KEY  (form_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
@@ -542,6 +544,7 @@ class Visual_Form_Builder{
 					$form_notification_subject = esc_html( $_REQUEST['form_notification_subject'] );
 					$form_notification_message = wp_richedit_pre( $_REQUEST['form_notification_message'] );
 					$form_notification_entry = esc_html( $_REQUEST['form_notification_entry'] );
+					$form_label_alignment = esc_html( $_REQUEST['form_label_alignment'] );
 					
 					/* Add confirmation based on which type was selected */
 					switch ( $form_success_type ) {
@@ -575,7 +578,8 @@ class Visual_Form_Builder{
 						'form_notification_email' => $form_notification_email,
 						'form_notification_subject' => $form_notification_subject,
 						'form_notification_message' => $form_notification_message,
-						'form_notification_entry' => $form_notification_entry
+						'form_notification_entry' => $form_notification_entry,
+						'form_label_alignment' => $form_label_alignment
 					);
 					
 					$where = array(
@@ -752,7 +756,8 @@ class Visual_Form_Builder{
 							'form_notification_email' => $form->form_notification_email,
 							'form_notification_subject' => $form->form_notification_subject,
 							'form_notification_message' => $form->form_notification_message,
-							'form_notification_entry' => $form->form_notification_entry
+							'form_notification_entry' => $form->form_notification_entry,
+							'form_label_alignment' => $form->form_label_alignment
 						);
 						
 						$wpdb->insert( $this->form_table_name, $data );
@@ -782,7 +787,7 @@ class Visual_Form_Builder{
 						$wpdb->insert( $this->field_table_name, $data );
 
 						/* If a parent field, save the old ID and the new ID to update new parent ID */
-						if ( in_array( $field->field_type, array( 'fieldset', 'section' ) ) )
+						if ( in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) )
 							$parents[ $field->field_id ] = $wpdb->insert_id;
 						
 						if ( $override == $field->field_id )
@@ -940,6 +945,44 @@ class Visual_Form_Builder{
 		
 		die(1);
 	}
+	
+	/**
+	 * The jQuery form settings callback
+	 * 
+	 * @since 2.2
+	 */
+	public function form_settings_callback() {
+		global $current_user;
+		get_currentuserinfo();
+		
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_form_settings' ) {
+			$form_id = absint( $_REQUEST['form'] );
+			$status = isset( $_REQUEST['status'] ) ? $_REQUEST['status'] : 'opened';
+			$accordion = isset( $_REQUEST['accordion'] ) ? $_REQUEST['accordion'] : 'general-settings';
+			$user_id = $current_user->ID;
+			
+			$form_settings = get_user_meta( $user_id, 'vfb-form-settings', true );
+			
+			$array = array(
+				'form_setting_tab' => $status,
+				'setting_accordion' => $accordion
+			);
+			
+			/* Set defaults if meta key doesn't exist */	
+			if ( !$form_settings || $form_settings == '' ) {
+				$meta_value[ $form_id ] = $array;
+				
+				update_user_meta( $user_id, 'vfb-form-settings', $meta_value );
+			}
+			else {
+				$form_settings[ $form_id ] = $array;
+				
+				update_user_meta( $user_id, 'vfb-form-settings', $form_settings );
+			}
+		}
+		
+		die(1);
+	}
 
 	/**
 	 * Build field output in admin
@@ -1006,13 +1049,17 @@ class Visual_Form_Builder{
 						<?php if ( in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) ) : ?>
 						
 							<p class="description description-wide">
-								<label for="edit-form-item-name-<?php echo $field->field_id; ?>"><?php echo ( in_array( $field->field_type, array( 'fieldset', 'verification' ) ) ) ? 'Legend' : 'Name'; ?><br />
-									<input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+								<label for="edit-form-item-name-<?php echo $field->field_id; ?>"><?php echo ( in_array( $field->field_type, array( 'fieldset', 'verification' ) ) ) ? 'Legend' : 'Name'; ?>
+                                <span class="vfb-tooltip" rel="For Fieldsets, a Legend is simply the name of that group. Use general terms that describe the fields included in this Fieldset." title="About Legend">(?)</span>
+                                    <br />
+									<input type="text" value="<?php echo stripslashes( $field->field_name ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 								</label>
 							</p>
                             <p class="description description-wide">
                                 <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-                                    <?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
+                                    <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
+                                    <span class="vfb-tooltip" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets." title="About CSS Classes">(?)</span>
+                                    <br />
                                     <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
                                 </label>
                             </p>
@@ -1021,19 +1068,26 @@ class Visual_Form_Builder{
 							<!-- Instructions -->
 							<p class="description description-wide">
 								<label for="edit-form-item-name-<?php echo $field->field_id; ?>">
-										<?php _e( 'Name' , 'visual-form-builder'); ?><br />
-										<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+										<?php _e( 'Name' , 'visual-form-builder'); ?>
+                                        <span class="vfb-tooltip" title="About Name" rel="A field's name is the most visible and direct way to describe what that field is for.">(?)</span>
+                                        <br />
+										<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 								</label>
 							</p>
 							<p class="description description-wide">
-								<label for="edit-form-item-description-<?php echo $field->field_id; ?>">Description (HTML tags allowed)<br />
+								<label for="edit-form-item-description-<?php echo $field->field_id; ?>">
+                                	<?php _e( 'Description (HTML tags allowed)', 'visual-form-builder' ); ?>
+                                	<span class="vfb-tooltip" title="About Instructions Description" rel="The Instructions field allows for long form explanations, typically seen at the beginning of Fieldsets or Sections. HTML tags are allowed.">(?)</span>
+                                    <br />
 									<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 								</label>
 							</p>
 							<p class="description description-wide">
 								<label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-									<?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
-									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
+									<?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
+                                    <span class="vfb-tooltip" title="About CSS Classes" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets.">(?)</span>
+                                    <br />
+									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" maxlength="255" />
 								</label>
 							</p>
 						
@@ -1042,15 +1096,19 @@ class Visual_Form_Builder{
 							<!-- Name -->
 							<p class="description description-wide">
 								<label for="edit-form-item-name-<?php echo $field->field_id; ?>">
-									<?php _e( 'Name' , 'visual-form-builder'); ?><br />
-									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" />
+									<?php _e( 'Name' , 'visual-form-builder'); ?>
+                                    <span class="vfb-tooltip" title="About Name" rel="A field's name is the most visible and direct way to describe what that field is for.">(?)</span>
+                                    <br />
+									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 								</label>
 							</p>
 							<?php if ( $field->field_type !== 'submit' ) : ?>
 								<!-- Description -->
 								<p class="description description-wide">
 									<label for="edit-form-item-description-<?php echo $field->field_id; ?>">
-										<?php _e( 'Description' , 'visual-form-builder'); ?><br />
+										<?php _e( 'Description' , 'visual-form-builder'); ?>
+                                         <span class="vfb-tooltip" title="About Description" rel="A description is an optional piece of text that further explains the meaning of this field. Descriptions are displayed below the field. HTML tags are allowed.">(?)</span>
+                                        <br />
 										<input type="text" value="<?php echo stripslashes( $field->field_description ); ?>" name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" />
 									</label>
 								</p>
@@ -1061,6 +1119,8 @@ class Visual_Form_Builder{
 									<!-- Options -->
 									<p class="description description-wide">
 										<?php _e( 'Options' , 'visual-form-builder'); ?>
+                                        <span class="vfb-tooltip" title="About Options" rel="This property allows you to set predefined options to be selected by the user.  Use the plus and minus buttons to add and delete options.  At least one option must exist.">(?)</span>
+                                        <br />
 									<?php
 										/* If the options field isn't empty, unserialize and build array */
 										if ( !empty( $field->field_options ) ) {
@@ -1115,6 +1175,8 @@ class Visual_Form_Builder{
 									?>
 										<label for="edit-form-item-options-<?php echo $field->field_id; ?>">
 											<?php _e( 'Accepted File Extensions' , 'visual-form-builder'); ?>
+                                            <span class="vfb-tooltip" title="About Accepted File Extensions" rel="Control the types of files allowed.  Enter extensions without periods and separate multiples using the pipe character ( | ).">(?)</span>
+                                    		<br />
                                             <input type="text" value="<?php echo stripslashes( $options ); ?>" name="field_options-<?php echo $field->field_id; ?>[]" class="widefat" id="edit-form-item-options-<?php echo $field->field_id; ?>" />
 										</label>
                                     </p>
@@ -1127,7 +1189,9 @@ class Visual_Form_Builder{
 								<!-- Validation -->
 								<p class="description description-thin">
 									<label for="edit-form-item-validation">
-										<?php _e( 'Validation' , 'visual-form-builder'); ?><br />
+										<?php _e( 'Validation' , 'visual-form-builder'); ?>
+                                        <span class="vfb-tooltip" title="About Validation" rel="Ensures user-entered data is formatted properly. For more information on Validation, refer to the Help tab at the top of this page.">(?)</span>
+                                        <br />
 									   <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea', 'html', 'file-upload', 'secret' ) ) ) ? ' disabled="disabled"' : ''; ?>>
 											<?php if ( $field->field_type == 'time' ) : ?>
 											<option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>><?php _e( '12 Hour Format' , 'visual-form-builder'); ?></option>
@@ -1148,7 +1212,9 @@ class Visual_Form_Builder{
 								<!-- Required -->
 								<p class="field-link-target description description-thin">
 									<label for="edit-form-item-required">
-										<?php _e( 'Required' , 'visual-form-builder'); ?><br />
+										<?php _e( 'Required' , 'visual-form-builder'); ?>
+                                        <span class="vfb-tooltip" title="About Required" rel="Requires the field to be completed before the form is submitted. By default, all fields are set to No.">(?)</span>
+                                        <br />
 										<select name="field_required-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-required-<?php echo $field->field_id; ?>">
 											<option value="no" <?php selected( $field->field_required, 'no' ); ?>><?php _e( 'No' , 'visual-form-builder'); ?></option>
 											<option value="yes" <?php selected( $field->field_required, 'yes' ); ?>><?php _e( 'Yes' , 'visual-form-builder'); ?></option>
@@ -1160,7 +1226,9 @@ class Visual_Form_Builder{
 									<!-- Size -->
 									<p class="description description-thin">
 										<label for="edit-form-item-size">
-											<?php _e( 'Size' , 'visual-form-builder'); ?><br />
+											<?php _e( 'Size' , 'visual-form-builder'); ?>
+                                            <span class="vfb-tooltip" title="About Size" rel="Control the size of the field.  By default, all fields are set to Medium.">(?)</span>
+                                            <br />
 											<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>">
                                             	<option value="small" <?php selected( $field->field_size, 'small' ); ?>><?php _e( 'Small' , 'visual-form-builder'); ?></option>
 												<option value="medium" <?php selected( $field->field_size, 'medium' ); ?>><?php _e( 'Medium' , 'visual-form-builder'); ?></option>
@@ -1173,7 +1241,9 @@ class Visual_Form_Builder{
 									<!-- Options Layout -->
 									<p class="description description-thin">
 										<label for="edit-form-item-size">
-											<?php _e( 'Options Layout' , 'visual-form-builder'); ?><br />
+											<?php _e( 'Options Layout' , 'visual-form-builder'); ?>
+                                            <span class="vfb-tooltip" title="About Options Layout" rel="Control the layout of radio buttons or checkboxes.  By default, options are arranged in One Column.">(?)</span>
+                                            <br />
 											<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>"<?php echo ( $field->field_type == 'time' ) ? ' disabled="disabled"' : ''; ?>>
 												<option value="" <?php selected( $field->field_size, '' ); ?>><?php _e( 'One Column' , 'visual-form-builder'); ?></option>
                                                 <option value="two-column" <?php selected( $field->field_size, 'two-column' ); ?>><?php _e( 'Two Columns' , 'visual-form-builder'); ?></option>
@@ -1187,7 +1257,9 @@ class Visual_Form_Builder{
 									<!-- Field Layout -->
 									<p class="description description-thin">
 										<label for="edit-form-item-layout">
-											<?php _e( 'Field Layout' , 'visual-form-builder'); ?><br />
+											<?php _e( 'Field Layout' , 'visual-form-builder'); ?>
+                                            <span class="vfb-tooltip" title="About Field Layout" rel="Used to create advanced layouts. Align fields side by side in various configurations.">(?)</span>
+                                            <br />
 											<select name="field_layout-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-layout-<?php echo $field->field_id; ?>">
                                             	
 												<option value="" <?php selected( $field->field_layout, '' ); ?>><?php _e( 'Default' , 'visual-form-builder'); ?></option>
@@ -1209,8 +1281,10 @@ class Visual_Form_Builder{
 									</p>
 								<p class="description description-wide">
                                     <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-                                        <?php _e( 'CSS Classes' , 'visual-form-builder'); ?><br />
-                                        <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
+                                        <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
+                                        <span class="vfb-tooltip" title="About CSS Classes" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets.">(?)</span>
+                                        <br />
+                                        <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" maxlength="255" />
                                     </label>
 								</p>
 
@@ -1432,181 +1506,276 @@ class Visual_Form_Builder{
                                                 <span class="sender-labels"><?php _e( 'Form Name' , 'visual-form-builder'); ?></span>
                                                 <input type="text" value="<?php echo ( isset( $form_title ) ) ? $form_title : ''; ?>" title="Enter form name here" class="menu-name regular-text menu-item-textbox" id="form-name" name="form_title" />
                                             </label>
-                                            <?php if ( !empty( $form_nav_selected_id ) ) : ?>
-                                            	<div class="delete-action">
-                                                	<a class="" href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?></a>
-                                            	</div>
-                                            <?php endif; ?>
                                             <?php 
 												/* Display sender details and confirmation message if we're on a form, otherwise just the form name */
 												if ( $form_nav_selected_id !== '0' ) : 
 											?>
                                             <br class="clear" />
 											
-                                            <div id="form-details-nav">
-                                            	<a href="<?php echo add_query_arg( array( 'form' => $form_nav_selected_id, 'details' => 'email' ), admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>" class="<?php echo ( 'email' == $details_meta ) ? 'current' : ''; ?>" title="<?php _e( 'Customize Email Details' , 'visual-form-builder'); ?>"><?php _e( 'Email Details' , 'visual-form-builder'); ?></a>
-                                                <a href="<?php echo add_query_arg( array( 'form' => $form_nav_selected_id, 'details' => 'confirmation' ), admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>" class="<?php echo ( 'confirmation' == $details_meta ) ? 'current' : ''; ?>" title="<?php _e( 'Customize Confirmation Message' , 'visual-form-builder'); ?>"><?php _e( 'Confirmation' , 'visual-form-builder'); ?></a>
-                                                <a href="<?php echo add_query_arg( array( 'form' => $form_nav_selected_id, 'details' => 'notification' ), admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>" class="<?php echo ( 'notification' == $details_meta ) ? 'current' : ''; ?>" title="<?php _e( 'Customize Notification Email' , 'visual-form-builder'); ?>"><?php _e( 'Notification' , 'visual-form-builder'); ?></a>
-                                            </div>
-                                            
-                                            <div id="email-details" class="<?php echo ( 'email' == $details_meta ) ? 'form-details-current' : 'form-details'; ?>">
-                                                <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
-
-                                                <!-- E-mail Subject -->
-                                                <label for="form-email-subject" class="menu-name-label howto open-label">
-                                                    <span class="sender-labels"><?php _e( 'E-mail Subject' , 'visual-form-builder'); ?></span>
-                                                    <input type="text" value="<?php echo stripslashes( $form_subject ); ?>" class="menu-name regular-text menu-item-textbox" id="form-email-subject" name="form_email_subject" />
-                                                </label>
-                                                <br class="clear" />
-
-                                                <!-- Sender Name -->
-                                                <label for="form-email-sender-name" class="menu-name-label howto open-label">
-                                                    <span class="sender-labels"><?php _e( 'Sender Name' , 'visual-form-builder'); ?></span>
-                                                    <input type="text" value="<?php echo $form_email_from_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
-                                                </label>
-                                                <span>OR</span>
-                                                <select name="form_email_from_name_override" id="form_email_from_name_override">
-                                                    <option value="" <?php selected( $form_email_from_name_override, '' ); ?>><?php _e( 'Select a required text field' , 'visual-form-builder'); ?></option>
-                                                    <?php 
-													foreach( $senders as $sender ) {
-                                                    	echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . stripslashes( $sender->field_name ) . '</option>';
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <br class="clear" />
-                                                
-                                                <!-- Sender E-mail -->
-                                                <label for="form-email-sender" class="menu-name-label howto open-label">
-                                                    <span class="sender-labels"><?php _e( 'Sender E-mail' , 'visual-form-builder'); ?></span>
-                                                    <input type="text" value="<?php echo $form_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
-                                                </label>
-                                                <span><?php _e( 'OR' , 'visual-form-builder'); ?></span>
-                                                <select name="form_email_from_override" id="form_email_from_override">
-                                                    <option value="" <?php selected( $form_email_from_override, '' ); ?>><?php _e( 'Select a required text field with email validation' , 'visual-form-builder'); ?></option>
-                                                    <?php 
-													foreach( $emails as $email ) {
-                                                    	echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . stripslashes( $email->field_name ) . '</option>';
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <br class="clear" />
-
-                                                <!-- E-mail(s) To -->
-												<?php
-													/* Basic count to keep track of multiple options */
-													$count = 1;
-													
-													/* Loop through the options */
-													foreach ( $form_email_to as $email_to ) {
-												?>
-												<div id="clone-email-<?php echo $count; ?>">
-													<label for="form-email-to-<?php echo "$count"; ?>" class="menu-name-label howto open-label clonedOption">
-                                                    <span class="sender-labels"><?php _e( 'E-mail(s) To' , 'visual-form-builder'); ?></span>
-														<input type="text" value="<?php echo stripslashes( $email_to ); ?>" name="form_email_to[]" class="menu-name regular-text menu-item-textbox" id="form-email-to-<?php echo "$count"; ?>" />
-													</label>
-													
-													<a href="#" class="addEmail" title="Add an Email">Add</a> <a href="#" class="deleteEmail" title="Delete Email">Delete</a>
-                                                    <br class="clear" />
-												</div>
-                                                
-												<?php 
-														$count++;
+											<?php
+												/* Get the current user */
+												global $current_user;
+												get_currentuserinfo();
+												
+												/* Save current user ID */
+												$user_id = $current_user->ID;
+												
+												/* Get the Form Setting drop down and accordion settings, if any */
+												$user_form_settings = get_user_meta( $user_id, 'vfb-form-settings' );
+												
+												/* Setup defaults for the Form Setting tab and accordion */
+												$settings_tab = 'closed';
+												$settings_accordion = 'general-settings';
+												
+												/* Loop through the user_meta array */
+												foreach( $user_form_settings as $set ) {
+													/* If form settings exist for this form, use them instead of the defaults */
+													if ( isset( $set[ $form_id ] ) ) {
+														$settings_tab = $set[ $form_id ]['form_setting_tab'];
+														$settings_accordion = $set[ $form_id ]['setting_accordion'];
 													}
-												?>
-                                                
-                                            </div>
+												}
+												
+												/* If tab is opened, set current class */
+												$opened_tab = ( $settings_tab == 'opened' ) ? 'current' : '';
+											?>
                                             
-                                            <div id="confirmation-message" class="<?php echo ( 'confirmation' == $details_meta ) ? 'form-details-current' : 'form-details'; ?>">
-                                            	<p><em><?php _e( "After someone submits a form, you can control what is displayed. By default, it's a message but you can send them to another WordPress Page or a custom URL." , 'visual-form-builder'); ?></em></p>
-                                            	<label for="form-success-type-text" class="menu-name-label open-label">
-                                                    <input type="radio" value="text" id="form-success-type-text" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'text' ); ?> />
-                                                    <span><?php _e( 'Text' , 'visual-form-builder'); ?></span>
-                                                </label>
-                                                <label for="form-success-type-page" class="menu-name-label open-label">
-                                                    <input type="radio" value="page" id="form-success-type-page" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'page' ); ?>/>
-                                                    <span><?php _e( 'Page' , 'visual-form-builder'); ?></span>
-                                                </label>
-                                                <label for="form-success-type-redirect" class="menu-name-label open-label">
-                                                    <input type="radio" value="redirect" id="form-success-type-redirect" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'redirect' ); ?>/>
-                                                    <span><?php _e( 'Redirect' , 'visual-form-builder'); ?></span>
-                                                </label>
-                                                <br class="clear" />
-                                                
-                                                <?php
-												/* If there's no text message, make sure there is something displayed by setting a default */
-												if ( $form_success_message === '' )
-													$default_text = sprintf( '<p id="form_success">%s</p>', __( 'Your form was successfully submitted. Thank you for contacting us.' , 'visual-form-builder') );
-												?>
-                                                <textarea id="form-success-message-text" class="form-success-message<?php echo ( 'text' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_text"><?php echo $default_text; ?><?php echo ( 'text' == $form_success_type ) ? $form_success_message : ''; ?></textarea>
-                                                
-												<?php
-												/* Display all Pages */
-												wp_dropdown_pages( array(
-													'name' => 'form_success_message_page', 
-													'id' => 'form-success-message-page',
-													'show_option_none' => __( 'Select a Page' , 'visual-form-builder'),
-													'selected' => $form_success_message
-												));
-												?>
-                                                <input type="text" value="<?php echo ( 'redirect' == $form_success_type ) ? $form_success_message : ''; ?>" id="form-success-message-redirect" class="form-success-message regular-text<?php echo ( 'redirect' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_redirect" />
-											<br class="clear" />
-
+                                            <div class="button-group">
+												<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Form Settings' , 'visual-form-builder'); ?><span class="button-icon arrow"></span></a>
+                                                <a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
+                                                <a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
                                             </div>
-                                            <div id="notification" class="<?php echo ( 'notification' == $details_meta ) ? 'form-details-current' : 'form-details'; ?>">
-                                            	<p><em><?php _e( "When a user submits their entry, you can send a customizable notification email." , 'visual-form-builder'); ?></em></p>
-                                                <label for="form-notification-setting">
-                                                    <input type="checkbox" value="1" id="form-notification-setting" class="form-notification" name="form_notification_setting" <?php checked( $form_notification_setting, '1' ); ?> style="margin-top:-1px;margin-left:0;"/>
-                                                    <?php _e( 'Send Confirmation Email to User' , 'visual-form-builder'); ?>
-                                                </label>
-                                                <br class="clear" />
-                                                <div id="notification-email">
-                                                	<label for="form-notification-email-name" class="menu-name-label howto open-label">
-                                                        <span class="sender-labels"><?php _e( 'Sender Name' , 'visual-form-builder'); ?></span>
-                                                        <input type="text" value="<?php echo $form_notification_email_name; ?>" class="menu-name regular-text menu-item-textbox" id="form-notification-email-name" name="form_notification_email_name" />
-                                                    </label>
+                                                                                        
+                                            <div id="form-settings" class="<?php echo $opened_tab; ?>">
+                                                <!-- General settings section -->
+                                                <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">1. General<span class="arrow"></span></a>
+                                                <div id="general-settings" class="form-details<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">
+                                                    <!-- Label Alignment -->
+                                                    <p class="description description-wide">
+                                                    <label for="form-label-alignment">
+                                                        <?php _e( 'Label Alignment' , 'visual-form-builder'); ?>
+                                                        <span class="vfb-tooltip" title="About Label Alignment" rel="Set the field labels for this form to be aligned either on top, to the left, or to the right.  By default, all labels are aligned on top of the inputs.">(?)</span>
+                                    					<br />
+                                                     </label>
+                                                        <select name="form_label_alignment" id="form-label-alignment" class="widefat">
+                                                            <option value="" <?php selected( $form_label_alignment, '' ); ?>><?php _e( 'Top Aligned' , 'visual-form-builder'); ?></option>
+                                                            <option value="left-label" <?php selected( $form_label_alignment, 'left-label' ); ?>><?php _e( 'Left Aligned' , 'visual-form-builder'); ?></option>
+                                                            <option value="right-label" <?php selected( $form_label_alignment, 'right-label' ); ?>><?php _e( 'Right Aligned' , 'visual-form-builder'); ?></option>                                                        
+                                                        </select>
+                                                    </p>
                                                     <br class="clear" />
-                                                    <label for="form-notification-email-from" class="menu-name-label howto open-label">
-                                                        <span class="sender-labels"><?php _e( 'Sender Email' , 'visual-form-builder'); ?></span>
-                                                        <input type="text" value="<?php echo $form_notification_email_from; ?>" class="menu-name regular-text menu-item-textbox" id="form-notification-email-from" name="form_notification_email_from" />
-                                                    </label>
-                                                    <br class="clear" />
-                                                    <label for="form-notification-email" class="menu-name-label howto open-label">
-                                                        <span class="sender-labels"><?php _e( 'Send To' , 'visual-form-builder'); ?></span>
-                                                    
-                                                    <select name="form_notification_email" id="form-notification-email">
-                                                        <option value="" <?php selected( $form_notification_email, '' ); ?>><?php _e( 'Select a required text field with email validation' , 'visual-form-builder'); ?></option>
-                                                        <?php 
-                                                        foreach( $emails as $email ) {
-                                                            echo '<option value="' . $email->field_id . '"' . selected( $form_notification_email, $email->field_id ) . '>' . $email->field_name . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select></label>
-                                                    <br class="clear" />
-                                                    <label for="form-notification-subject" class="menu-name-label howto open-label">
-                                                        <span class="sender-labels"><?php _e( 'Subject' , 'visual-form-builder'); ?></span>
-                                                        <input type="text" value="<?php echo $form_notification_subject; ?>" class="menu-name regular-text menu-item-textbox" id="form-notification-subject" name="form_notification_subject" />
-                                                    </label>
-                                                    <br class="clear" />
-                                                    <label for="form-notification-message" class="menu-name-label howto open-label"><?php _e( 'Message' , 'visual-form-builder'); ?></label>
-													<br class="clear" />
-                                                    <textarea id="form-notification-message" class="form-notification-message" name="form_notification_message"><?php echo $form_notification_message; ?></textarea>
-                                                    <br class="clear" />
-                                                    <label for="form-notification-entry">
-                                                    <input type="checkbox" value="1" id="form-notification-entry" class="form-notification" name="form_notification_entry" <?php checked( $form_notification_entry, '1' ); ?> style="margin-top:-1px;margin-left:0;"/>
-                                                    <?php _e( "Include a Copy of the User's Entry" , 'visual-form-builder'); ?>
-                                                </label>
                                                 </div>
+                                                
+                                                <!-- Email section -->
+                                                <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">2. Email<span class="arrow"></span></a>
+                                                <div id="email-details" class="form-details<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">
+                                                    
+                                                    <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
+    
+                                                    <!-- E-mail Subject -->
+                                                    <p class="description description-wide">
+                                                    <label for="form-email-subject">
+                                                        <?php _e( 'E-mail Subject' , 'visual-form-builder'); ?>
+                                                        <span class="vfb-tooltip" title="About E-mail Subject" rel="This option sets the subject of the email that is sent to the emails you have set in the E-mail(s) To field.">(?)</span>
+                                    					<br />
+                                                        <input type="text" value="<?php echo stripslashes( $form_subject ); ?>" class="widefat" id="form-email-subject" name="form_email_subject" />
+                                                    </label>
+                                                    </p>
+                                                    <br class="clear" />
+    
+                                                    <!-- Sender Name -->
+                                                    <p class="description description-thin">
+                                                    <label for="form-email-sender-name">
+                                                        <?php _e( 'Your Name or Company' , 'visual-form-builder'); ?>
+                                                        <span class="vfb-tooltip" title="About Your Name or Company" rel="This option sets the From display name of the email that is sent to the emails you have set in the E-mail(s) To field.">(?)</span>
+                                    					<br />
+                                                        <input type="text" value="<?php echo $form_email_from_name; ?>" class="widefat" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
+                                                    </label>
+                                                    </p>
+                                                    <p class="description description-thin">
+                                                    	<label for="form_email_from_name_override">
+                                                        	<?php _e( "User's Name (optional)" , 'visual-form-builder'); ?>
+                                                            <span class="vfb-tooltip" title="About User's Name" rel="Select a required text field from your form to use as the From display name in the email.">(?)</span>
+                                    						<br />
+                                                        <select name="form_email_from_name_override" id="form_email_from_name_override" class="widefat">
+                                                            <option value="" <?php selected( $form_email_from_name_override, '' ); ?>><?php _e( 'Select a required text field' , 'visual-form-builder'); ?></option>
+                                                            <?php 
+                                                            foreach( $senders as $sender ) {
+                                                                echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . stripslashes( $sender->field_name ) . '</option>';
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                        </label>
+                                                    </p>
+                                                    <br class="clear" />
+                                                    
+                                                    <!-- Sender E-mail -->
+                                                    <p class="description description-thin">
+                                                    <label for="form-email-sender">
+                                                        <?php _e( 'Reply-To E-mail' , 'visual-form-builder'); ?>
+                                                        <span class="vfb-tooltip" title="About Reply-To Email" rel="Manually set the email address that users will reply to.">(?)</span>
+                                    					<br />
+                                                        <input type="text" value="<?php echo $form_email_from; ?>" class="widefat" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
+                                                    </label>
+                                                    </p>
+                                                    <p class="description description-thin">
+                                                        <label for="form_email_from_override">
+                                                        	<?php _e( "User's E-mail (optional)" , 'visual-form-builder'); ?>
+                                                            <span class="vfb-tooltip" title="About User's Email" rel="Select a required email field from your form to use as the Reply-To email.">(?)</span>
+                                    						<br />
+                                                        <select name="form_email_from_override" id="form_email_from_override" class="widefat">
+                                                            <option value="" <?php selected( $form_email_from_override, '' ); ?>><?php _e( 'Select a required email field' , 'visual-form-builder'); ?></option>
+                                                            <?php 
+                                                            foreach( $emails as $email ) {
+                                                                echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . stripslashes( $email->field_name ) . '</option>';
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                        </label>
+                                                    </p>
+                                                    <br class="clear" />
+    												
+                                                    <!-- E-mail(s) To -->
+                                                    <?php
+                                                        /* Basic count to keep track of multiple options */
+                                                        $count = 1;
+                                                        
+                                                        /* Loop through the options */
+                                                        foreach ( $form_email_to as $email_to ) {
+                                                    ?>
+                                                    <div id="clone-email-<?php echo $count; ?>" class="option">
+                                                        <p class="description description-wide">
+                                                            <label for="form-email-to-<?php echo "$count"; ?>" class="clonedOption">
+                                                            <?php _e( 'E-mail(s) To' , 'visual-form-builder'); ?>
+                                                            <span class="vfb-tooltip" title="About E-mail(s) To" rel="This option sets single or multiple emails to send the submitted form data to. At least one email is required.">(?)</span>
+                                    					<br />
+                                                                <input type="text" value="<?php echo stripslashes( $email_to ); ?>" name="form_email_to[]" class="widefat" id="form-email-to-<?php echo "$count"; ?>" />
+                                                            </label>
+                                                            
+                                                            <a href="#" class="addEmail" title="Add an Email">Add</a> <a href="#" class="deleteEmail" title="Delete Email">Delete</a>
+                                                            
+                                                        </p>
+                                                        <br class="clear" />
+                                                    </div>
+                                                    <?php 
+                                                            $count++;
+                                                        }
+                                                    ?>
+                                                </div>
+                                                
+                                                <!-- Confirmation section -->
+                                                <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">3. Confirmation<span class="arrow"></span></a>
+                                                <div id="confirmation-message" class="form-details<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">
+                                                    <p><em><?php _e( "After someone submits a form, you can control what is displayed. By default, it's a message but you can send them to another WordPress Page or a custom URL." , 'visual-form-builder'); ?></em></p>
+                                                    <label for="form-success-type-text" class="menu-name-label open-label">
+                                                        <input type="radio" value="text" id="form-success-type-text" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'text' ); ?> />
+                                                        <span><?php _e( 'Text' , 'visual-form-builder'); ?></span>
+                                                    </label>
+                                                    <label for="form-success-type-page" class="menu-name-label open-label">
+                                                        <input type="radio" value="page" id="form-success-type-page" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'page' ); ?>/>
+                                                        <span><?php _e( 'Page' , 'visual-form-builder'); ?></span>
+                                                    </label>
+                                                    <label for="form-success-type-redirect" class="menu-name-label open-label">
+                                                        <input type="radio" value="redirect" id="form-success-type-redirect" class="form-success-type" name="form_success_type" <?php checked( $form_success_type, 'redirect' ); ?>/>
+                                                        <span><?php _e( 'Redirect' , 'visual-form-builder'); ?></span>
+                                                    </label>
+                                                    <br class="clear" />
+                                                    <p class="description description-wide">
+                                                    <?php
+                                                    /* If there's no text message, make sure there is something displayed by setting a default */
+                                                    if ( $form_success_message === '' )
+                                                        $default_text = sprintf( '<p id="form_success">%s</p>', __( 'Your form was successfully submitted. Thank you for contacting us.' , 'visual-form-builder') );
+                                                    ?>
+                                                    <textarea id="form-success-message-text" class="form-success-message<?php echo ( 'text' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_text"><?php echo $default_text; ?><?php echo ( 'text' == $form_success_type ) ? $form_success_message : ''; ?></textarea>
+                                                    
+                                                    <?php
+                                                    /* Display all Pages */
+                                                    wp_dropdown_pages( array(
+                                                        'name' => 'form_success_message_page', 
+                                                        'id' => 'form-success-message-page',
+                                                        'class' => 'widefat',
+                                                        'show_option_none' => __( 'Select a Page' , 'visual-form-builder'),
+                                                        'selected' => $form_success_message
+                                                    ));
+                                                    ?>
+                                                    <input type="text" value="<?php echo ( 'redirect' == $form_success_type ) ? $form_success_message : ''; ?>" id="form-success-message-redirect" class="form-success-message regular-text<?php echo ( 'redirect' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_redirect" placeholder="http://" />
+                                                    </p>
+                                                <br class="clear" />
+    
+                                                </div>
+                                            
+                                                <!-- Notification section -->
+                                                <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">4. Notification<span class="arrow"></span></a>
+                                                <div id="notification" class="form-details<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">
+                                                    <p><em><?php _e( "When a user submits their entry, you can send a customizable notification email." , 'visual-form-builder'); ?></em></p>
+                                                    <label for="form-notification-setting">
+                                                        <input type="checkbox" value="1" id="form-notification-setting" class="form-notification" name="form_notification_setting" <?php checked( $form_notification_setting, '1' ); ?> style="margin-top:-1px;margin-left:0;"/>
+                                                        <?php _e( 'Send Confirmation Email to User' , 'visual-form-builder'); ?>
+                                                    </label>
+                                                    <br class="clear" />
+                                                    <div id="notification-email">
+                                                        <p class="description description-wide">
+                                                        <label for="form-notification-email-name">
+                                                            <?php _e( 'Sender Name or Company' , 'visual-form-builder'); ?>
+                                                            <span class="vfb-tooltip" title="About Sender Name or Company" rel="Enter the name you would like to use for the email notification.">(?)</span>
+                                    						<br />
+                                                            <input type="text" value="<?php echo $form_notification_email_name; ?>" class="widefat" id="form-notification-email-name" name="form_notification_email_name" />
+                                                        </label>
+                                                        </p>
+                                                        <br class="clear" />
+                                                        <p class="description description-wide">
+                                                        <label for="form-notification-email-from">
+                                                            <?php _e( 'Reply-To E-mail' , 'visual-form-builder'); ?>
+                                                            <span class="vfb-tooltip" title="About Reply-To Email" rel="Manually set the email address that users will reply to.">(?)</span>
+                                    						<br />
+                                                            <input type="text" value="<?php echo $form_notification_email_from; ?>" class="widefat" id="form-notification-email-from" name="form_notification_email_from" />
+                                                        </label>
+                                                        </p>
+                                                        <br class="clear" />
+                                                        <p class="description description-wide">
+                                                            <label for="form-notification-email">
+                                                                <?php _e( 'E-mail To' , 'visual-form-builder'); ?>
+                                                                <span class="vfb-tooltip" title="About E-mail To" rel="Select a required email field from your form to send the notification email to.">(?)</span>
+                                    							<br />
+                                                                <select name="form_notification_email" id="form-notification-email" class="widefat">
+                                                                    <option value="" <?php selected( $form_notification_email, '' ); ?>><?php _e( 'Select a required email field' , 'visual-form-builder'); ?></option>
+                                                                    <?php 
+                                                                    foreach( $emails as $email ) {
+                                                                        echo '<option value="' . $email->field_id . '"' . selected( $form_notification_email, $email->field_id ) . '>' . $email->field_name . '</option>';
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                            </label>
+                                                        </p>
+                                                        <br class="clear" />
+                                                        <p class="description description-wide">
+                                                        <label for="form-notification-subject">
+                                                           <?php _e( 'E-mail Subject' , 'visual-form-builder'); ?>
+                                                           <span class="vfb-tooltip" title="About E-mail Subject" rel="This option sets the subject of the email that is sent to the emails you have set in the E-mail To field.">(?)</span>
+                                    						<br />
+                                                            <input type="text" value="<?php echo $form_notification_subject; ?>" class="widefat" id="form-notification-subject" name="form_notification_subject" />
+                                                        </label>
+                                                        </p>
+                                                        <br class="clear" />
+                                                        <p class="description description-wide">
+                                                        <label for="form-notification-message"><?php _e( 'Message' , 'visual-form-builder'); ?></label>
+                                                        <span class="vfb-tooltip" title="About Message" rel="Insert a message to the user. This will be inserted into the beginning of the email body.">(?)</span>
+                                    					<br />
+                                                        <textarea id="form-notification-message" class="form-notification-message widefat" name="form_notification_message"><?php echo $form_notification_message; ?></textarea>
+                                                        </p>
+                                                        <br class="clear" />
+                                                        <label for="form-notification-entry">
+                                                        <input type="checkbox" value="1" id="form-notification-entry" class="form-notification" name="form_notification_entry" <?php checked( $form_notification_entry, '1' ); ?> style="margin-top:-1px;margin-left:0;"/>
+                                                        <?php _e( "Include a Copy of the User's Entry" , 'visual-form-builder'); ?>
+                                                    </label>
+                                                    </div>
+                                                </div>                                               
                                             </div>
                                             <?php endif; ?>
-                                            <br class="clear" />
+
                                             <div class="publishing-action">
                                                 <input type="submit" value="<?php echo ( $action == 'create_form' ) ? __( 'Create Form' , 'visual-form-builder') : __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
                                             </div>
-                                            <?php if ( !empty( $form_nav_selected_id ) ) : ?>
-                                            	<div class="delete-action">
-                                                	<a class="submitdelete deletion menu-delete" href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>"><?php _e( 'Delete Form' , 'visual-form-builder'); ?></a>
-                                            	</div>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -1645,9 +1814,11 @@ class Visual_Form_Builder{
                                             <p>Attention Visual Form Builder users!  I am happy to announce <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a>, available now for only <strong>$10</strong>.</p>
                                             <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
                                             <ul>
-                                                <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, and more)' , 'visual-form-builder'); ?></li>
+                                                <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
+                                                <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
+                                                <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
@@ -1778,8 +1949,8 @@ class Visual_Form_Builder{
 			$verification = '';
 
 			foreach ( $forms as $form ) :
-						
-				$output = '<form id="' . $form->form_key . '" class="visual-form-builder" method="post" enctype="multipart/form-data">
+				$label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
+				$output = '<form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
 							<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
 				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 
@@ -1851,8 +2022,14 @@ class Visual_Form_Builder{
 							$validation = ' {digits:true,maxlength:2,minlength:2}';
 							$verification .= '<li class="item item-' . $field->field_type . '"' . $logged_in_display . '><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
 							
+							/* Set variable for testing if required is Yes/No */
+							if ( $required == '' )
+								$verification .= '<input type="hidden" name="_vfb-required-secret" value="0" />';
+							
+							$verification .= '<input type="hidden" name="_vfb-secret" value="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" />';
+							
 							if ( !empty( $field->field_description ) )
-								$verification .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$verification .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
 								$verification .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
 						}
@@ -1869,7 +2046,7 @@ class Visual_Form_Builder{
 						case 'phone' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
 								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text ' . $field->field_size . $required . $validation . $css . '" />';
 								
@@ -1878,7 +2055,7 @@ class Visual_Form_Builder{
 						case 'textarea' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 	
 							$output .= '<textarea name="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" class="textarea ' . $field->field_size . $required . $css . '"></textarea>';
 								
@@ -1886,7 +2063,7 @@ class Visual_Form_Builder{
 						
 						case 'select' :
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 									
 							$output .= '<select name="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" class="select ' . $field->field_size . $required . $css . '">';
 							
@@ -1904,7 +2081,7 @@ class Visual_Form_Builder{
 						case 'radio' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							
 							$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
 							
@@ -1925,7 +2102,7 @@ class Visual_Form_Builder{
 						case 'checkbox' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							
 							$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
 							
@@ -1945,7 +2122,7 @@ class Visual_Form_Builder{
 						case 'address' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 								
 								$countries = array( "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 							$output .= '<div>
@@ -1990,7 +2167,7 @@ class Visual_Form_Builder{
 						case 'date' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
 								$output .= '<input type="text" name="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" />';
 							
@@ -1998,7 +2175,7 @@ class Visual_Form_Builder{
 						
 						case 'time' :
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 
 							/* Get the time format (12 or 24) */
 							$time_format = str_replace( 'time-', '', $validation );
@@ -2033,7 +2210,7 @@ class Visual_Form_Builder{
 						case 'html' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 
 							$output .= '<script type="text/javascript">edToolbar("vfb-' . $field->field_key . '-' . $field->field_id . '");</script>';
 							$output .= '<textarea name="vfb-'. $field->field_key . '-' . $field->field_id . '" id="vfb-'. $field->field_key . '-' . $field->field_id . '" class="textarea vfbEditor ' . $field->field_size . $required . $css . '"></textarea>';
@@ -2061,7 +2238,7 @@ class Visual_Form_Builder{
 						
 						case 'submit' :
 							
-							$submit = $field->field_name;
+							$submit = stripslashes( $field->field_name );
 							
 						break;
 						
@@ -2120,8 +2297,19 @@ class Visual_Form_Builder{
 	public function email() {
 		global $wpdb, $post;
 		
-		/* Security check before moving any further */
-		//if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' && is_numeric( $_REQUEST['vfb-secret'] ) && strlen( $_REQUEST['vfb-secret'] ) == 2 ) :
+		$required = ( isset( $_REQUEST['_vfb-required-secret'] ) && $_REQUEST['_vfb-required-secret'] == '0' ) ? false : true;
+		$secret_field = ( isset( $_REQUEST['_vfb-secret'] ) ) ? $_REQUEST['_vfb-secret'] : '';
+		
+		/* If the verification is set to required, run validation check */
+		if ( true == $required && !empty( $secret_field ) )
+			if ( !is_numeric( $_REQUEST[ $secret_field ] ) && strlen( $_REQUEST[ $secret_field ] ) !== 2 )
+				wp_die( __( 'Security check' , 'visual-form-builder') );
+		
+		/* Test if it's a known SPAM bot */
+		if ( $this->isBot() )
+			wp_die( __( 'Security check' , 'visual-form-builder') );
+		
+		/* Basic security check before moving any further */
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' ) :
 			$nonce = $_REQUEST['_wpnonce'];
 			
@@ -2195,6 +2383,8 @@ class Visual_Form_Builder{
 			/* Build our forms as an object */
 			$fields = $wpdb->get_results( $query );
 			
+			/* Setup counter for alt rows */
+			$i = $points = 0;
 			
 			/* Prepare the beginning of the content */
 			$message = '<html><body><table rules="all" style="border-color: #666;" cellpadding="10">';
@@ -2206,6 +2396,13 @@ class Visual_Form_Builder{
 					$value = $_FILES[ 'vfb-' . $field->field_key . '-' . $field->field_id ];
 					
 					if ( $value['size'] > 0 ) {
+						/* 25MB is the max size allowed */
+						$max_attach_size = 25 * 1048576;
+						
+						/* Display error if file size has been exceeded */
+						if ( $value['size'] > $max_attach_size )
+							wp_die( __( 'File size exceeds 25MB. Most email providers will reject emails with attachments larger than 25MB. Please decrease the file size and try again.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+						
 						/* Options array for the wp_handle_upload function. 'test_form' => false */
 						$upload_overrides = array( 'test_form' => false ); 
 						
@@ -2217,6 +2414,32 @@ class Visual_Form_Builder{
 						
 						/* If the wp_handle_upload call returned a local path for the image */
 						if ( isset( $uploaded_file['file'] ) ) {
+							/* Retrieve the file type from the file name. Returns an array with extension and mime type */
+							$wp_filetype = wp_check_filetype( basename( $uploaded_file['file'] ), null );
+							
+							/* Return the current upload directory location */
+ 							$wp_upload_dir = wp_upload_dir();
+							
+							$media_upload = array(
+								'guid' => $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $uploaded_file['file'] ), 
+								'post_mime_type' => $wp_filetype['type'],
+								'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $uploaded_file['file'] ) ),
+								'post_content' => '',
+								'post_status' => 'inherit'
+							);
+							
+							/* Insert attachment into Media Library and get attachment ID */
+							$attach_id = wp_insert_attachment( $media_upload, $uploaded_file['file'] );
+							
+							/* Include the file that runs wp_generate_attachment_metadata() */
+							require_once( ABSPATH . 'wp-admin/includes/image.php' );
+							
+							/* Setup attachment metadata */
+							$attach_data = wp_generate_attachment_metadata( $attach_id, $uploaded_file['file'] );
+							
+							/* Update the attachment metadata */
+							wp_update_attachment_metadata( $attach_id, $attach_data );
+							
 							$attachments[ 'vfb-' . $field->field_key . '-' . $field->field_id ] = $uploaded_file['file'];
 
 							$data[] = array(
@@ -2291,6 +2514,22 @@ class Visual_Form_Builder{
 					else
 						$value = html_entity_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES, 'UTF-8' );
 					
+					/* Setup spam catcher RegEx */
+					$exploits = '/(content-type|bcc:|cc:|document.cookie|onclick|onload|javascript|alert)/i';
+					$profanity = '/(beastial|bestial|blowjob|clit|cock|cum|cunilingus|cunillingus|cunnilingus|cunt|ejaculate|fag|felatio|fellatio|fuck|fuk|fuks|gangbang|gangbanged|gangbangs|hotsex|jism|jiz|kock|kondum|kum|kunilingus|orgasim|orgasims|orgasm|orgasms|phonesex|phuk|phuq|porn|pussies|pussy|spunk|xxx)/i';
+					$spamwords = '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|texas|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
+					
+					/* Add up points for each spam hit */
+					if ( preg_match( $exploits, $value ) )
+						$points += 2;
+					elseif ( preg_match( $profanity, $value ) )
+						$points += 1;
+					elseif ( preg_match( $spamwords, $value ) )
+						$points += 1;
+					
+					/* Validate input */
+					$this->validate_input( $value, $field->field_type );
+					
 					//if ( $field->field_type !== 'submit' ) {
 					if ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit' ) ) ) {
 						if ( $field->field_type == 'fieldset' )
@@ -2329,7 +2568,7 @@ class Visual_Form_Builder{
 			$wpdb->insert( $this->entries_table_name, $entry );
 
 			/* Close out the content */
-			$message .= '<tr><td class="footer" height="61" align="left" valign="middle"><p style="font-size: 12px; font-weight: normal; margin: 0; line-height: 16px; padding: 0;">This email was built and sent using <a href="http://wordpress.org/extend/plugins/visual-form-builder/" style="font-size: 12px;">Visual Form Builder</a>.</p></td></tr></table></body></html>';
+			$message .= '<tr><td class="footer" height="61" align="left" valign="middle" colspan="2"><p style="font-size: 12px; font-weight: normal; margin: 0; line-height: 16px; padding: 0;">This email was built and sent using <a href="http://wordpress.org/extend/plugins/visual-form-builder/" style="font-size: 12px;">Visual Form Builder</a>.</p></td></tr></table></body></html>';
 			
 			/* Initialize header filter vars */
 			$this->header_from_name = stripslashes( $form_from_name );
@@ -2382,6 +2621,70 @@ class Visual_Form_Builder{
 			if ( $_REQUEST['vfb-spam'] !== '' || !is_numeric( $_REQUEST['vfb-secret'] ) || strlen( $_REQUEST['vfb-secret'] ) !== 2 )
 				wp_die( __( 'Ooops! Looks like you have failed the security validation for this form. Please go back and try again.' , 'visual-form-builder') );
 		endif;
+	}
+	
+	/**
+	 * Validate the input
+	 * 
+	 * @since 2.2
+	 */
+	public function validate_input( $data, $type ) {
+		if ( strlen( $data ) > 0 ) :
+			switch( $type ) {
+				
+				case 'email' :
+					if ( !is_email( $data ) )
+						wp_die( __( 'Not a valid email address', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'number' :
+					if ( !is_numeric( $data ) )
+						wp_die( __( 'Not a valid number.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'digits' :
+					if ( !is_int( $data ) )
+						wp_die( __( 'Not a valid digit. Please enter a number without a decimal point.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'phone' :
+					if ( strlen( $data ) > 9 && preg_match( '/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/', $data ) )
+						return true; 
+					else
+						wp_die( __( 'Not a valid phone number. Most US/Canada and International formats accepted.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'url' :
+					if ( !preg_match( '|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $data ) )
+						wp_die( __( 'Not a valid URL.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				default :
+					return true;
+				break;
+			}
+		endif;
+	}
+	
+	/**
+	 * Make sure the User Agent string is not a SPAM bot
+	 * 
+	 * @since 1.3
+	 */
+	public function isBot() {
+		$bots = array( 'Indy', 'Blaiz', 'Java', 'libwww-perl', 'Python', 'OutfoxBot', 'User-Agent', 'PycURL', 'AlphaServer', 'T8Abot', 'Syntryx', 'WinHttp', 'WebBandit', 'nicebot');
+	 
+		$isBot = false;
+		
+		foreach ( $bots as $bot ) {
+			if ( strpos( $_SERVER['HTTP_USER_AGENT'], $bot ) !== false )
+				$isBot = true;
+		}
+	 
+		if ( empty($_SERVER['HTTP_USER_AGENT'] ) || $_SERVER['HTTP_USER_AGENT'] == ' ' )
+			$isBot = true;
+	 
+		return $isBot;
 	}
 	
 	/**

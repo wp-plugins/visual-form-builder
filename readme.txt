@@ -4,9 +4,9 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 2.1
+Stable tag: 2.2
 
-Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
+Build contact forms using a simple, clean interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
 == Description ==
 
@@ -164,8 +164,22 @@ To Export Selected:
 1. Visual Form Builder page
 2. Configuring field item options
 3. Entries management screen
+4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.2**
+
+* Add Label Alignment option
+* Add server side form validation; SPAM hardening
+* Add inline Field help tooltip popups
+* Add Spanish translation
+* Update Form Settings UI
+* Update File Upload field to place attachments in Media Library
+* Update Field Description to allow HTML tags
+* Update Field Name and CSS Classes to enforce a maxlength of 255 characters
+* Update jQueryUI version
+* Fix bug preventing form deletion
 
 **Version 2.1**
 
@@ -282,6 +296,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.2 =
+Updated Form Settings UI. Additional SPAM hardening, new inline help tooltips, file uploads now added to Media Library, and a lot more!
 
 = 2.1 =
 Please note this version requires WordPress 3.3.  Please update your WordPress install before upgrading to Visual Form Builder 2.1.
