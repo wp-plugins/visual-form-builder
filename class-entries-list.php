@@ -34,7 +34,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * @since 1.2
 	 * @returns $item string Column name
 	 */
-	function column_default($item, $column_name){
+	function column_default( $item, $column_name ){
 		switch ( $column_name ) {
 			case 'subject':
 			case 'sender_name':
@@ -51,25 +51,15 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * 
 	 * @since 1.2
 	 */
-	function column_form($item){
+	function column_form( $item ){
 		 
 		/* Build row actions */
 		$actions = array(
 			'view' => sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s" id="%4$s" class="view-entry">View</a>', $_REQUEST['page'], $_REQUEST['view'], 'view', $item['entry_id'] ),
 			'delete' => sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $item['entry_id'] ),
 		);
-		
-		/* Build the form's data for display only */
-		$data = '<fieldset class="visual-form-builder-inline-edit"><div class="visual-form-builder-inline-edit-col">';
-		foreach ( $item['data'] as $k => $v ) {
-			$data .= '<label><span class="title">' . ucwords( $k ) . '</span><span class="input-text-wrap"><input class="ptitle" type="text" value="' . $v . '" readonly="readonly" /></span></label>'; 
-		}
-		$data .= '</div></fieldset><p class="submit"><a id="' . $item['entry_id'] . '" class="button-secondary alignleft visual-form-builder-inline-edit-cancel">' . __( 'Cancel' , 'visual-form-builder') . '</a></p>';
-		
-		/* Hide the data intially */
-		$hidden_div = '<div id="entry-' . $item['entry_id'] . '" class="hidden">' . $data . '</div>';
 	
-		return sprintf( '%1$s %2$s %3$s', $item['form'], $this->row_actions( $actions ), $hidden_div );
+		return sprintf( '%1$s %2$s', $item['form'], $this->row_actions( $actions ) );
 	}
 	
 	/**
@@ -77,7 +67,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * 
 	 * @since 1.2
 	 */
-	function column_cb($item){
+	function column_cb( $item ){
 		return sprintf( '<input type="checkbox" name="%1$s[]" value="%2$s" />', $this->_args['singular'], $item['entry_id'] );
 	}
 	
@@ -86,7 +76,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * 
 	 * @since 1.2
 	 */
-	function get_columns(){		
+	function get_columns(){
 		$columns = array(
 			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
 			'form' => __( 'Form' , 'visual-form-builder'),
@@ -107,10 +97,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * @since 1.2
 	 * @returns array() $cols SQL results
 	 */
-	function get_entries( $orderby = 'date', $order = 'ASC' ){
+	function get_entries( $orderby = 'date', $order = 'ASC', $per_page, $offset = 0, $search = '' ){
 		global $wpdb;
 		
-		switch ( $orderby ) {
+		/* Set OFFSET for pagination */
+		$offset = ( $offset > 0 ) ? "OFFSET $offset" : '';
+ 		
+ 		switch ( $orderby ) {
 			case 'date':
 				$order_col = 'date_submitted';
 			break;
@@ -132,7 +125,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			$where = 'WHERE forms.form_id = ' . $this->current_filter_action();
 
 		$sql_order = sanitize_sql_orderby( "$order_col $order" );
-		$query = "SELECT forms.form_title, entries.* FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id $where ORDER BY $sql_order";
+		$query = "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.subject, entries.sender_name, entries.sender_email, entries.emails_to, entries.date_submitted, entries.ip_address FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id $where $search ORDER BY $sql_order LIMIT $per_page $offset";
 		
 		$cols = $wpdb->get_results( $query );
 		
@@ -178,8 +171,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * 
 	 * @since 1.2
 	 */
-	function process_bulk_action() {		
-		$entry_id = ( is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
+	function process_bulk_action() {
+		$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
 		
 		if ( 'delete' === $this->current_action() ) {
 			global $wpdb;
@@ -274,9 +267,10 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 							/* Loop through our submitted data */
 							foreach ( $fields as $field_key => $field_value ) {
 								if ( !is_array( $field_value ) ) {
+
 									/* Replace quotes for the header */
 									$header = str_replace( '"', '""', ucwords( $field_key ) );
-									
+
 									/* Replace all spaces for each form field name */
 									$field_key = preg_replace( '/(\s)/i', '', $field_key );
 									
@@ -297,7 +291,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 								else {
 									/* Cast each array as an object */
 									$obj = (object) $field_value;
-									
+
 									switch ( $obj->type ) {
 										case 'fieldset' :
 										case 'section' :
@@ -308,9 +302,10 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 										default :
 											/* Replace quotes for the header */
 											$header = str_replace( '"', '""', $obj->name );
-											
+
 											/* Find new field names and make a new column with a header */
 											if ( !array_key_exists( $obj->name, $cols ) ) {
+												
 												$cols[$obj->name] = array(
 													'header' => $header,
 													'data' => array()
@@ -338,7 +333,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			/* Setup our CSV vars */
 			$csv_headers = NULL;
 			$csv_rows = array();
-			
+
 			/* Loop through each column */
 			foreach ( $cols as $data ) {
 				/* End our header row, if needed */
@@ -391,9 +386,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		global $wpdb;
-		$query = "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC";
 		
-		$cols = $wpdb->get_results( $query );
+		$cols = $wpdb->get_results( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" );
 		
 		/* Only display the dropdown on the top of the table */
 		if ( 'top' == $which ) {
@@ -425,6 +419,16 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	}
 	
 	/**
+	 * Display Search box
+	 * 
+	 * @since 1.4
+	 * @returns html Search Form
+	 */
+	function search_box( $text, $input_id ) {
+	    parent::search_box( $text, $input_id );
+	}
+	
+	/**
 	 * Prepares our data for display
 	 * 
 	 * @since 1.2
@@ -442,6 +446,12 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		/* How many to show per page */
 		$per_page = $options['per_page'];
 		
+		/* What page are we looking at? */
+		$current_page = $this->get_pagenum();
+		
+		/* Use offset for pagination */
+		$offset = ( $current_page - 1 ) * $per_page;
+		
 		/* Get column headers */
 		$columns = $this->get_columns();
 		$hidden = array();
@@ -454,13 +464,26 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 
 		/* Handle our bulk actions */
 		$this->process_bulk_action();
-						
+		
+		/* Get entries search terms */
+		$search_terms = ( !empty( $_REQUEST['s'] ) ) ? explode( ' ', $_REQUEST['s'] ) : array();
+		
+		/* Loop through search terms and build query */
+		foreach( $search_terms as $term ) {
+			$term = esc_sql( like_escape( $term ) );
+			
+			$search .= "{$searchand}((entries.subject LIKE '%{$term}%') OR (entries.sender_name LIKE '%{$term}%') OR (entries.sender_email LIKE '%{$term}%') OR (entries.emails_to LIKE '%{$term}%') OR (entries.data LIKE '%{$term}%'))";
+			$searchand = ' AND ';
+		}
+		
+		$search = ( !empty($search) ) ? " AND ({$search}) " : '';
+				
 		/* Set our ORDER BY and ASC/DESC to sort the entries */
 		$orderby = ( !empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'date';
 		$order = ( !empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'desc';
 		
 		/* Get the sorted entries */
-		$entries = $this->get_entries( $orderby, $order );
+		$entries = $this->get_entries( $orderby, $order, $per_page, $offset, $search );
 		
 		$data = array();
 
@@ -475,19 +498,12 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 					'sender_email' => stripslashes( $entry->sender_email ),
 					'emails_to' => implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ),
 					'date' => date( "$date_format $time_format", strtotime( $entry->date_submitted ) ),
-					'ip_address' => $entry->ip_address,
-					'data' => unserialize( $entry->data )
+					'ip_address' => $entry->ip_address
 			);
 		}
-	
-		/* What page are we looking at? */
-		$current_page = $this->get_pagenum();
 
 		/* How many entries do we have? */
-		$total_items = count( $entries );
-		
-		/* Calculate pagination */
-		$data = array_slice( $data, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name" ) );
 
 		/* Add sorted data to the items property */
 		$this->items = $data;

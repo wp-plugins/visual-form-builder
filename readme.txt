@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.3
-Tested up to: 3.3.1
-Stable tag: 2.2
+Tested up to: 3.4
+Stable tag: 2.3
 
 Build contact forms using a simple, clean interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -60,6 +60,7 @@ Build contact forms using a simple, clean interface. Forms include jQuery valida
 * Bulk Export to CSV
 * Bulk Delete
 * Advanced Filtering
+* Search across all entries
 * Collect submitted data as well as date submitted and IP Address
 
 = Customized Confirmation Messages =
@@ -167,6 +168,20 @@ To Export Selected:
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.3**
+
+* Add media button to Posts/Pages to easily embed forms (thanks to Paul Armstrong Designs!)
+* Add search feature to Entries
+* Add Default Value option to fields
+* Add Default Country option to Address block
+* Fix bug where Required option was not being set on File Upload fields
+* Fix bug where Form Name was not required on Add New page
+* Update and optimize Entries query
+* Update Security Check messages to be more verbose
+* Update email formatting to add line breaks
+* Update how the entries files are included to eliminate PHP notices
+* Minor updates to CSS
 
 **Version 2.2**
 
@@ -296,6 +311,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.3 =
+Added media button, Entries search and default values
 
 = 2.2 =
 Updated Form Settings UI. Additional SPAM hardening, new inline help tooltips, file uploads now added to Media Library, and a lot more!

@@ -79,8 +79,7 @@ class VisualFormBuilder_Entries_Detail{
 						</div>
 					</div>
 				</div>
-			<div>
-				<div id="post-body-content">
+		<div id="vfb-entries-body-content">
         <?php
         	$count = 0;
 			$open_fieldset = $open_section = false;
@@ -154,7 +153,7 @@ class VisualFormBuilder_Entries_Detail{
 			if ( $count > 0 )
 				echo '</div></div>';
 		
-			echo '</div></div></div></div>';
+			echo '</div></div></div>';
 		}
 		
 		echo '<br class="clear"></div>';
