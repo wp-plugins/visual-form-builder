@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.3
+Version: 2.3.1
 */
 
 /*
@@ -28,7 +28,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.3';
+	protected $vfb_db_version = '2.3.1';
 
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 	
@@ -106,11 +106,15 @@ class Visual_Form_Builder{
 	 * @since 1.2
 	 */
 	public function includes(){
+		global $entries_list, $entries_detail;
+		
 		/* Load the Entries List class */
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-list.php' );
+		$entries_list = new VisualFormBuilder_Entries_List();
 		
 		/* Load the Entries Details class */
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'class-entries-detail.php' );
+		$entries_detail = new VisualFormBuilder_Entries_Detail();
 	}
 	
 	/**
@@ -321,27 +325,6 @@ class Visual_Form_Builder{
 			update_option( 'visual-form-builder-screen-options', $updated_options );
 		}
 	}
-	
-	/**
-	 * Runs the export_entries function in the class-entries-list.php file
-	 * 
-	 * @since 1.4
-	 */
-	public function export_entries() {
-		if ( class_exists( 'VisualFormBuilder_Pro_Entries_List' ) ) {
-			$entries = new VisualFormBuilder_Entries_List();
-			
-			/* If exporting all, don't pass the IDs */
-			if ( 'export-all' === $entries->current_action() )
-				$entries->export_entries();
-			/* If exporting selected, pick up the ID array and pass them */
-			elseif ( 'export-selected' === $entries->current_action() ) {
-				$entry_id = ( is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
-				$entries->export_entries( $entry_id );
-			}
-		}
-	}
-
 	
 	/**
 	 * Install database tables
@@ -1412,7 +1395,7 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 */
 	public function admin() {
-		global $wpdb;
+		global $wpdb, $entries_list, $entries_detail;
 
 		/* Set variables depending on which tab is selected */
 		$form_nav_selected_id = ( isset( $_REQUEST['form'] ) ) ? $_REQUEST['form'] : '0';
@@ -1453,10 +1436,7 @@ class Visual_Form_Builder{
             <?php
 				/* Display the Entries */
 				if ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ) : 
-				
-					$entries_list = new VisualFormBuilder_Entries_List();
-					$entries_detail = new VisualFormBuilder_Entries_Detail();
-					
+										
 					if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'view' ) ) ) :
 						$entries_detail->entries_detail();
 					else :
@@ -2755,14 +2735,10 @@ class Visual_Form_Builder{
 						wp_die( __( 'Not a valid email address', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
+				case 'number' :
 				case 'currency' :
 					if ( !is_numeric( $data ) )
-						wp_die( __( 'Not a valid currency.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
-				break;
-				
-				case 'number' :
-					if ( !is_int( $data ) )
-						wp_die( __( 'Not a valid digit. Please enter a number without a decimal point.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+						wp_die( __( 'Not a valid number.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
 				case 'phone' :

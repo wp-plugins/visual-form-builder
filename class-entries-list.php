@@ -26,6 +26,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'plural'    => 'entries',
 			'ajax'      => false
 		) );
+		
+		/* Handle our bulk actions */
+		$this->process_bulk_action();
 	}
 
 	/**
@@ -122,7 +125,18 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		/* If the form filter dropdown is used */
 		if ( $this->current_filter_action() )
-			$where = 'WHERE forms.form_id = ' . $this->current_filter_action();
+			$where .= 'AND forms.form_id = ' . $this->current_filter_action();
+		
+		/* Get the month and year from the dropdown */
+		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
+		
+		/* If a month/year has been selected, parse out the month/year and build the clause */
+		if ( $m > 0 ) {
+			$year = substr( $m, 0, 4 );
+			$month = substr( $m, -2 );
+			
+			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
+		}
 
 		$sql_order = sanitize_sql_orderby( "$order_col $order" );
 		$query = "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.subject, entries.sender_name, entries.sender_email, entries.emails_to, entries.date_submitted, entries.ip_address FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id $where $search ORDER BY $sql_order LIMIT $per_page $offset";
@@ -172,15 +186,26 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 * @since 1.2
 	 */
 	function process_bulk_action() {
-		$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
-		
-		if ( 'delete' === $this->current_action() ) {
-			global $wpdb;
+		switch( $this->current_action() ) {
+			case 'export-all' :
+				$this->export_entries();
+			break;
 			
-			foreach ( $entry_id as $id ) {
-				$id = absint( $id );
-				$wpdb->query( "DELETE FROM $this->entries_table_name WHERE entries_id = $id" );
-			}
+			case 'export-selected' :
+				$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
+				$this->export_entries( $entry_id );
+			break;
+			
+			case 'delete' :
+				$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
+				
+				global $wpdb;
+					
+				foreach ( $entry_id as $id ) {
+					$id = absint( $id );
+					$wpdb->query( "DELETE FROM $this->entries_table_name WHERE entries_id = $id" );
+				}
+			break;
 		}
 	}
 	
@@ -276,7 +301,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 									
 									/* Find new field names and make a new column with a header */
 									if ( !array_key_exists( $field_key, $cols ) ) {
-										$cols[$field_key] = array(
+										$cols[ $field_key ] = array(
 											'header' => $header,
 											'data' => array()
 											);									
@@ -296,6 +321,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 										case 'fieldset' :
 										case 'section' :
 										case 'instructions' :
+										case 'verification' :
+										case 'secret' :
 										case 'submit' :
 										break;
 										
@@ -333,7 +360,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			/* Setup our CSV vars */
 			$csv_headers = NULL;
 			$csv_rows = array();
-
+			
 			/* Loop through each column */
 			foreach ( $cols as $data ) {
 				/* End our header row, if needed */
@@ -346,22 +373,25 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 				/* Loop through each row of data and add to our CSV */
 				for ( $i = 0; $i < $row; $i++ ) {
 					/* End our row of data, if needed */
-					if ( $csv_rows[$i] )
-						$csv_rows[$i] .= ',';
+					if ( array_key_exists( $i, $csv_rows ) && !empty( $csv_rows[ $i ] ) )
+						$csv_rows[ $i ] .= ',';
+					elseif ( !array_key_exists( $i, $csv_rows ) )
+						$csv_rows[ $i ] = '';
 					
 					/* Add a starting quote for this row's data */
-					$csv_rows[$i] .= '"';
+					$csv_rows[ $i ] .= '"';
 					
 					/* If there's data at this point, add it to the row */
-					if ( array_key_exists( $i, $data['data'] ) )
-						$csv_rows[$i] .=  $data['data'][$i];
+					if ( array_key_exists( $i, $data[ 'data' ] ) )
+						$csv_rows[ $i ] .=  $data[ 'data' ][ $i ];
 					
 					/* Add a closing quote for this row's data */
-					$csv_rows[$i] .= '"';				
+					$csv_rows[ $i ] .= '"';				
 				}			
 			}
 			
 			/* Change our header so the browser spits out a CSV file to download */
+			ob_start();
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="' . date( 'Y-m-d' ) . '-entries.csv"');
 			ob_clean();
@@ -376,7 +406,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 				
 			die();
 			
-		endif;		
+		endif;	
 	}
 	
 	/**
@@ -391,8 +421,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		/* Only display the dropdown on the top of the table */
 		if ( 'top' == $which ) {
-			echo '<div class="alignleft actions">
-				<select id="form-filter" name="form-filter">
+			echo '<div class="alignleft actions">';
+				$this->months_dropdown();
+			echo '<select id="form-filter" name="form-filter">
 				<option value="-1"' . selected( $this->current_filter_action(), -1 ) . '>' . __( 'View all forms' , 'visual-form-builder') . '</option>';
 			
 			foreach ( $cols as $form ) {
@@ -403,6 +434,48 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 				<input type="submit" value="' . __( 'Filter' , 'visual-form-builder') . '" class="button-secondary" />
 				</div>';
 		}
+	}
+	
+	/**
+	 * Display Year/Month filter
+	 * 
+	 * @since 2.3.1
+	 */
+	function months_dropdown() {
+		global $wpdb, $wp_locale;
+		
+	    $months = $wpdb->get_results( $wpdb->prepare( "
+			SELECT DISTINCT YEAR( date_submitted ) AS year, MONTH( date_submitted ) AS month
+			FROM $this->entries_table_name
+			ORDER BY date_submitted DESC
+		" ) );
+
+		$month_count = count( $months );
+
+		if ( !$month_count || ( 1 == $month_count && 0 == $months[0]->month ) )
+			return;
+		
+		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
+?>
+		<select name='m'>
+			<option<?php selected( $m, 0 ); ?> value='0'><?php _e( 'Show all dates' ); ?></option>
+<?php
+		foreach ( $months as $arc_row ) {
+			if ( 0 == $arc_row->year )
+				continue;
+			
+			$month = zeroise( $arc_row->month, 2 );
+			$year = $arc_row->year;
+
+			printf( "<option %s value='%s'>%s</option>\n",
+				selected( $m, $year . $month, false ),
+				esc_attr( $arc_row->year . $month ),
+				sprintf( __( '%1$s %2$d' ), $wp_locale->get_month( $month ), $year )
+			);
+		}
+?>
+		</select>
+<?php
 	}
 	
 	/**
@@ -461,9 +534,6 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		/* Build the column headers */
 		$this->_column_headers = array($columns, $hidden, $sortable);
-
-		/* Handle our bulk actions */
-		$this->process_bulk_action();
 		
 		/* Get entries search terms */
 		$search_terms = ( !empty( $_REQUEST['s'] ) ) ? explode( ' ', $_REQUEST['s'] ) : array();
@@ -502,8 +572,25 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			);
 		}
 
+		$where = '';
+		
+		/* If the form filter dropdown is used */
+		if ( $this->current_filter_action() )
+			$where .= 'AND form_id = ' . $this->current_filter_action();
+		
+		/* Get the month/year from the dropdown */
+		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
+		
+		/* Parse month/year and build the clause */
+		if ( $m > 0 ) {
+			$year = substr( $m, 0, 4 );
+			$month = substr( $m, -2 );
+			
+			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
+		}
+		
 		/* How many entries do we have? */
-		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name" ) );
+		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE 1=1 $where" ) );
 
 		/* Add sorted data to the items property */
 		$this->items = $data;
@@ -514,6 +601,95 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'per_page'    => $per_page,
 			'total_pages' => ceil( $total_items / $per_page )
 		) );
+	}
+	
+	/**
+	 * Display the pagination.
+	 * Customize default function to work with months and form drop down filters
+	 *
+	 * @since 3.1.0
+	 * @access protected
+	 */
+	function pagination( $which ) {
+		if ( empty( $this->_pagination_args ) )
+			return;
+
+		extract( $this->_pagination_args, EXTR_SKIP );
+
+		$output = '<span class="displaying-num">' . sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) ) . '</span>';
+
+		$current = $this->get_pagenum();
+
+		$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+		$current_url = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
+
+		$page_links = array();
+		
+		/* Added to pick up the months dropdown */
+		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
+		
+		$disable_first = $disable_last = '';
+		if ( $current == 1 )
+			$disable_first = ' disabled';
+		if ( $current == $total_pages )
+			$disable_last = ' disabled';
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'first-page' . $disable_first,
+			esc_attr__( 'Go to the first page' ),
+			esc_url( remove_query_arg( 'paged', $current_url ) ),
+			'&laquo;'
+		);
+		
+		/* Modified the add_query_args to include my custom dropdowns */
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'prev-page' . $disable_first,
+			esc_attr__( 'Go to the previous page' ),
+			esc_url( add_query_arg( array( 'paged' => max( 1, $current-1 ), 'm' => $m, 'form-filter' => $this->current_filter_action() ), $current_url ) ),
+			'&lsaquo;'
+		);
+
+		if ( 'bottom' == $which )
+			$html_current_page = $current;
+		else
+			$html_current_page = sprintf( "<input class='current-page' title='%s' type='text' name='paged' value='%s' size='%d' />",
+				esc_attr__( 'Current page' ),
+				$current,
+				strlen( $total_pages )
+			);
+
+		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
+		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . '</span>';
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'next-page' . $disable_last,
+			esc_attr__( 'Go to the next page' ),
+			esc_url( add_query_arg( array( 'paged' => min( $total_pages, $current+1 ), 'm' => $m, 'form-filter' => $this->current_filter_action() ), $current_url ) ),
+			'&rsaquo;'
+		);
+		
+		/* Modified the add_query_args to include my custom dropdowns */
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'last-page' . $disable_last,
+			esc_attr__( 'Go to the last page' ),
+			esc_url( add_query_arg( array( 'paged' => $total_pages, 'm' => $m, 'form-filter' => $this->current_filter_action() ), $current_url ) ),
+			'&raquo;'
+		);
+
+		$pagination_links_class = 'pagination-links';
+		if ( ! empty( $infinite_scroll ) )
+			$pagination_links_class = ' hide-if-js';
+		$output .= "\n<span class='$pagination_links_class'>" . join( "\n", $page_links ) . '</span>';
+
+		if ( $total_pages )
+			$page_class = $total_pages < 2 ? ' one-page' : '';
+		else
+			$page_class = ' no-pages';
+
+		$this->_pagination = "<div class='tablenav-pages{$page_class}'>$output</div>";
+
+		echo $this->_pagination;
 	}
 }
 ?>
