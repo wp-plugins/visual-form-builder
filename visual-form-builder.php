@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.3.2
+Version: 2.3.3
 */
 
 /*
@@ -28,7 +28,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.3.2';
+	protected $vfb_db_version = '2.3.3';
 
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 	
@@ -122,7 +122,7 @@ class Visual_Form_Builder{
 	 * @since 2.3
 	 */
 	public function add_media_button( $context ){
-		$out = '<a href="#TB_inline?width=450&inlineId=vfb_form" class="thickbox" title="Add Visual Form Builder form"><img src="'. plugins_url( 'visual-form-builder-pro/css/vfb_icon.png' ) . '" alt="Add Visual Form Builder form" /></a>';
+		$out = '<a href="#TB_inline?width=450&inlineId=vfb_form" class="thickbox" title="Add Visual Form Builder form"><img src="'. plugins_url( 'visual-form-builder/css/vfb_icon.png' ) . '" alt="Add Visual Form Builder form" /></a>';
     	
     	return $context . $out;
 	}
@@ -1328,7 +1328,7 @@ class Visual_Form_Builder{
 								<!-- Default Value -->
 								<p class="description description-wide">
                                     <label for="edit-form-item-default-<?php echo $field->field_id; ?>">
-                                        <?php _e( 'Default Value' , 'visual-form-builder-pro'); ?>
+                                        <?php _e( 'Default Value' , 'visual-form-builder'); ?>
                                         <span class="vfb-tooltip" title="About Default Value" rel="Set a default value that will be inserted automatically.">(?)</span>
                                     	<br />
                                         <input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_default ) ); ?>" name="field_default-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-default-<?php echo $field->field_id; ?>" maxlength="255" />
@@ -1338,7 +1338,7 @@ class Visual_Form_Builder{
 								<!-- Default Country -->
 								<p class="description description-wide">
                                     <label for="edit-form-item-default-<?php echo $field->field_id; ?>">
-                                        <?php _e( 'Default Country' , 'visual-form-builder-pro'); ?>
+                                        <?php _e( 'Default Country' , 'visual-form-builder'); ?>
                                         <span class="vfb-tooltip" title="About Default Country" rel="Select the country you would like to be displayed by default.">(?)</span>
                                     	<br />
                                         <select name="field_default-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-default-<?php echo $field->field_id; ?>">
