@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.3
 Tested up to: 3.4
-Stable tag: 2.3.3
+Stable tag: 2.4
 
 Build contact forms using a simple, clean interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 
@@ -169,6 +169,12 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 2.4**
+
+* Fix bug where label alignment option was not being saved
+* Update spam bot check to only execute when form is submitted
+* Update list of spam bots
+
 **Version 2.3.3**
 
 * Fix bug for missing media button image
@@ -325,6 +331,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.4 =
+Update spam bot check, fixed bug where label alignment option was not being saved
 
 = 2.3.3 =
 Fixed missing media button image

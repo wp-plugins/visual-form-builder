@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.3.3
+Version: 2.4
 */
 
 /*
@@ -28,7 +28,7 @@ $visual_form_builder = new Visual_Form_Builder();
 /* Restrict Categories class */
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.3.3';
+	protected $vfb_db_version = '2.4';
 
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 	
@@ -1038,8 +1038,7 @@ class Visual_Form_Builder{
 		
 		$field_where = ( isset( $field_id ) && !is_null( $field_id ) ) ? "AND field_id = $field_id" : '';
 		/* Display all fields for the selected form */
-		$query_fields = "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id $field_where ORDER BY field_sequence ASC";
-		$fields = $wpdb->get_results( $query_fields );
+		$fields = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id $field_where ORDER BY field_sequence ASC" );
 		
 		$depth = 1;
 		$parent = $last = 0;
@@ -1403,10 +1402,7 @@ class Visual_Form_Builder{
 		
 		/* Query to get all forms */
 		$order = sanitize_sql_orderby( 'form_id DESC' );
-		$query = "SELECT * FROM $this->form_table_name ORDER BY $order";
-		
-		/* Build our forms as an object */
-		$forms = $wpdb->get_results( $query );
+		$forms = $wpdb->get_results( "SELECT * FROM $this->form_table_name ORDER BY $order" );
 		
 		/* Loop through each form and assign a form id, if any */
 		foreach ( $forms as $form ) {
@@ -1467,7 +1463,7 @@ class Visual_Form_Builder{
 							/* Disable the left box if there's no active form selected */
                         	$disabled = ( empty( $form_nav_selected_id ) ) ? ' disabled="disabled"' : '';
 						?>
-                            <div class="postbox">
+                            <div class="postbox"><!-- !Form Items -->
                                 <h3 class="hndle"><span><?php _e( 'Form Items' , 'visual-form-builder'); ?></span></h3>
                                 <div class="inside" >
                                     <div class="taxonomydiv">
@@ -1496,7 +1492,7 @@ class Visual_Form_Builder{
                                 </div>
                             </div>
                       </form>
-                            <div class="postbox">
+                            <div class="postbox"><!-- !Form Output -->
                                 <h3 class="hndle"><span><?php _e( 'Form Output' , 'visual-form-builder'); ?></span></h3>
                                 <div class="inside">
                                     <div id="customlinkdiv" class="customlinkdiv">
@@ -1518,9 +1514,9 @@ class Visual_Form_Builder{
                 <div id="menu-management-liquid">
                     <div id="menu-management">
                        	<div class="nav-tabs-nav">
-                        	<div class="nav-tabs-arrow nav-tabs-arrow-left"><a>&laquo;</a></div>
+                        	<div class="nav-tabs-arrow nav-tabs-arrow-left"><a>&laquo;</a></div><!-- !Form Tab Nav - Left Arrow -->
                             <div class="nav-tabs-wrapper">
-                                <div class="nav-tabs">
+                                <div class="nav-tabs"><!-- !Form Tabs -->
                                     <?php
 										/* Loop through each for and build the tabs */
 										foreach ( $forms as $form ) {
@@ -1546,13 +1542,13 @@ class Visual_Form_Builder{
 												$form_notification_message = stripslashes( $form->form_notification_message );
 												$form_notification_entry = stripslashes( $form->form_notification_entry );
 												
+												$form_label_alignment = stripslashes( $form->form_label_alignment );
+												
 												/* Only show required text fields for the sender name override */
-												$sender_query 	= "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = '' AND field_required = 'yes'";
-												$senders = $wpdb->get_results( $sender_query );
+												$senders = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE form_id = $form_nav_selected_id AND field_type='text' AND field_validation = '' AND field_required = 'yes'" );
 												
 												/* Only show required email fields for the email override */
-												$email_query = "SELECT * FROM $this->field_table_name WHERE (form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = $form_nav_selected_id AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')";
-												$emails = $wpdb->get_results( $email_query );
+												$emails = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE (form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = $form_nav_selected_id AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')" );
 											
 											else :
 												echo '<a href="' . esc_url( add_query_arg( array( 'form' => $form->form_id ), admin_url( 'options-general.php?page=visual-form-builder' ) ) ) . '" class="nav-tab" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</a>';
@@ -1569,7 +1565,7 @@ class Visual_Form_Builder{
 									<?php endif; ?>
                                 </div>
                             </div>
-                            <div class="nav-tabs-arrow nav-tabs-arrow-right"><a>&raquo;</a></div>
+                            <div class="nav-tabs-arrow nav-tabs-arrow-right"><a>&raquo;</a></div><!-- !Form Tab Nav - Right Arrow -->
                         </div>
 
                         <div class="menu-edit">
@@ -1625,10 +1621,10 @@ class Visual_Form_Builder{
                                             </div>
                                                                                         
                                             <div id="form-settings" class="<?php echo $opened_tab; ?>">
-                                                <!-- General settings section -->
+                                                <!-- !General settings section -->
                                                 <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">1. General<span class="arrow"></span></a>
                                                 <div id="general-settings" class="form-details<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">
-                                                    <!-- Label Alignment -->
+                                                    <!-- !Label Alignment -->
                                                     <p class="description description-wide">
                                                     <label for="form-label-alignment">
                                                         <?php _e( 'Label Alignment' , 'visual-form-builder'); ?>
@@ -1645,13 +1641,13 @@ class Visual_Form_Builder{
                                                 </div>
                                                 
                                                 
-                                                <!-- Email section -->
+                                                <!-- !Email section -->
                                                 <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">2. Email<span class="arrow"></span></a>
                                                 <div id="email-details" class="form-details<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">
                                                     
                                                     <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
     
-                                                    <!-- E-mail Subject -->
+                                                    <!-- !E-mail Subject -->
                                                     <p class="description description-wide">
                                                     <label for="form-email-subject">
                                                         <?php _e( 'E-mail Subject' , 'visual-form-builder'); ?>
@@ -1662,7 +1658,7 @@ class Visual_Form_Builder{
                                                     </p>
                                                     <br class="clear" />
     
-                                                    <!-- Sender Name -->
+                                                    <!-- !Sender Name -->
                                                     <p class="description description-thin">
                                                     <label for="form-email-sender-name">
                                                         <?php _e( 'Your Name or Company' , 'visual-form-builder'); ?>
@@ -1688,7 +1684,7 @@ class Visual_Form_Builder{
                                                     </p>
                                                     <br class="clear" />
                                                     
-                                                    <!-- Sender E-mail -->
+                                                    <!-- !Sender E-mail -->
                                                     <p class="description description-thin">
                                                     <label for="form-email-sender">
                                                         <?php _e( 'Reply-To E-mail' , 'visual-form-builder'); ?>
@@ -1714,7 +1710,7 @@ class Visual_Form_Builder{
                                                     </p>
                                                     <br class="clear" />
     												
-                                                    <!-- E-mail(s) To -->
+                                                    <!-- !E-mail(s) To -->
                                                     <?php
                                                         /* Basic count to keep track of multiple options */
                                                         $count = 1;
@@ -1888,11 +1884,12 @@ class Visual_Form_Builder{
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div class="vfb-pro-upgrade">
+                                        <div class="vfb-pro-upgrade"><!-- !VFB Pro Upgrade -->
                                         	<h3>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only $10</h3>
                                             <p>Attention Visual Form Builder users!  I am happy to announce <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a>, available now for only <strong>$10</strong>.</p>
                                             <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
                                             <ul>
+                                                <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
@@ -1903,6 +1900,7 @@ class Visual_Form_Builder{
                                                 <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'PayPal Integration' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
+                                                <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Unlimited Use' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
@@ -1960,10 +1958,8 @@ class Visual_Form_Builder{
 		
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
 			/* Get forms */
-			$order = sanitize_sql_orderby( 'form_id DESC' );
-			$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
-			
-			$forms 	= $wpdb->get_results( $query );
+			$order = sanitize_sql_orderby( 'form_id DESC' );			
+			$forms 	= $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order" );
 			
 			foreach ( $forms as $form ) {
 				/* If text, return output and format the HTML for display */
@@ -2013,15 +2009,11 @@ class Visual_Form_Builder{
 		else {
 			/* Get forms */
 			$order = sanitize_sql_orderby( 'form_id DESC' );
-			$query 	= "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order";
-			
-			$forms 	= $wpdb->get_results( $query );
+			$forms 	= $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE form_id = $form_id ORDER BY $order" );
 			
 			/* Get fields */
 			$order_fields = sanitize_sql_orderby( 'field_sequence ASC' );
-			$query_fields = "SELECT * FROM $this->field_table_name WHERE form_id = $form_id ORDER BY $order_fields";
-			
-			$fields = $wpdb->get_results( $query_fields );
+			$fields = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE form_id = $form_id ORDER BY $order_fields" );
 
 			/* Setup count for fieldset and ul/section class names */
 			$count = 1;
@@ -2086,7 +2078,7 @@ class Visual_Form_Builder{
 					elseif ( in_array( $field->field_type, array( 'verification', 'secret' ) ) ) {
 						
 						if ( $field->field_type == 'verification' )
-							$verification .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . $page . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
+							$verification .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
 						
 						if ( $field->field_type == 'secret' ) {
 							/* Default logged in values */
@@ -2241,7 +2233,7 @@ class Visual_Form_Builder{
 								<option selected="selected" value=""></option>';
 								
 								foreach ( $this->countries as $country ) {
-									$output .= "<option value='$country' " . selected( $default, $country, 0 ) . ">$country</option>";
+									$output .= "<option value=\"$country\" " . selected( $default, $country, 0 ) . ">$country</option>";
 								}
 								
 								$output .= '</select>
@@ -2266,6 +2258,8 @@ class Visual_Form_Builder{
 
 							/* Get the time format (12 or 24) */
 							$time_format = str_replace( 'time-', '', $validation );
+							$time_format = apply_filters( 'vfb_time_format', $time_format );
+							
 							/* Set whether we start with 0 or 1 and how many total hours */
 							$hour_start = ( $time_format == '12' ) ? 1 : 0;
 							$hour_total = ( $time_format == '12' ) ? 12 : 23;
@@ -2281,7 +2275,11 @@ class Visual_Form_Builder{
 							
 							/* Minute */
 							$output .= '<span class="time"><select name="vfb-'. $field->field_key . '-' . $field->field_id . '[min]" id="vfb-'. $field->field_key . '-' . $field->field_id . '-min" class="select' . $required . $css . '">';
-							for ( $i = 0; $i <= 55; $i+=5 ) {
+							
+							$total_mins = apply_filters( 'vfb_time_min_total', 55 );
+							$min_interval = apply_filters( 'vfb_time_min_interval', 5 );
+							
+							for ( $i = 0; $i <= $total_mins; $i += $min_interval ) {
 								/* Add the leading zero */
 								$min = ( $i < 10 ) ? "0$i" : $i;
 								$output .= "<option value='$min'>$min</option>";
@@ -2323,7 +2321,7 @@ class Visual_Form_Builder{
 						
 						break;
 						
-						case 'submit' :
+						case 'submit' :							
 							
 							$submit = stripslashes( $field->field_name );
 							
@@ -2336,6 +2334,7 @@ class Visual_Form_Builder{
 					/* Closing </li> */
 					$output .= ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit', 'fieldset', 'section' ) ) ) ? '</li>' : '';
 				}
+				
 				
 				/* Close user-added fields */
 				$output .= '</ul><br /></fieldset>';
@@ -2368,7 +2367,7 @@ class Visual_Form_Builder{
 								</li>
 							</ul>
 						</fieldset></form>';
-
+				
 			endforeach;
 		}
 		
@@ -2392,10 +2391,6 @@ class Visual_Form_Builder{
 			if ( !is_numeric( $_REQUEST[ $secret_field ] ) && strlen( $_REQUEST[ $secret_field ] ) !== 2 )
 				wp_die( __( 'Security check: failed secret question. Please try again!' , 'visual-form-builder') );
 		
-		/* Test if it's a known SPAM bot */
-		if ( $this->isBot() )
-			wp_die( __( 'Security check: looks like you are a SPAM bot. If you think this is an error, please email the site owner.' , 'visual-form-builder') );
-		
 		/* Basic security check before moving any further */
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && $_REQUEST['vfb-spam'] == '' ) :
 			$nonce = $_REQUEST['_wpnonce'];
@@ -2403,6 +2398,10 @@ class Visual_Form_Builder{
 			/* Security check to verify the nonce */
 			if ( ! wp_verify_nonce( $nonce, 'visual-form-builder-nonce' ) )
 				wp_die( __( 'Security check: unable to verify nonce value.' , 'visual-form-builder') );
+			
+			/* Test if it's a known SPAM bot */
+			if ( $this->isBot() )
+				wp_die( __( 'Security check: looks like you are a SPAM bot. If you think this is an error, please email the site owner.' , 'visual-form-builder') );
 			
 			/* Set submitted action to display success message */
 			$this->submitted = true;
@@ -2418,18 +2417,22 @@ class Visual_Form_Builder{
 			
 			/* Get sender and email details */
 			foreach ( $forms as $form ) {
-				$form_title = stripslashes( html_entity_decode( $form->form_title, ENT_QUOTES, 'UTF-8' ) );
-				$form_subject = stripslashes( html_entity_decode( $form->form_email_subject, ENT_QUOTES, 'UTF-8' ) );
-				$form_to = ( is_array( unserialize( $form->form_email_to ) ) ) ? unserialize( $form->form_email_to ) : explode( ',', unserialize( $form->form_email_to ) );
-				$form_from = stripslashes( $form->form_email_from );
-				$form_from_name = stripslashes( $form->form_email_from_name );
-				$form_notification_setting = stripslashes( $form->form_notification_setting );
-				$form_notification_email_name = stripslashes( $form->form_notification_email_name );
-				$form_notification_email_from = stripslashes( $form->form_notification_email_from );
-				$form_notification_email = stripslashes( $form->form_notification_email );
-				$form_notification_subject = stripslashes( $form->form_notification_subject );
-				$form_notification_message = stripslashes( $form->form_notification_message );
-				$form_notification_entry = stripslashes( $form->form_notification_entry );
+				$form_settings = (object) array(
+					'form_title' => stripslashes( html_entity_decode( $form->form_title, ENT_QUOTES, 'UTF-8' ) ),
+					'form_subject' => stripslashes( html_entity_decode( $form->form_email_subject, ENT_QUOTES, 'UTF-8' ) ),
+					'form_to' => ( is_array( unserialize( $form->form_email_to ) ) ) ? unserialize( $form->form_email_to ) : explode( ',', unserialize( $form->form_email_to ) ),
+					'form_from' => stripslashes( $form->form_email_from ),
+					'form_from_name' => stripslashes( $form->form_email_from_name ),
+					'form_notification_setting' => stripslashes( $form->form_notification_setting ),
+					'form_notification_email_name' => stripslashes( $form->form_notification_email_name ),
+					'form_notification_email_from' => stripslashes( $form->form_notification_email_from ),
+					'form_notification_subject' => stripslashes( html_entity_decode( $form->form_notification_subject, ENT_QUOTES, 'UTF-8' ) ),
+					'form_notification_message' => stripslashes( $form->form_notification_message ),
+					'form_notification_entry' => stripslashes( $form->form_notification_entry )
+				);
+				
+				/* Allow the form settings to be filtered (ex: return $form_settings->'form_title' = 'Hello World';) */				
+				$form_settings = (object) apply_filters_ref_array( 'vfb_email_form_settings', array( $form_settings, $form_id ) );
 			}
 			
 			/* Sender name override query */
@@ -2441,16 +2444,22 @@ class Visual_Form_Builder{
 			/* Notification send to email override query */
 			$notification = $wpdb->get_results( "SELECT fields.field_id, fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_notification_email = fields.field_id WHERE forms.form_id = $form_id" );
 			
+			/* Load initial Reply-To settings */
+			$reply_to_name = stripslashes( $form_settings->form_from_name );
+			$reply_to_email = $form_settings->form_from;
+			
 			/* Loop through name results and assign sender name to override, if needed */
 			foreach( $senders as $sender ) {
 				if ( !empty( $sender->field_key ) )
-					$form_from_name = $_POST[ 'vfb-' . $sender->field_key . '-' . $sender->field_id ];
+					$form_settings->form_from_name = $_POST[ 'vfb-' . $sender->field_key . '-' . $sender->field_id ];
+					$reply_to_name = $form_settings->form_from_name;
 			}
 
 			/* Loop through email results and assign sender email to override, if needed */
 			foreach ( $emails as $email ) {
 				if ( !empty( $email->field_key ) )
-					$form_from = $_POST[ 'vfb-' . $email->field_key . '-' . $email->field_id ];
+					$form_settings->form_from = $_POST[ 'vfb-' . $email->field_key . '-' . $email->field_id ];
+					$reply_to_email = $form_settings->form_from;
 			}
 			
 			/* Loop through email results and assign as blind carbon copy, if needed */
@@ -2487,7 +2496,8 @@ class Visual_Form_Builder{
 					
 					if ( $value['size'] > 0 ) {
 						/* 25MB is the max size allowed */
-						$max_attach_size = 25 * 1048576;
+						$size = apply_filters( 'vfb_max_file_size', 25 );
+						$max_attach_size = $size * 1048576;
 						
 						/* Display error if file size has been exceeded */
 						if ( $value['size'] > $max_attach_size )
@@ -2586,7 +2596,7 @@ class Visual_Form_Builder{
 							if ( !empty( $address ) && ( empty( $value['city'] ) && empty( $value['state'] ) ) )
 								$address .= '<br>';
 							else if ( !empty( $address ) && ( !empty( $value['city'] ) || !empty( $value['state'] ) ) )
-								$address .= '. ';
+								$address .= ' ';
 							$address .= $value['zip'];
 						}
 						if ( !empty( $value['country'] ) ) {
@@ -2646,10 +2656,10 @@ class Visual_Form_Builder{
 			$entry = array(
 				'form_id' => $form_id,
 				'data' => serialize( $data ),
-				'subject' => $form_subject,
-				'sender_name' => $form_from_name,
-				'sender_email' => $form_from,
-				'emails_to' => serialize( $form_to ),
+				'subject' => $form_settings->form_subject,
+				'sender_name' => $form_settings->form_from_name,
+				'sender_email' => $form_settings->form_from,
+				'emails_to' => serialize( $form_settings->form_to ),
 				'date_submitted' => date_i18n( 'Y-m-d G:i:s' ),
 				'ip_address' => $_SERVER['REMOTE_ADDR']
 			);
@@ -2664,8 +2674,8 @@ class Visual_Form_Builder{
 			$message = $header . $body . $footer;
 			
 			/* Initialize header filter vars */
-			$this->header_from_name = stripslashes( $form_from_name );
-			$this->header_from = $form_from;
+			$this->header_from_name = stripslashes( $form_settings->form_from_name );
+			$this->header_from = $form_settings->form_from;
 			$this->header_content_type = 'text/html';
 			
 			/* Set wp_mail header filters to send an HTML email */
@@ -2673,9 +2683,15 @@ class Visual_Form_Builder{
 			add_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
 			add_filter( 'wp_mail_content_type', array( &$this, 'mail_header_content_type' ) );
 			
+			/* Setup headers */
+			$from_name = ( $this->header_from_name == '' ) ? 'WordPress' : $this->header_from_name;
+			$from_email = 'wordpress@' . $_SERVER['SERVER_NAME'];
+			$reply_to = "\"$this->header_from_name\" <$this->header_from>";
+			$headers = "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+			
 			/* Send the mail */
 			foreach ( $form_to as $email ) {
-				wp_mail( $email, esc_html( $form_subject ), $message, '', $attachments );
+				wp_mail( $email, esc_html( $form_settings->form_subject ), $message, $headers, $attachments );
 			}
 			
 			/* Kill the values stored for header name and email */
@@ -2687,30 +2703,29 @@ class Visual_Form_Builder{
 			remove_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
 			
 			/* Send auto-responder email */
-			if ( $form_notification_setting !== '' ) :
+			if ( $form_settings->form_notification_setting !== '' ) :
 				
 				/* Assign notify header filter vars */
-				$this->header_from_name = stripslashes( $form_notification_email_name );
-				$this->header_from = $form_notification_email_from;
+				$this->header_from_name = stripslashes( $form_settings->form_notification_email_name );
+				$this->header_from = $form_settings->form_notification_email_from;
 				
 				/* Set the wp_mail header filters for notification email */
 				add_filter( 'wp_mail_from_name', array( &$this, 'mail_header_from_name' ) );
 				add_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
 				
 				/* Decode HTML for message so it outputs properly */
-				$notify_message = ( $form_notification_message !== '' ) ? html_entity_decode( $form_notification_message ) : '';
+				$notify_message = ( $form_settings->form_notification_message !== '' ) ? html_entity_decode( $form_settings->form_notification_message ) : '';
 				
-				/* Either prepend the notification message to the submitted entry, or send by itself */
 				/* Either prepend the notification message to the submitted entry, or send by itself */				
-				if ( $form_notification_entry !== '' )
+				if ( $form_settings->form_notification_entry !== '' )
 					$auto_response_email = $header . '<p style="font-size: 12px; font-weight: normal; margin: 14px 0 14px 0; color: black; padding: 0;">' . $notify_message . '</p>' . $body . $footer;
 				else
 					$auto_response_email = $header . '<table cellspacing="0" border="0" cellpadding="0" width="100%"><tr><td colspan="2" class="mainbar" align="left" valign="top" width="600"><p style="font-size: 12px; font-weight: normal; margin: 14px 0 14px 0; color: black; padding: 0;">' . $notify_message . '</p></td></tr>' . $footer;
 				
-				$attachments = ( $form_notification_entry !== '' ) ? $attachments : '';
+				$attachments = ( $form_settings->form_notification_entry !== '' ) ? $attachments : '';
 				
 				/* Send the mail */
-				wp_mail( $copy_email, esc_html( $form_notification_subject ), $auto_response_email, '', $attachments );
+				wp_mail( $copy_email, esc_html( $form_settings->form_notification_subject ), $auto_response_email, '', $attachments );
 			endif;
 			
 		elseif ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
@@ -2765,12 +2780,12 @@ class Visual_Form_Builder{
 	 * @since 1.3
 	 */
 	public function isBot() {
-		$bots = array( 'Indy', 'Blaiz', 'Java', 'libwww-perl', 'Python', 'OutfoxBot', 'User-Agent', 'PycURL', 'AlphaServer', 'T8Abot', 'Syntryx', 'WinHttp', 'WebBandit', 'nicebot');
+		$bots = apply_filters( 'vfb_blocked_spam_bots', array( 'archiver', 'binlar', 'casper', 'checkprivacy', 'clshttp', 'cmsworldmap', 'comodo', 'curl', 'diavol', 'dotbot', 'email', 'extract', 'feedfinder', 'flicky',  'grab', 'harvest', 'httrack', 'ia_archiver', 'jakarta', 'kmccrew', 'libwww', 'loader', 'miner', 'nikto', 'nutch', 'planetwork', 'purebot', 'pycurl', 'python', 'scan', 'skygrid', 'sucker', 'turnit', 'vikspider', 'wget', 'winhttp', 'youda', 'zmeu', 'zune' ) );
 	 
 		$isBot = false;
 		
 		foreach ( $bots as $bot ) {
-			if ( strpos( $_SERVER['HTTP_USER_AGENT'], $bot ) !== false )
+			if ( stripos( $_SERVER['HTTP_USER_AGENT'], $bot ) !== false )
 				$isBot = true;
 		}
 	 
