@@ -58,8 +58,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		 
 		/* Build row actions */
 		$actions = array(
-			'view' => sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s" id="%4$s" class="view-entry">View</a>', $_REQUEST['page'], $_REQUEST['view'], 'view', $item['entry_id'] ),
-			'delete' => sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $item['entry_id'] ),
+			'view' 		=> sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s" id="%4$s" class="view-entry">View</a>', $_REQUEST['page'], $_REQUEST['view'], 'view', $item['entry_id'] ),
+			'delete' 	=> sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $item['entry_id'] ),
 		);
 	
 		return sprintf( '%1$s %2$s', $item['form'], $this->row_actions( $actions ) );
@@ -81,14 +81,14 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function get_columns(){
 		$columns = array(
-			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
-			'form' => __( 'Form' , 'visual-form-builder'),
-			'subject' => __( 'Email Subject' , 'visual-form-builder'),
-			'sender_name' => __( 'Sender Name' , 'visual-form-builder'),
-			'sender_email' => __( 'Sender Email' , 'visual-form-builder'),
-			'emails_to' => __( 'Emailed To' , 'visual-form-builder'),
-			'ip_address' => __( 'IP Address' , 'visual-form-builder'),
-			'date' => __( 'Date Submitted' , 'visual-form-builder')
+			'cb' 			=> '<input type="checkbox" />', //Render a checkbox instead of text
+			'form' 			=> __( 'Form' , 'visual-form-builder'),
+			'subject' 		=> __( 'Email Subject' , 'visual-form-builder'),
+			'sender_name' 	=> __( 'Sender Name' , 'visual-form-builder'),
+			'sender_email' 	=> __( 'Sender Email' , 'visual-form-builder'),
+			'emails_to' 	=> __( 'Emailed To' , 'visual-form-builder'),
+			'ip_address' 	=> __( 'IP Address' , 'visual-form-builder'),
+			'date' 			=> __( 'Date Submitted' , 'visual-form-builder')
 		);
 		
 		return $columns;
@@ -154,11 +154,11 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function get_sortable_columns() {		
 		$sortable_columns = array(
-			'form' => array( 'form', false ),
-			'subject' => array( 'subject', false ),
-			'sender_name' => array( 'sender_name', false ),
-			'sender_email' => array( 'sender_email', false ),
-			'date' => array( 'date', true )
+			'form' 			=> array( 'form', false ),
+			'subject' 		=> array( 'subject', false ),
+			'sender_name' 	=> array( 'sender_name', false ),
+			'sender_email' 	=> array( 'sender_email', false ),
+			'date' 			=> array( 'date', true )
 		);
 		
 		return $sortable_columns;
@@ -172,9 +172,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete' , 'visual-form-builder'),
-			'export-all' => __( 'Export All' , 'visual-form-builder'),
-			'export-selected' => __( 'Export Selected' , 'visual-form-builder')
+			'delete' 			=> __( 'Delete' , 'visual-form-builder'),
+			'export-selected' 	=> __( 'Export Selected' , 'visual-form-builder')
 		);
 		
 		return $actions;
@@ -187,10 +186,6 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function process_bulk_action() {
 		switch( $this->current_action() ) {
-			case 'export-all' :
-				$this->export_entries();
-			break;
-			
 			case 'export-selected' :
 				$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
 				$this->export_entries( $entry_id );
@@ -203,7 +198,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 					
 				foreach ( $entry_id as $id ) {
 					$id = absint( $id );
-					$wpdb->query( "DELETE FROM $this->entries_table_name WHERE entries_id = $id" );
+					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->entries_table_name WHERE entries_id = %d", $id ) );
 				}
 			break;
 		}
@@ -217,59 +212,47 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function export_entries( $selected = NULL ) {		
 		global $wpdb;
 		
-		/* Setup our query to accept selected entry IDs */	
+		// If no entry has been checked, return an error
+		if ( empty( $selected ) )
+			return new WP_Error( 'VFB_selected_entries_error', __( 'You must select at least one entry to export.', 'visual-form-builder' ) );
+		
+		// Setup our query to accept selected entry IDs	
 		if ( is_array( $selected ) && !empty( $selected ) )
 			$selected = " WHERE entries.entries_id IN (" . implode( ',', $selected ) . ")";
 	
 		$entries = $wpdb->get_results( "SELECT entries.*, forms.form_title FROM $this->entries_table_name AS entries JOIN $this->form_table_name AS forms USING(form_id) $selected ORDER BY entries_id DESC" );
 		
-		/* If there's entries returned, do our CSV stuff */
+		$sitename = sanitize_key( get_bloginfo( 'name' ) );
+		if ( ! empty($sitename) ) $sitename .= '.';
+		$filename = $sitename . 'vfb.selected-entries.' . date( 'Y-m-d' ) . '.csv';
+		
+		header( 'Content-Description: File Transfer' );
+		header( 'Content-Disposition: attachment; filename=' . $filename );
+		header( 'Content-Type: text/csv; charset=' . get_option( 'blog_charset' ), true );
+		
+		// If there's entries returned, do our CSV stuff
 		if ( $entries ) :
 			
-			/* Setup our default columns */
+			// Setup our default columns
 			$cols = array(
-				'entries_id' => array(
-					'header' => __( 'Entries ID' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'form_title' => array(
-					'header' => __( 'Form' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'date_submitted' => array(
-					'header' => __( 'Date Submitted' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'ip_address' => array(
-					'header' => __( 'IP Address' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'subject' => array(
-					'header' => __( 'Email Subject' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'sender_name' => array(
-					'header' => __( 'Sender Name' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'sender_email' => array(
-					'header' => __( 'Sender Email' , 'visual-form-builder'),
-					'data' => array()
-					),
-				'emails_to' => array(
-					'header' => __( 'Emailed To' , 'visual-form-builder'),
-					'data' => array()
-					)
+				'entries_id' 		=> array( 'header' => __( 'Entries ID' , 'visual-form-builder'), 'data' => array() ),
+				'form_title'		=> array( 'header' => __( 'Form' , 'visual-form-builder'), 'data' => array() ),
+				'date_submitted'	=> array( 'header' => __( 'Date Submitted' , 'visual-form-builder'), 'data' => array() ),
+				'ip_address' 		=> array( 'header' => __( 'IP Address' , 'visual-form-builder'), 'data' => array() ),
+				'subject' 			=> array( 'header' => __( 'Email Subject' , 'visual-form-builder'), 'data' => array() ),
+				'sender_name' 		=> array( 'header' => __( 'Sender Name' , 'visual-form-builder'), 'data' => array() ),
+				'sender_email' 		=> array( 'header' => __( 'Sender Email' , 'visual-form-builder'), 'data' => array() ),
+				'emails_to' 		=> array( 'header' => __( 'Emailed To' , 'visual-form-builder'), 'data' => array() )
 			);
 			
-			/* Initialize row index at 0 */
+			// Initialize row index at 0
 			$row = 0;
 			
-			/* Loop through all entries */
+			// Loop through all entries
 			foreach ( $entries as $entry ) {
-				/* Loop through each entry and its fields */
+				// Loop through each entry and its fields
 				foreach ( $entry as $key => $value ) {
-					/* Handle each column in the entries table */
+					// Handle each column in the entries table
 					switch ( $key ) {
 						case 'entries_id':
 						case 'form_title':
@@ -286,37 +269,33 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 						break;
 						
 						case 'data':
-							/* Unserialize value only if it was serialized */
+							// Unserialize value only if it was serialized
 							$fields = maybe_unserialize( $value );
 							
-							/* Loop through our submitted data */
-							foreach ( $fields as $field_key => $field_value ) {
+							// Loop through our submitted data
+							foreach ( $fields as $field_key => $field_value ) :
 								if ( !is_array( $field_value ) ) {
 
-									/* Replace quotes for the header */
+									// Replace quotes for the header
 									$header = str_replace( '"', '""', ucwords( $field_key ) );
 
-									/* Replace all spaces for each form field name */
+									// Replace all spaces for each form field name
 									$field_key = preg_replace( '/(\s)/i', '', $field_key );
 									
-									/* Find new field names and make a new column with a header */
-									if ( !array_key_exists( $field_key, $cols ) ) {
-										$cols[ $field_key ] = array(
-											'header' => $header,
-											'data' => array()
-											);									
-									}
+									// Find new field names and make a new column with a header
+									if ( !array_key_exists( $field_key, $cols ) )
+										$cols[ $field_key ] = array( 'header' => $header, 'data' => array() );									
 									
-									/* Get rid of single quote entity */
+									// Get rid of single quote entity
 									$field_value = str_replace( '&#039;', "'", $field_value );
 									
-									/* Load data, row by row */
+									// Load data, row by row
 									$cols[ $field_key ][ 'data' ][ $row ] = str_replace( '"', '""', stripslashes( html_entity_decode( $field_value ) ) );
 								}
 								else {
-									/* Cast each array as an object */
+									// Cast each array as an object
 									$obj = (object) $field_value;
-
+									
 									switch ( $obj->type ) {
 										case 'fieldset' :
 										case 'section' :
@@ -327,86 +306,75 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 										break;
 										
 										default :
-											/* Replace quotes for the header */
+											// Replace quotes for the header
 											$header = str_replace( '"', '""', $obj->name );
-
-											/* Find new field names and make a new column with a header */
-											if ( !array_key_exists( $obj->name, $cols ) ) {
-												
-												$cols[$obj->name] = array(
-													'header' => $header,
-													'data' => array()
-													);									
-											}
 											
-											/* Get rid of single quote entity */
+											// Replace all spaces for each form field name
+											$field_key = preg_replace( '/(\s)/i', '', strtolower( $obj->name ) );
+											
+											// Find new field names and make a new column with a header
+											if ( !array_key_exists( $field_key, $cols ) )
+												$cols[ $field_key ] = array( 'header' => $header, 'data' => array() );									
+											
+											// Get rid of single quote entity
 											$obj->value = str_replace( '&#039;', "'", $obj->value );
 											
-											/* Load data, row by row */
-											$cols[ $obj->name ][ 'data' ][ $row ] = str_replace( '"', '""', stripslashes( html_entity_decode( $obj->value ) ) );
+											// Load data, row by row
+											$cols[ $field_key ][ 'data' ][ $row ] = str_replace( '"', '""', stripslashes( html_entity_decode( $obj->value ) ) );
 
 										break;
-									}
-								}
-							}
-						break;
-					}
-						
-				}
+									}	//end switch
+								}	//end if is_array check
+							endforeach;	//end fields loop
+						break;	//end entries switch
+					}	//end entries data loop
+				}	//end loop through entries
 				
 				$row++;
-			}
+			}//end if entries exists check
 			
-			/* Setup our CSV vars */
+			// Setup our CSV vars
 			$csv_headers = NULL;
 			$csv_rows = array();
 			
-			/* Loop through each column */
+			// Loop through each column
 			foreach ( $cols as $data ) {
-				/* End our header row, if needed */
+				// End our header row, if needed
 				if ( $csv_headers )
 					$csv_headers .= ',';
 				
-				/* Build our headers */
+				// Build our headers
 				$csv_headers .= "{$data['header']}";
 				
-				/* Loop through each row of data and add to our CSV */
+				// Loop through each row of data and add to our CSV
 				for ( $i = 0; $i < $row; $i++ ) {
-					/* End our row of data, if needed */
+					// End our row of data, if needed
 					if ( array_key_exists( $i, $csv_rows ) && !empty( $csv_rows[ $i ] ) )
 						$csv_rows[ $i ] .= ',';
 					elseif ( !array_key_exists( $i, $csv_rows ) )
 						$csv_rows[ $i ] = '';
 					
-					/* Add a starting quote for this row's data */
+					// Add a starting quote for this row's data
 					$csv_rows[ $i ] .= '"';
 					
-					/* If there's data at this point, add it to the row */
+					// If there's data at this point, add it to the row
 					if ( array_key_exists( $i, $data[ 'data' ] ) )
 						$csv_rows[ $i ] .=  $data[ 'data' ][ $i ];
 					
-					/* Add a closing quote for this row's data */
+					// Add a closing quote for this row's data
 					$csv_rows[ $i ] .= '"';				
 				}			
 			}
 			
-			/* Change our header so the browser spits out a CSV file to download */
-			ob_start();
-			header('Content-type: text/csv');
-			header('Content-Disposition: attachment; filename="' . date( 'Y-m-d' ) . '-entries.csv"');
-			ob_clean();
+			// Print headers for the CSV
+			echo "$csv_headers\n";
 			
-			/* Print headers for the CSV */
-			echo $csv_headers . "\n";
-			
-			/* Print each row of data for the CSV */
+			// Print each row of data for the CSV
 			foreach ( $csv_rows as $row ) {
-				echo $row . "\n";
+				echo "$row\n";
 			}
-				
-			die();
 			
-		endif;	
+		endif;
 	}
 	
 	/**
@@ -417,7 +385,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function extra_tablenav( $which ) {
 		global $wpdb;
 		
-		$cols = $wpdb->get_results( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" );
+		$cols = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" ) );
 		
 		/* Only display the dropdown on the top of the table */
 		if ( 'top' == $which ) {
@@ -561,14 +529,14 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		foreach ( $entries as $entry ) {
 			$data[] = 
 				array(
-					'entry_id' => $entry->entries_id,
-					'form' => stripslashes( $entry->form_title ),
-					'subject' => stripslashes( $entry->subject ),
-					'sender_name' => stripslashes( $entry->sender_name ),
-					'sender_email' => stripslashes( $entry->sender_email ),
-					'emails_to' => implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ),
-					'date' => date( "$date_format $time_format", strtotime( $entry->date_submitted ) ),
-					'ip_address' => $entry->ip_address
+					'entry_id' 		=> $entry->entries_id,
+					'form' 			=> stripslashes( $entry->form_title ),
+					'subject' 		=> stripslashes( $entry->subject ),
+					'sender_name' 	=> stripslashes( $entry->sender_name ),
+					'sender_email' 	=> stripslashes( $entry->sender_email ),
+					'emails_to' 	=> implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ),
+					'date' 			=> date( "$date_format $time_format", strtotime( $entry->date_submitted ) ),
+					'ip_address' 	=> $entry->ip_address
 			);
 		}
 
