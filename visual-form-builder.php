@@ -95,8 +95,8 @@ class Visual_Form_Builder{
 		add_action( 'init', array( &$this, 'email' ), 10 );
 		add_action( 'init', array( &$this, 'confirmation' ), 12 );
 		
-		/* Add jQuery and CSS to the front-end */
-		add_action( 'wp_head', array( &$this, 'css' ) );
+		// Add CSS to the front-end
+		add_action( 'wp_enqueue_scripts', array( &$this, 'css' ) );
 		//add_action( 'template_redirect', array( &$this, 'form_validation' ) );
 	}
 	
@@ -428,7 +428,6 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'jquery-ui-core ', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( 'visual-form-builder/js/visual-form-builder-validate.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
-		wp_enqueue_script( 'visual-form-builder-quicktags', plugins_url( 'visual-form-builder/js/js_quicktags.js' ) );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 	}
 	
@@ -440,6 +439,8 @@ class Visual_Form_Builder{
 	public function css() {
 		wp_enqueue_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( 'visual-form-builder/css/visual-form-builder.css' ) ) );
 		wp_enqueue_style( 'vfb-date-picker-css', apply_filters( 'vfb-date-picker-css','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/base/jquery-ui.css' ) );
+		
+		wp_enqueue_script( 'visual-form-builder-quicktags', plugins_url( 'visual-form-builder/js/js_quicktags.js' ) );
 	}
 		
 	/**
@@ -641,13 +642,15 @@ class Visual_Form_Builder{
 							$field_sequence++;
 						}
 						
-						/* Check if a submit field type exists for backwards compatibility upgrades */
-						$is_verification = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'verification' AND form_id = $form_id" );
-						$is_secret = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = $form_id" );
-						$is_submit = $wpdb->get_var( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = $form_id" );
+						// Check if a submit field type exists for backwards compatibility upgrades
+						$is_verification = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'verification' AND form_id = %d", $form_id ) );
+						$is_secret = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = %d", $form_id ) );
+						$is_submit = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = %d", $form_id ) );
 						
 						/* Decrement sequence */
 						$field_sequence--;
+						
+						$verification_id = '';
 						
 						/* If this form doesn't have a verification field, add one */
 						if ( $is_verification == NULL ) {
@@ -2036,12 +2039,13 @@ class Visual_Form_Builder{
 
 				foreach ( $fields as $field ) {
 					/* If field is required, build the span and add setup the 'required' class */
-					$required_span = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
-					$required = ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
-					$validation = ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
-					$css = ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
-					$layout = ( !empty( $field->field_layout ) ) ? " $field->field_layout" : '';
-					$default = ( !empty( $field->field_default ) ) ? html_entity_decode( stripslashes( $field->field_default ) ) : '';
+					$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
+					$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
+					$validation 	= ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
+					$css 			= ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
+					$id_attr 		= 'vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id;
+					$layout 		= ( !empty( $field->field_layout ) ) ? " $field->field_layout" : '';
+					$default 		= ( !empty( $field->field_default ) ) ? html_entity_decode( stripslashes( $field->field_default ) ) : '';
 					
 					/* Close each section */
 					if ( $open_section == true ) {
@@ -2064,7 +2068,7 @@ class Visual_Form_Builder{
 						if ( $open_fieldset == true )
 							$output .= '</ul><br /></fieldset>';
 						
-						$output .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
+						$output .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . '" id="' . $id_attr . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
 						$open_fieldset = true;
 						$count++;
 					}
@@ -2080,7 +2084,7 @@ class Visual_Form_Builder{
 						$columns_choice = ( in_array( $field->field_type, array( 'radio', 'checkbox' ) ) ) ? " $field->field_size" : '';
 						
 						if ( $field->field_type !== 'hidden' ) {
-							$output .= '<li class="item item-' . $field->field_type . $columns_choice . $layout . '"><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+							$output .= '<li class="item item-' . $field->field_type . $columns_choice . $layout . '" id="item-' . $id_attr . '"><label for="' . $id_attr . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
 						}
 					}
 					elseif ( in_array( $field->field_type, array( 'verification', 'secret' ) ) ) {
@@ -2108,7 +2112,7 @@ class Visual_Form_Builder{
 							}
 							
 							$validation = ' {digits:true,maxlength:2,minlength:2}';
-							$verification .= '<li class="item item-' . $field->field_type . '"' . $logged_in_display . '><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+							$verification .= '<li class="item item-' . $field->field_type . '"' . $logged_in_display . '><label for="' . $id_attr . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
 							
 							/* Set variable for testing if required is Yes/No */
 							if ( $required == '' )
@@ -2117,9 +2121,9 @@ class Visual_Form_Builder{
 							$verification .= '<input type="hidden" name="_vfb-secret" value="vfb-' . $field->field_id . '" />';
 							
 							if ( !empty( $field->field_description ) )
-								$verification .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
+								$verification .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
-								$verification .= '<input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
+								$verification .= '<input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $logged_in_value . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
 						}
 					}
 					
@@ -2134,9 +2138,9 @@ class Visual_Form_Builder{
 						case 'phone' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
-								$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
+								$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $css . '" />';
 								
 						break;
 						
@@ -2145,7 +2149,7 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 	
-							$output .= '<textarea name="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" class="textarea ' . $field->field_size . $required . $css . '">' . $default . '</textarea>';
+							$output .= '<textarea name="vfb-' . $field->field_id . '" id="'. $id_attr . '" class="textarea ' . $field->field_size . $required . $css . '">' . $default . '</textarea>';
 								
 						break;
 						
@@ -2153,7 +2157,7 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 									
-							$output .= '<select name="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" id="vfb-'. esc_html( $field->field_key ) . '-' . $field->field_id . '" class="select ' . $field->field_size . $required . $css . '">';
+							$output .= '<select name="vfb-'. $field->field_id . '" id="' . $id_attr . '" class="select ' . $field->field_size . $required . $css . '">';
 							
 							$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
 							
@@ -2181,8 +2185,8 @@ class Visual_Form_Builder{
 								$option++;
 								
 								$output .= '<span>
-												<input type="radio" name="vfb-' . $field->field_id . '" id="vfb-'. $field->field_key . '-' . $field->field_id . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="radio' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
-											' <label for="vfb-' . $field->field_key . '-' . $field->field_id . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label>' .
+												<input type="radio" name="vfb-' . $field->field_id . '" id="'. $id_attr . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="radio' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
+											' <label for="' . $id_attr . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label>' .
 											'</span>';
 							}
 							
@@ -2204,8 +2208,8 @@ class Visual_Form_Builder{
 								// Increment the base index by one to match $default
 								$option++;
 								
-								$output .= '<span><input type="checkbox" name="vfb-'. $field->field_key . '-' . $field->field_id . '[]" id="vfb-'. $field->field_key . '-' . $field->field_id . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="checkbox' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
-									' <label for="vfb-' . $field->field_key . '-' . $field->field_id . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label></span>';
+								$output .= '<span><input type="checkbox" name="vfb-' . $field->field_id . '[]" id="' . $id_attr . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="checkbox' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
+									' <label for="' . $id_attr . '-' . $option . '" class="choice">' . trim( stripslashes( $value ) ) . '</label></span>';
 							}
 							
 							$output .= '<div style="clear:both"></div></div>';
@@ -2220,29 +2224,28 @@ class Visual_Form_Builder{
 							$output .= '<div>
 								<span class="full">
 					
-									<input type="text" name="vfb-' . $field->field_id . '[address]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '-address" maxlength="150" class="text medium' . $required . $css . '" />
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-address">Address</label>
+									<input type="text" name="vfb-' . $field->field_id . '[address]" id="' . $id_attr . '-address" maxlength="150" class="text medium' . $required . $css . '" />
+									<label for="' . $id_attr . '-address">Address</label>
 								</span>
 								<span class="full">
-									<input type="text" name="vfb-' . $field->field_id . '[address-2]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . 'address-2" maxlength="150" class="text medium' . $css . '" />
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-address-2">Address Line 2</label>
+									<input type="text" name="vfb-' . $field->field_id . '[address-2]" id="' . $id_attr . 'address-2" maxlength="150" class="text medium' . $css . '" />
+									<label for="' . $id_attr . '-address-2">Address Line 2</label>
 								</span>
 								<span class="left">
 					
-									<input type="text" name="vfb-' . $field->field_id . '[city]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '-city" maxlength="150" class="text medium' . $required . $css . '" />
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-city">City</label>
+									<input type="text" name="vfb-' . $field->field_id . '[city]" id="' . $id_attr . '-city" maxlength="150" class="text medium' . $required . $css . '" />
+									<label for="' . $id_attr . '-city">City</label>
 								</span>
 								<span class="right">
-									<input type="text" name="vfb-' . $field->field_id . '[state]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '-state" maxlength="150" class="text medium' . $required . $css . '" />
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-state">State / Province / Region</label>
+									<input type="text" name="vfb-' . $field->field_id . '[state]" id="' . $id_attr . '-state" maxlength="150" class="text medium' . $required . $css . '" />
+									<label for="' . $id_attr . '-state">State / Province / Region</label>
 								</span>
 								<span class="left">
-					
-									<input type="text" name="vfb-' . $field->field_id . '[zip]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '-zip" maxlength="150" class="text medium' . $required . $css . '" />
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-zip">Postal / Zip Code</label>
+									<input type="text" name="vfb-' . $field->field_id . '[zip]" id="' . $id_attr . '-zip" maxlength="150" class="text medium' . $required . $css . '" />
+									<label for="' . $id_attr . '-zip">Postal / Zip Code</label>
 								</span>
 								<span class="right">
-								<select class="select' . $required . $css . '" name="vfb-' . $field->field_id . '[country]" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '-country">
+								<select class="select' . $required . $css . '" name="vfb-' . $field->field_id . '[country]" id="' . $id_attr . '-country">
 								<option selected="selected" value=""></option>';
 								
 								foreach ( $this->countries as $country ) {
@@ -2250,7 +2253,7 @@ class Visual_Form_Builder{
 								}
 								
 								$output .= '</select>
-									<label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-country">Country</label>
+									<label for="' . $id_attr . '-country">Country</label>
 								</span>
 							</div>';
 
@@ -2259,9 +2262,9 @@ class Visual_Form_Builder{
 						case 'date' :
 							
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $default . '" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
+								$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 							else
-								$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" />';
+								$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="" class="text vfb-date-picker ' . $field->field_size . $required . $css . '" />';
 							
 						break;
 						
@@ -2278,16 +2281,16 @@ class Visual_Form_Builder{
 							$hour_total = ( $time_format == '12' ) ? 12 : 23;
 							
 							/* Hour */
-							$output .= '<span class="time"><select name="vfb-'. $field->field_key . '-' . $field->field_id . '[hour]" id="vfb-'. $field->field_key . '-' . $field->field_id . '-hour" class="select' . $required . $css . '">';
+							$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[hour]" id="' . $id_attr . '-hour" class="select' . $required . $css . '">';
 							for ( $i = $hour_start; $i <= $hour_total; $i++ ) {
 								/* Add the leading zero */
 								$hour = ( $i < 10 ) ? "0$i" : $i;
 								$output .= "<option value='$hour'>$hour</option>";
 							}
-							$output .= '</select><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-hour">HH</label></span>';
+							$output .= '</select><label for="' . $id_attr . '-hour">HH</label></span>';
 							
 							/* Minute */
-							$output .= '<span class="time"><select name="vfb-'. $field->field_key . '-' . $field->field_id . '[min]" id="vfb-'. $field->field_key . '-' . $field->field_id . '-min" class="select' . $required . $css . '">';
+							$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[min]" id="' . $id_attr . '-min" class="select' . $required . $css . '">';
 							
 							$total_mins = apply_filters( 'vfb_time_min_total', 55 );
 							$min_interval = apply_filters( 'vfb_time_min_interval', 5 );
@@ -2297,11 +2300,11 @@ class Visual_Form_Builder{
 								$min = ( $i < 10 ) ? "0$i" : $i;
 								$output .= "<option value='$min'>$min</option>";
 							}
-							$output .= '</select><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-min">MM</label></span>';
+							$output .= '</select><label for="' . $id_attr . '-min">MM</label></span>';
 							
 							/* AM/PM */
 							if ( $time_format == '12' )
-								$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[ampm]" id="vfb-'. $field->field_key . '-' . $field->field_id . '-ampm" class="select' . $required . $css . '"><option value="AM">AM</option><option value="PM">PM</option></select><label for="vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '-ampm">AM/PM</label></span>';
+								$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[ampm]" id="' . $id_attr . '-ampm" class="select' . $required . $css . '"><option value="AM">AM</option><option value="PM">PM</option></select><label for="' . $id_attr . '-ampm">AM/PM</label></span>';
 							$output .= '<div class="clear"></div>';		
 						break;
 						
@@ -2310,8 +2313,8 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 
-							$output .= '<script type="text/javascript">edToolbar("vfb-' . $field->field_key . '-' . $field->field_id . '");</script>';
-							$output .= '<textarea name="vfb-' . $field->field_id . '" id="vfb-'. $field->field_key . '-' . $field->field_id . '" class="textarea vfbEditor ' . $field->field_size . $required . $css . '"></textarea>';
+							$output .= '<script type="text/javascript">edToolbar("' . $id_attr . '");</script>';
+							$output .= '<textarea name="vfb-' . $field->field_id . '" id="' . $id_attr . '" class="textarea vfbEditor ' . $field->field_size . $required . $css . '"></textarea>';
 								
 						break;
 						
@@ -2321,9 +2324,9 @@ class Visual_Form_Builder{
 							$accept = ( !empty( $options[0] ) ) ? " {accept:'$options[0]'}" : '';
 
 							if ( !empty( $field->field_description ) )
-								$output .= '<span><input type="file" size="35" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
+								$output .= '<span><input type="file" size="35" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" /><label>' . stripslashes( $field->field_description ) . '</label></span>';
 							else
-								$output .= '<input type="file" size="35" name="vfb-' . $field->field_id . '" id="vfb-' . esc_html( $field->field_key )  . '-' . $field->field_id . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" />';
+								$output .= '<input type="file" size="35" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="text ' . $field->field_size . $required . $validation . $accept . $css . '" />';
 						
 									
 						break;
