@@ -126,7 +126,7 @@ class VisualFormBuilder_Export {
 		
 		$sitename = sanitize_key( get_bloginfo( 'name' ) );
 		if ( ! empty($sitename) ) $sitename .= '.';
-		$filename = $sitename . 'vfb-pro.' . "$form_key." . date( 'Y-m-d' ) . ".{$args['format']}";
+		$filename = $sitename . 'vfb.' . "$form_key." . date( 'Y-m-d' ) . ".{$args['format']}";
 		
 		$content_type = ( 'csv' == $args['format'] ) ? 'text/csv' : 'application/vnd.ms-excel';
 		
@@ -316,24 +316,26 @@ class VisualFormBuilder_Export {
 		
 		$args = array();
 		
-		if ( 'entries' == $_REQUEST['content'] ) {
+		if ( !isset( $_REQUEST['content'] ) || 'entries' == $_REQUEST['content'] ) {
 			$args['content'] = 'entries';
 			
-			if ( $_REQUEST['format'] )
-				$args['format'] = 'csv';
+			$args['format'] = 'csv';
 				
-			if ( $_REQUEST['form_id'] )
+			if ( isset( $_REQUEST['form_id'] ) )
 				$args['form_id'] = (int) $_REQUEST['form_id'];
 			
-			if ( $_REQUEST['entries_start_date'] || $_REQUEST['entries_end_date'] ) {
+			if ( isset( $_REQUEST['entries_start_date'] ) || isset( $_REQUEST['entries_end_date'] ) ) {
 				$args['start_date'] = $_REQUEST['entries_start_date'];
 				$args['end_date'] = $_REQUEST['entries_end_date'];
 			}
 		}
-			
-		$this->export_entries( $args );
 		
-		die();
+		switch( $this->export_action() ) {
+			case 'entries' :
+				$this->export_entries( $args );
+				die();
+			break;
+		}
 	}
 	
 	/**
