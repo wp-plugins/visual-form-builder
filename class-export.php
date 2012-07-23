@@ -38,7 +38,7 @@ class VisualFormBuilder_Export {
 		?>
         <form method="post" id="vfb-export">
         	<p>Backup and save some or all of your Visual Form Builder Pro data.</p>
-        	<p>Once you've saved the file, you will be able to import Visual Form Builder Pro data from this site into another site.</p>
+        	<p>Once you've saved the file, you will be able to import Visual Form Builder data from this site into another site.</p>
         	<h3>Choose what to export</h3>
         	
         	<p><label><input type="radio" name="content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder-pro' ); ?></label></p>

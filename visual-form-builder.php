@@ -22,6 +22,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA 
 */
 
+// Set to true to load uncompressed and unminified scripts and stylesheets
+define( 'VFB_SCRIPT_DEBUG', false );
+
 /* Instantiate new class */
 $visual_form_builder = new Visual_Form_Builder();
 
@@ -40,6 +43,9 @@ class Visual_Form_Builder{
 		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
 		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
+		
+		// Add suffix to load dev files
+		$this->load_dev_files = ( defined( 'VFB_SCRIPT_DEBUG' ) && VFB_SCRIPT_DEBUG ) ? '.dev' : '';
 		
 		/* Make sure we are in the admin before proceeding. */
 		if ( is_admin() ) {
@@ -403,8 +409,8 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 */
 	public function admin_css() {
-		wp_enqueue_style( 'visual-form-builder-style', plugins_url( 'visual-form-builder' ) . '/css/visual-form-builder-admin.css' );
-		wp_enqueue_style( 'visual-form-builder-main', plugins_url( 'visual-form-builder' ) . '/css/nav-menu.css' );
+		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin$this->load_dev_files.css" ) );
+		wp_enqueue_style( 'visual-form-builder-main', plugins_url( "visual-form-builder/css/nav-menu$this->load_dev_files.css" ) );
 	}
 	
 	/**
@@ -415,7 +421,7 @@ class Visual_Form_Builder{
 	public function admin_scripts() {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
-		wp_enqueue_script( 'form-elements-add', plugins_url( 'visual-form-builder/js/visual-form-builder.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'form-elements-add', plugins_url( "visual-form-builder/js/visual-form-builder$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
 	}
 	
@@ -429,9 +435,8 @@ class Visual_Form_Builder{
 		$this->add_scripts = true;
 		
 		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
-		//wp_enqueue_script( 'jquery-ui-core ', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( 'visual-form-builder/js/visual-form-builder-validate.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 	}
 	
@@ -1110,14 +1115,6 @@ class Visual_Form_Builder{
 									<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 								</label>
 							</p>
-							<p class="description description-wide">
-								<label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-									<?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
-                                    <span class="vfb-tooltip" title="About CSS Classes" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets.">(?)</span>
-                                    <br />
-									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" maxlength="255" />
-								</label>
-							</p>
 						
 						<?php else: ?>
 							
@@ -1444,7 +1441,7 @@ class Visual_Form_Builder{
 					echo ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] ) && in_array( $_REQUEST['page'], array( 'visual-form-builder' ) ) ) ? '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'visual-form-builder'), $_REQUEST['s'] ) : '';
 				?>
 			</h2>            
-            <ul class="subsubsub">
+            <ul class="sub-navigation">
                 <li><a<?php echo ( !isset( $_REQUEST['view'] ) ) ? ' class="current"' : ''; ?> href="<?php echo admin_url( 'options-general.php?page=visual-form-builder' ); ?>"><?php _e( 'Forms' , 'visual-form-builder'); ?></a> |</li>
                 <li><a<?php echo ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'entries' ) ) ) ? ' class="current"' : ''; ?> href="<?php echo add_query_arg( 'view', 'entries', admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>"><?php _e( 'Entries' , 'visual-form-builder'); ?></a> |</li>
                 <li><a<?php echo ( isset( $_REQUEST['view'] ) && in_array( $_REQUEST['view'], array( 'export' ) ) ) ? ' class="current"' : ''; ?> href="<?php echo add_query_arg( 'view', 'export', admin_url( 'options-general.php?page=visual-form-builder' ) ); ?>"><?php _e( 'Export' , 'visual-form-builder'); ?></a></li>
@@ -1780,6 +1777,8 @@ class Visual_Form_Builder{
                                                     <br class="clear" />
                                                     <p class="description description-wide">
                                                     <?php
+                                                    $default_text = '';
+                                                    
                                                     /* If there's no text message, make sure there is something displayed by setting a default */
                                                     if ( $form_success_message === '' )
                                                         $default_text = sprintf( '<p id="form_success">%s</p>', __( 'Your form was successfully submitted. Thank you for contacting us.' , 'visual-form-builder') );
@@ -1916,6 +1915,7 @@ class Visual_Form_Builder{
                                                 <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
+                                                <li><?php _e( 'Import/Export forms, settings, and entries' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
                                                 <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
@@ -2025,6 +2025,7 @@ class Visual_Form_Builder{
 		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : $atts[0];
 		
 		$open_fieldset = $open_section = false;
+		$output = '';
 		
 		/* Default the submit value */
 		$submit = 'Submit';
@@ -2046,7 +2047,7 @@ class Visual_Form_Builder{
 			$count = 1;
 			
 			$verification = '';
-
+			
 			foreach ( $forms as $form ) :
 				$label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
 				$output = '<form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
@@ -2179,7 +2180,7 @@ class Visual_Form_Builder{
 							
 							/* Loop through each option and output */
 							foreach ( $options as $option => $value ) {
-								$output .= '<option value="' . trim( stripslashes( $value ) ) . '"' . selected( $default, ++$option, 0 ) . '">'. trim( stripslashes( $value ) ) . '</option>';
+								$output .= '<option value="' . trim( stripslashes( $value ) ) . '"' . selected( $default, ++$option, 0 ) . '>'. trim( stripslashes( $value ) ) . '</option>';
 							}
 							
 							$output .= '</select>';
@@ -2510,7 +2511,7 @@ class Visual_Form_Builder{
 			$i = $points = 0;
 			
 			/* Setup HTML email vars */
-			$header = $body = $message = $footer = $html_email = $auto_response_email = '';
+			$header = $body = $message = $footer = $html_email = $auto_response_email = $attachments = '';
 			
 			/* Prepare the beginning of the content */
 			$header = '<html>
