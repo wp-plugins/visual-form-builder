@@ -58,8 +58,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		 
 		/* Build row actions */
 		$actions = array(
-			'view' 		=> sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s" id="%4$s" class="view-entry">View</a>', $_REQUEST['page'], $_REQUEST['view'], 'view', $item['entry_id'] ),
-			'delete' 	=> sprintf( '<a href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $item['entry_id'] ),
+			'view' 		=> sprintf( '<a href="?page=%s&action=%s&entry=%s" id="%3$s" class="view-entry">View</a>', $_REQUEST['page'], 'view', $item['entry_id'] ),
+			'delete' 	=> sprintf( '<a href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['entry_id'] ),
 		);
 	
 		return sprintf( '%1$s %2$s', $item['form'], $this->row_actions( $actions ) );

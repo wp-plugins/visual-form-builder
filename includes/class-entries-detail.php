@@ -21,22 +21,25 @@ class VisualFormBuilder_Entries_Detail{
 		
 		$entry_id = absint( $_REQUEST['entry'] );
 		
-		$query = "SELECT forms.form_title, entries.* FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id WHERE entries.entries_id  = $entry_id;";
+		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT forms.form_title, entries.* FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id WHERE entries.entries_id  = %d", $entry_id ) );
 		
-		$entries = $wpdb->get_results( $query );
+		echo '<p>' . sprintf( '<a href="?page=%s" class="view-entry">&laquo; Back to Entries</a>', $_REQUEST['page'] ) . '</p>';
 		
-		echo '<p>' . sprintf( '<a href="?page=%s&view=%s" class="view-entry">&laquo; Back to Entries</a>', $_REQUEST['page'], $_REQUEST['view'] ) . '</p>';
-		
-		/* Get the date/time format that is saved in the options table */
+		// Get the date/time format that is saved in the options table
 		$date_format = get_option('date_format');
 		$time_format = get_option('time_format');
 		
-		/* Loop trough the entries and setup the data to be displayed for each row */
+		// Loop trough the entries and setup the data to be displayed for each row
 		foreach ( $entries as $entry ) {
 			$data = unserialize( $entry->data );
 ?>
-<h3><span><?php echo stripslashes( $entry->form_title ); ?> : <?php echo __( 'Entry' , 'visual-form-builder'); ?> # <?php echo $entry->entries_id; ?></span></h3>
-            <div id="poststuff" class="metabox-holder has-right-sidebar">
+			<form id="entry-edit" method="post" action="">
+				<input name="action" type="hidden" value="update_entry" />
+				<input name="entry_id" type="hidden" value="<?php echo $entry_id; ?>" />
+				
+				<?php wp_nonce_field( 'update-entry-' . $entry_id ); ?>
+			<h3><span><?php echo stripslashes( $entry->form_title ); ?> : <?php echo __( 'Entry' , 'visual-form-builder'); ?> # <?php echo $entry->entries_id; ?></span></h3>
+            <div id="vfb-poststuff" class="metabox-holder has-right-sidebar">
 				<div id="side-info-column" class="inner-sidebar">
 					<div id="side-sortables">
 						<div id="submitdiv" class="postbox">
@@ -63,25 +66,26 @@ class VisualFormBuilder_Entries_Detail{
 										<div class="misc-pub-section">
 											<span><strong><?php echo __( 'Sender Email' , 'visual-form-builder'); ?>: </strong><a href="mailto:<?php echo stripslashes( $entry->sender_email ); ?>"><?php echo stripslashes( $entry->sender_email ); ?></a></span>
 										</div>
-										<div class="misc-pub-section misc-pub-section-last">
+										<div class="misc-pub-section">
 											<span><strong><?php echo __( 'Emailed To' , 'visual-form-builder'); ?>: </strong><?php echo preg_replace('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', '<a href="mailto:$1">$1</a>', implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ) ); ?></span>
 										</div>
 										<div class="clear"></div>
-									</div>
-								</div>
+									</div> <!--#misc-publishing-actions -->
+								</div> <!-- #minor-publishing -->
 								
 								<div id="major-publishing-actions">
-									<div id="delete-action"><?php echo sprintf( '<a class="submitdelete deletion entry-delete" href="?page=%s&view=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], $_REQUEST['view'], 'delete', $entry_id ); ?></div>
+									<div id="delete-action"><?php echo sprintf( '<a class="submitdelete deletion entry-delete" href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $entry_id ); ?></div>
 									<div class="clear"></div>
-								</div>
-							</div>
-							</div>
-						</div>
-					</div>
-				</div>
-		<div id="vfb-entries-body-content">
+								</div> <!-- #major-publishing-actions -->
+							</div> <!-- #submitbox -->
+							</div> <!-- .inside -->
+						</div> <!-- #submitdiv -->
+					</div> <!-- #side-sortables -->
+				</div> <!-- #side-info-column -->
+            <!--</div>  #poststuff -->
+			<div id="vfb-entries-body-content">
         <?php
-        	$count = 0;
+			$count = 0;
 			$open_fieldset = $open_section = false;
 			
 			foreach ( $data as $k => $v ) {
@@ -94,58 +98,42 @@ class VisualFormBuilder_Entries_Detail{
 					
 					echo '<h4>' . ucwords( $k ) . '</h4>';
 					echo $v;
-					//echo '</div></div>';
 					$count++;
 				}
 				else {
-					/* Cast each array as an object */
+					// Cast each array as an object
 					$obj = (object) $v;
-
-					/* Close each section */
-					if ( $open_section == true ) {
-						/* If this field's parent does NOT equal our section ID */
-						if ( $sec_id && $sec_id !== $obj->parent_id ) {
-							echo '</div>';
-							$open_section = false;
-						}
-					}
 					
 					if ( $obj->type == 'fieldset' ) {
-						/* Close each fieldset */
+						// Close each fieldset
 						if ( $open_fieldset == true )
-							echo '</div>';
+							echo '</table>';
 						
-						echo '<div class="vfb-details"><h2>' . $obj->name . '</h2>';
-					
+						echo '<h3>' . stripslashes( $obj->name ) . '</h3><table class="form-table">';
+						
 						$open_fieldset = true;
 					}
-					elseif ( $obj->type == 'section' ) {
-						/* Close each fieldset */
-						if ( $open_section == true )
-							echo '</div>';
-						
-						echo '<div class="vfb-details section"><h3 class="section-heading">' . $obj->name . '</h3>';
-						
-						/* Save section ID for future comparison */
-						$sec_id = $obj->id;
-						$open_section = true;
-					}
+					
 					
 					switch ( $obj->type ) {
 						case 'fieldset' :
 						case 'section' :
 						case 'submit' :
+						case 'page-break' :
 						case 'verification' :
 						case 'secret' :
+
 						break;
 						
 						default :
-							echo '<div class="postbox">
-								<h3><span>' . $obj->name . '</span></h3>
-								<div class="inside">' .
-								$obj->value .
-								'</div></div>';
+							?>
+							<tr valign="top">
+								<th scope="row"><label for="field[<?php echo $obj->id; ?>]"><?php echo stripslashes( $obj->name ); ?></label></th>
+								<td style="background:#eee;border:1px solid #ddd"><?php echo stripslashes( esc_attr( $obj->value ) ); ?></td>
+							</tr>
+                        	<?php
 						break;
+												
 					}
 				}
 			}
@@ -153,10 +141,13 @@ class VisualFormBuilder_Entries_Detail{
 			if ( $count > 0 )
 				echo '</div></div>';
 		
-			echo '</div></div></div>';
+			//echo '</div></div></div>';
 		}
-		
+		echo '</table></div>';
 		echo '<br class="clear"></div>';
+		
+		
+		echo '</form>';
 	}
 }
 ?>
