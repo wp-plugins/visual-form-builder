@@ -34,10 +34,6 @@ class VisualFormBuilder_Entries_Detail{
 			$data = unserialize( $entry->data );
 ?>
 			<form id="entry-edit" method="post" action="">
-				<input name="action" type="hidden" value="update_entry" />
-				<input name="entry_id" type="hidden" value="<?php echo $entry_id; ?>" />
-				
-				<?php wp_nonce_field( 'update-entry-' . $entry_id ); ?>
 			<h3><span><?php echo stripslashes( $entry->form_title ); ?> : <?php echo __( 'Entry' , 'visual-form-builder'); ?> # <?php echo $entry->entries_id; ?></span></h3>
             <div id="vfb-poststuff" class="metabox-holder has-right-sidebar">
 				<div id="side-info-column" class="inner-sidebar">
