@@ -335,7 +335,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	
 	                                <div class="publishing-action">
 	                                	<?php if ( current_user_can( 'vfb_create_forms' ) ) : ?>
-	                                    	<input type="submit" value="<?php echo ( $action == 'create_form' ) ? __( 'Create Form' , 'visual-form-builder') : __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
+	                                    	<input type="submit" value="Save Form" class="button-primary menu-save" id="save_form" name="save_form" />
 	                                    <?php elseif ( $form_nav_selected_id !== '0' && !current_user_can( 'vfb_create_forms' ) && current_user_can( 'vfb_edit_forms' ) ) : ?>
 	                                    	<input type="submit" value="<?php echo __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
 	                                    <?php endif; ?>
@@ -366,11 +366,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                    <div id="form-editor-footer">
 	                    	<div class="vfb-major-publishing-actions">
 	                            <div class="publishing-action">
-	                            	<?php if ( current_user_can( 'vfb_create_forms' ) ) : ?>
-	                                	<input type="submit" value="<?php echo ( $action == 'create_form' ) ? __( 'Create Form' , 'visual-form-builder') : __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
-	                                <?php elseif ( $form_nav_selected_id !== '0' && !current_user_can( 'vfb_create_forms' ) && current_user_can( 'vfb_edit_forms' ) ) : ?>
-	                                    <input type="submit" value="<?php echo __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
-	                                <?php endif; ?>
+	                                <input type="submit" value="Save Form" class="button-primary menu-save" id="save_form" name="save_form" />
 	                            </div> <!-- .publishing-action -->
 	                        </div> <!-- .vfb-major-publishing-actions -->
 	                    </div> <!-- #form-editor-footer -->
