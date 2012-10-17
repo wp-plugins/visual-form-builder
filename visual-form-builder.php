@@ -379,9 +379,9 @@ class Visual_Form_Builder{
 	public function meta_box_form_items() {
 	?>
 		<div class="taxonomydiv">
-			<p><strong><?php _e( 'Click' , 'visual-form-builder-pro'); ?></strong> <?php _e( 'to Add a Field' , 'visual-form-builder-pro'); ?> <img id="add-to-form" alt="" src="<?php echo admin_url( '/images/wpspin_light.gif' ); ?>" class="waiting spinner" /></p>
+			<p><strong><?php _e( 'Click' , 'visual-form-builder'); ?></strong> <?php _e( 'to Add a Field' , 'visual-form-builder'); ?> <img id="add-to-form" alt="" src="<?php echo admin_url( '/images/wpspin_light.gif' ); ?>" class="waiting spinner" /></p>
 			<ul class="posttype-tabs add-menu-item-tabs" id="vfb-field-tabs">
-				<li class="tabs"><a href="#standard-fields" class="nav-tab-link vfb-field-types"><?php _e( 'Standard' , 'visual-form-builder-pro'); ?></a></li>
+				<li class="tabs"><a href="#standard-fields" class="nav-tab-link vfb-field-types"><?php _e( 'Standard' , 'visual-form-builder'); ?></a></li>
 			</ul>
 			<div id="standard-fields" class="tabs-panel tabs-panel-active">
 				<ul class="vfb-fields-col-1">
@@ -1176,9 +1176,9 @@ class Visual_Form_Builder{
 						<div class="vfb-publishing-actions">
                             <p>
                             	<a class="" href="<?php echo esc_url( add_query_arg( array( 'form' => $alphaForm['id'] ), admin_url( 'admin.php?page=visual-form-builder' ) ) ); ?>">
-                            	<strong><?php _e( 'Edit Form', 'visual-form-builder-pro' ); ?></strong>
+                            	<strong><?php _e( 'Edit Form', 'visual-form-builder' ); ?></strong>
                             	</a> |
-                            	<a class="submitdelete menu-delete" href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $alphaForm['id'] ), 'delete-form-' . $alphaForm['id'] ) ); ?>" class=""><?php _e( 'Delete' , 'visual-form-builder-pro'); ?></a> |
+                            	<a class="submitdelete menu-delete" href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $alphaForm['id'] ), 'delete-form-' . $alphaForm['id'] ) ); ?>" class=""><?php _e( 'Delete' , 'visual-form-builder'); ?></a> |
                             	<a href="<?php echo esc_url( add_query_arg( array( 'form-filter' => $alphaForm['id'] ), admin_url( 'admin.php?page=vfb-entries' ) ) ); ?>"><?php echo $alphaForm['entries_count']; ?> Entries</a>
                             
                             </p>                            

@@ -39,21 +39,21 @@ class VisualFormBuilder_Export {
         	<p>Once you've saved the file, you will be able to import Visual Form Builder data from this site into another site.</p>
         	<h3>Choose what to export</h3>
         	
-        	<p><label><input type="radio" name="content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder-pro' ); ?></label></p>
+        	<p><label><input type="radio" name="content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder' ); ?></label></p>
         	<p class="description">This will contain all of your forms, fields, entries, and email design settings.<br><strong>*Only available in Visual Form Builder Pro*</strong></p>
         	
-        	<p><label><input type="radio" name="content" value="forms" disabled="disabled" /> <?php _e( 'Forms', 'visual-form-builder-pro' ); ?></label></p>
+        	<p><label><input type="radio" name="content" value="forms" disabled="disabled" /> <?php _e( 'Forms', 'visual-form-builder' ); ?></label></p>
         	<p class="description">This will contain all of your forms, fields, and email design settings.<br><strong>*Only available in Visual Form Builder Pro*</strong></p>
         	
-        	<p><label><input type="radio" name="content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder-pro' ); ?></label></p>
+        	<p><label><input type="radio" name="content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder' ); ?></label></p>
         	
         	<ul id="entries-filters" class="vfb-export-filters">
         		<li><p class="description">This will export entries in either a .csv or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.</p></li>
         		<li>
         			<label for="format">Format:</label>
         			<select name="format">
-        				<option value="csv" selected="selected"><?php _e( 'Comma Separated (.csv)', 'visual-form-builder-pro' ); ?></option>
-        				<option value="xls" disabled="disabled"><?php _e( 'Excel (.xls) - Pro only', 'visual-form-builder-pro' ); ?></option>
+        				<option value="csv" selected="selected"><?php _e( 'Comma Separated (.csv)', 'visual-form-builder' ); ?></option>
+        				<option value="xls" disabled="disabled"><?php _e( 'Excel (.xls) - Pro only', 'visual-form-builder' ); ?></option>
         			</select>
         		</li>
         		<li>
