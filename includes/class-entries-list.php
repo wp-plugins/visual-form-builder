@@ -477,16 +477,26 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function prepare_items() {
 		global $wpdb;
 		
-		// Get screen options from the wp_options table
-		$options = get_option( 'visual-form-builder-screen-options' );
+		// get the current user ID
+		$user = get_current_user_id();
+		
+		// get the current admin screen
+		$screen = get_current_screen();
+		
+		// retrieve the "per_page" option
+		$screen_option = $screen->get_option( 'per_page', 'option' );
+		
+		// retrieve the value of the option stored for the current user
+		$per_page = get_user_meta( $user, $screen_option, true );
+		
+		// get the default value if none is set
+		if ( empty ( $per_page) || $per_page < 1 )
+			$per_page = $screen->get_option( 'per_page', 'default' );
 		
 		// Get the date/time format that is saved in the options table
-		$date_format = get_option('date_format');
-		$time_format = get_option('time_format');
-		
-		// How many to show per page
-		$per_page = $options['per_page'];
-		
+		$date_format = get_option( 'date_format' );
+		$time_format = get_option( 'time_format' );
+				
 		// What page are we looking at?
 		$current_page = $this->get_pagenum();
 		
@@ -562,7 +572,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 
 		// Add sorted data to the items property
 		$this->items = $data;
-
+		
 		// Register our pagination
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
