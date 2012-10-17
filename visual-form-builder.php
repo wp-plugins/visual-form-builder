@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.5
+Version: 2.6
 */
 
 /*
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // Set to true to load uncompressed and unminified scripts and stylesheets
-define( 'VFB_SCRIPT_DEBUG', true );
+define( 'VFB_SCRIPT_DEBUG', false );
 
 // Instantiate new class
 $visual_form_builder = new Visual_Form_Builder();
@@ -31,7 +31,7 @@ $visual_form_builder = new Visual_Form_Builder();
 // Visual Form Builder class
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.5',
+	protected $vfb_db_version = '2.6',
 			  $add_scripts = false;
 
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
@@ -152,7 +152,7 @@ class Visual_Form_Builder{
 	 */
 	public function plugin_action_links( $links, $file ) {
 		if ( $file == plugin_basename( __FILE__ ) )
-			$links[] = '<a href="options-general.php?page=visual-form-builder">' . __( 'Settings' , 'visual-form-builder') . '</a>';
+			$links[] = '<a href="admin.php?page=visual-form-builder">' . __( 'Settings' , 'visual-form-builder') . '</a>';
 	
 		return $links;
 	}	
@@ -665,11 +665,11 @@ class Visual_Form_Builder{
 					$form_from_name_override 		= esc_html( $_REQUEST['form_email_from_name_override'] );
 					$form_success_type 				= esc_html( $_REQUEST['form_success_type'] );
 					$form_notification_setting 		= isset( $_REQUEST['form_notification_setting'] ) ? esc_html( $_REQUEST['form_notification_setting'] ) : '';
-					$form_notification_email_name 	= esc_html( $_REQUEST['form_notification_email_name'] );
-					$form_notification_email_from 	= esc_html( $_REQUEST['form_notification_email_from'] );
-					$form_notification_email 		= esc_html( $_REQUEST['form_notification_email'] );
-					$form_notification_subject 		= esc_html( $_REQUEST['form_notification_subject'] );
-					$form_notification_message 		= wp_richedit_pre( $_REQUEST['form_notification_message'] );
+					$form_notification_email_name 	= isset( $_REQUEST['form_notification_email_name'] ) ? esc_html( $_REQUEST['form_notification_email_name'] ) : '';
+					$form_notification_email_from 	= isset( $_REQUEST['form_notification_email_from'] ) ? sanitize_email( $_REQUEST['form_notification_email_from'] ) : '';
+					$form_notification_email 		= isset( $_REQUEST['form_notification_email'] ) ? esc_html( $_REQUEST['form_notification_email'] ) : '';
+					$form_notification_subject 		= isset( $_REQUEST['form_notification_subject'] ) ? esc_html( $_REQUEST['form_notification_subject'] ) : '';
+					$form_notification_message 		= isset( $_REQUEST['form_notification_message'] ) ? wp_richedit_pre( $_REQUEST['form_notification_message'] ) : '';
 					$form_notification_entry 		= isset( $_REQUEST['form_notification_entry'] ) ? esc_html( $_REQUEST['form_notification_entry'] ) : '';
 					$form_label_alignment 			= esc_html( $_REQUEST['form_label_alignment'] );
 					
@@ -848,7 +848,7 @@ class Visual_Form_Builder{
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE form_id = %d", $id ) );
 					
 					// Redirect to keep the URL clean (use AJAX in the future?)
-					wp_redirect( add_query_arg( 'action', 'deleted', 'options-general.php?page=visual-form-builder' ) );
+					wp_redirect( add_query_arg( 'action', 'deleted', 'admin.php?page=visual-form-builder' ) );
 					exit();
 					
 				break;
@@ -1138,24 +1138,27 @@ class Visual_Form_Builder{
 		
 		$where = apply_filters( 'vfb_pre_get_forms', '' );
 		$forms = $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
-	
-		// Loop through each for and build the tabs
-		foreach ( $forms as $form ) {
-			$form_id 		= $form->form_id;
-			$form_title 	= stripslashes( $form->form_title );
-			$entries_count 	= $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE form_id = %d", $form_id ) );
-			$sort 			= substr( strtoupper( $form_title ), 0, 1 );
-			
-			if ( preg_match( '/[0-9]/i', $sort ) )
-				$sort = '0-9';
-			
-			$a[ $sort ][] = array(
-				'id'			=> $form_id,
-				'title' 		=> $form_title,
-				'entries_count'	=> $entries_count
-			);
-					
-		}
+		
+		$a = array();
+		
+		if ( $forms ) :
+			// Loop through each for and build the tabs
+			foreach ( $forms as $form ) {
+				$form_id 		= $form->form_id;
+				$form_title 	= stripslashes( $form->form_title );
+				$entries_count 	= $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE form_id = %d", $form_id ) );
+				$sort 			= substr( strtoupper( $form_title ), 0, 1 );
+				
+				if ( preg_match( '/[0-9]/i', $sort ) )
+					$sort = '0-9';
+				
+				$a[ $sort ][] = array(
+					'id'			=> $form_id,
+					'title' 		=> $form_title,
+					'entries_count'	=> $entries_count
+				);
+						
+			}
 		?>
 		<div class="vfb-form-alpha-list">
 			<hr>
@@ -1189,6 +1192,10 @@ class Visual_Form_Builder{
 				<hr>
 			<?php endforeach; ?>
 		</div> <!-- .vfb-form-alpha-list -->
+		
+		<?php else : ?>
+			<div class="vfb-form-alpha-list"><h3 id="vfb-no-forms">You currently don't have any forms.  Click on the <a href="<?php echo esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ); ?>">New Form</a> button to get started.</h3></div>
+		<?php endif; ?>
 		
 		<div id="vfb-upgrade-column">
 			<div class="vfb-pro-upgrade"><!-- VFB Pro Upgrade -->
@@ -1561,7 +1568,7 @@ class Visual_Form_Builder{
 						
 						<?php if ( !in_array( $field->field_type, array( 'verification', 'secret', 'submit' ) ) ) : ?>
 							<div class="menu-item-actions description-wide submitbox">
-								<a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=delete_field&amp;form=' . $form_nav_selected_id . '&amp;field=' . $field->field_id ), 'delete-field-' . $form_nav_selected_id ) ); ?>" class="item-delete submitdelete deletion"><?php _e( 'Remove' , 'visual-form-builder'); ?></a>
+								<a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_field&amp;form=' . $form_nav_selected_id . '&amp;field=' . $field->field_id ), 'delete-field-' . $form_nav_selected_id ) ); ?>" class="item-delete submitdelete deletion"><?php _e( 'Remove' , 'visual-form-builder'); ?></a>
 							</div>
 						<?php endif; ?>
 						
@@ -2461,6 +2468,9 @@ class Visual_Form_Builder{
 			// Build complete HTML email
 			$message = $header . $body . $footer;
 			
+			// Decode HTML for message so it outputs properly
+			$notify_message = ( $form_settings->form_notification_message !== '' ) ? html_entity_decode( $form_settings->form_notification_message ) : '';
+			
 			// Initialize header filter vars
 			$this->header_from_name 	= stripslashes( $reply_to_name );
 			$this->header_from 			= $reply_to_email;
@@ -2470,7 +2480,7 @@ class Visual_Form_Builder{
 			if ( $form_settings->form_notification_entry !== '' )
 				$auto_response_email = $header . $notify_message . $body . $footer;
 			else
-				$auto_response_email = $header . '<table cellspacing="0" border="0" cellpadding="0" width="100%"><tr><td colspan="2" class="mainbar" align="left" valign="top" width="600" style="' . $alt_row . ';">' . $notify_message . '</td></tr>' . $footer;
+				$auto_response_email = $header . '<table cellspacing="0" border="0" cellpadding="0" width="100%"><tr><td colspan="2" class="mainbar" align="left" valign="top" width="600">' . $notify_message . '</td></tr>' . $footer;
 			
 			
 			// Build email headers			
@@ -2493,7 +2503,7 @@ class Visual_Form_Builder{
 				$reply_name 	= stripslashes( $form_settings->form_notification_email_name );
 				$reply_email 	= $form_settings->form_notification_email_from;
 				$reply_to 		= "\"$reply_name\" <$reply_email>";
-				$headers 		= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+				$headers 		= "From: \"$reply_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 				
 				// Send the mail
 				wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
