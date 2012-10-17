@@ -58,7 +58,7 @@ class Visual_Form_Builder{
 			add_action( 'wp_ajax_visual_form_builder_delete_field', array( &$this, 'delete_field_callback' ) );
 			add_action( 'wp_ajax_visual_form_builder_form_settings', array( &$this, 'form_settings_callback' ) );
 			
-			add_action( 'load-settings_page_visual-form-builder', array( &$this, 'help' ) );
+			add_action( 'load-toplevel_page_visual-form-builder', array( &$this, 'help' ) );
 
 			// Adds additional media button to insert form shortcode
 			add_action( 'media_buttons_context', array( &$this, 'add_media_button' ) );
@@ -191,6 +191,8 @@ class Visual_Form_Builder{
 	                e.preventDefault();
 	                
 	                window.send_to_editor( '[vfb id=' + $( '#vfb_forms' ).val() + ']' );
+	                
+	                window.tb_remove();
 	            });
             });
         </script>
@@ -203,7 +205,7 @@ class Visual_Form_Builder{
 						<option value="<?php echo $form->form_id; ?>"><?php echo $form->form_title; ?></option>
 					<?php endforeach; ?>
 				</select>
-				<p><input type="submit" class="button" value="Insert Form" /></p>
+				<p><input type="submit" class="button-primary" value="Insert Form" /></p>
 			</form>
 		</div>
 	<?php	
@@ -228,7 +230,7 @@ class Visual_Form_Builder{
 						<li>Click Save Form to save your changes.</li>
 					</ul>'
 		) );
-		
+
 		$screen->add_help_tab( array(
 			'id' => 'vfb-help-tab-item-config',
 			'title' => 'Form Item Configuration',
@@ -283,7 +285,7 @@ class Visual_Form_Builder{
 						<li><em>Include a Copy of the User's Entry</em>: appends a copy of the user's submitted entry to the notification email.</li>
 					</ul>"
 		) );
-
+		
 		$screen->add_help_tab( array(
 			'id' => 'vfb-help-tab-tips',
 			'title' => 'Tips',
@@ -979,9 +981,10 @@ class Visual_Form_Builder{
 			$data[ $k['name'] ] = $k['value'];
 		}
 		
-		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'settings_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_create_field' ) {
-			$form_id = absint( $data['form_id'] );
-			$field_key = sanitize_title( $_REQUEST['field_type'] );
+		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'toplevel_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_create_field' ) {
+			
+			$form_id 	= absint( $data['form_id'] );
+			$field_key 	= sanitize_title( $_REQUEST['field_type'] );
 			$field_name = esc_html( $_REQUEST['field_type'] );
 			$field_type = strtolower( sanitize_title( $_REQUEST['field_type'] ) );
 			
@@ -1019,30 +1022,31 @@ class Visual_Form_Builder{
 			check_ajax_referer( 'create-field-' . $data['form_id'], 'nonce' );
 			
 			/* Get the last row's sequence that isn't a Verification */
-			$sequence_last_row = $wpdb->get_row( $wpdb->prepare( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = %d AND field_type = 'verification' ORDER BY field_sequence DESC LIMIT 1". $form_id ) );
+			$sequence_last_row = $wpdb->get_var( $wpdb->prepare( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = %d AND field_type = 'verification' ORDER BY field_sequence DESC LIMIT 1", $form_id ) );
 			
 			/* If it's not the first for this form, add 1 */
-			$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row->field_sequence : 0;
+			$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row : 0;
 
 			$newdata = array(
-				'form_id' => absint( $data['form_id'] ),
-				'field_key' => $field_key,
-				'field_name' => $field_name,
-				'field_type' => $field_type,
-				'field_options' => $field_options,
-				'field_sequence' => $field_sequence,
-				'field_validation' => $field_validation
+				'form_id' 			=> $form_id,
+				'field_key' 		=> $field_key,
+				'field_name' 		=> $field_name,
+				'field_type' 		=> $field_type,
+				'field_options' 	=> $field_options,
+				'field_sequence' 	=> $field_sequence,
+				'field_validation' 	=> $field_validation
 			);
 			
 			/* Create the field */
 			$wpdb->insert( $this->field_table_name, $newdata );
+			
 			$insert_id = $wpdb->insert_id;
 			$update_these = array( 'verification', 'secret', 'submit' );
 			
 			foreach ( $update_these as $update ) {
 				$where = array(
-					'form_id' => absint( $data['form_id'] ),
-					'field_type' => $update
+					'form_id' 		=> absint( $data['form_id'] ),
+					'field_type' 	=> $update
 				);
 				
 				$wpdb->update( $this->field_table_name, array( 'field_sequence' => $field_sequence + 1 ), $where );
@@ -1064,7 +1068,7 @@ class Visual_Form_Builder{
 	public function delete_field_callback() {
 		global $wpdb;
 
-		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'settings_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_delete_field' ) {
+		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'toplevel_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_delete_field' ) {
 			$form_id = absint( $_REQUEST['form'] );
 			$field_id = absint( $_REQUEST['field'] );
 			
@@ -1186,61 +1190,46 @@ class Visual_Form_Builder{
 				<hr>
 			<?php endforeach; ?>
 		</div> <!-- .vfb-form-alpha-list -->
-		<div class="vfb-pro-upgrade"><!-- VFB Pro Upgrade -->
-	    	<h3>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only $10</h3>
-	        <p>Attention Visual Form Builder users!  I am happy to announce <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a>, available now for only <strong>$10</strong>.</p>
-	        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
-	        <ul>
-	            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Import/Export forms, settings, and entries' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'PayPal Integration' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Unlimited Use' , 'visual-form-builder'); ?></li>
-	            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
+		
+		<div id="vfb-upgrade-column">
+			<div class="vfb-pro-upgrade"><!-- VFB Pro Upgrade -->
+		    	<h3>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only $10</h3>
+		        <p>Attention Visual Form Builder users!  I am happy to announce <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a>, available now for only <strong>$10</strong>.</p>
+		        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
+		        <ul>
+		            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Conditional Logic' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Import/Export forms, settings, and entries' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'PayPal Integration' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Live Preview' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Unlimited Use' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
+		        </ul>
+		        
+		        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
+		        <p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
+		    </div> <!-- .vfb-pro-upgrade -->
+		    
+	   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
+	        <ul id="promote-vfb">
+	        	<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
+	            <li id="star"><a href="http://wordpress.org/extend/plugins/visual-form-builder/"><?php _e( 'Rate Visual Form Builder on WordPress.org' , 'visual-form-builder'); ?></a></li>
+	            <li id="paypal">
+	                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" width="74" height="21"></a>
+	            </li>
 	        </ul>
-	        
-	        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
-	        <p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
-	    </div> <!-- .vfb-pro-upgrade -->
-        <div id="post-body-content">
-            <div class="post-body-plain">
-                <h3><?php _e( 'Getting Started' , 'visual-form-builder'); ?></h3>
-                <ol>
-                    <li><?php _e( 'Enter a name in the Form Name input above and click Create Form.' , 'visual-form-builder'); ?></li>
-                    <li><?php _e( 'Click form items from the Form Item box on the left to add to your form.' , 'visual-form-builder'); ?></li>
-                    <li><?php _e( 'After adding an item, drag and drop to put them in the order you want.' , 'visual-form-builder'); ?></li>
-                    <li><?php _e( 'Click the down arrow on each item to reveal configuration options.' , 'visual-form-builder'); ?></li>
-                    <li><?php _e( 'Configure the Email Details section.' , 'visual-form-builder'); ?></li>
-                    <li><?php _e( 'When you have finished building your form, click the Save Form button.' , 'visual-form-builder'); ?></li>
-                </ol>
-                
-                <h3><?php _e( 'Need more help?' , 'visual-form-builder'); ?></h3>
-                <ol>
-                	<li><?php _e( 'Click on the Help tab at the top of this page.' , 'visual-form-builder'); ?></li>
-                    <li><a href="http://wordpress.org/extend/plugins/visual-form-builder/faq/">Visual Form Builder FAQ</a></li>
-                    <li><a href="http://wordpress.org/tags/visual-form-builder?forum_id=10">Visual Form Builder Support Forums</a></li>
-                </ol>
-                
-                <h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
-                <ul id="promote-vfb">
-                	<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
-                    <li id="star"><a href="http://wordpress.org/extend/plugins/visual-form-builder/"><?php _e( 'Rate Visual Form Builder on WordPress.org' , 'visual-form-builder'); ?></a></li>
-                    <li id="paypal">
-                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" width="74" height="21"></a>
-                    </li>
-                </ul>
-            </div> <!-- .post-body-plain -->
-
+	    </div>
 	<?php
 	}
 
@@ -1787,7 +1776,7 @@ class Visual_Form_Builder{
 			$this->scripts();
 		
 		/* Get form id.  Allows use of [vfb id=1] or [vfb 1] */
-		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : $atts[0];
+		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : key( $atts );
 		
 		$open_fieldset = $open_section = false;
 		$output = '';
@@ -1815,7 +1804,7 @@ class Visual_Form_Builder{
 			
 			foreach ( $forms as $form ) :
 				$label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
-				$output = '<form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
+				$output = '<div class="visual-form-builder-container"><form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
 							<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
 				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 
@@ -2164,7 +2153,7 @@ class Visual_Form_Builder{
 									<input type="submit" name="visual-form-builder-submit" value="' . $submit . '" class="submit" id="sendmail" />
 								</li>
 							</ul>
-						</fieldset></form>';
+						</fieldset></form></div>';
 				
 			endforeach;
 		}
@@ -2407,7 +2396,7 @@ class Visual_Form_Builder{
 					}
 					/* If multiple values, build the list */
 					elseif ( is_array( $value ) )
-						$value = implode( ', ', $value );
+						$value = esc_html( implode( ', ', $value ) );
 					/* Lastly, handle single values */
 					else
 						$value = html_entity_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES, 'UTF-8' );
@@ -2425,10 +2414,12 @@ class Visual_Form_Builder{
 					elseif ( preg_match( $spamwords, $value ) )
 						$points += 1;
 					
+					//Sanitize input
+					$value = $this->sanitize_input( $value, $field->field_type );
+					
 					// Validate input
 					$this->validate_input( $value, $field->field_name, $field->field_type, $field->field_required );
 					
-					//if ( $field->field_type !== 'submit' ) {
 					if ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit' ) ) ) {
 						if ( $field->field_type == 'fieldset' )
 							$body .= '<tr style="background-color:#393E40;color:white;font-size:14px;"><td colspan="2">' . stripslashes( $field->field_name ) . '</td></tr>' . "\n";
@@ -2439,27 +2430,27 @@ class Visual_Form_Builder{
 					}
 				
 					$data[] = array(
-						'id' => $field->field_id,
-						'slug' => $field->field_key,
-						'name' => $field->field_name,
-						'type' => $field->field_type,
-						'options' => $field->field_options,
+						'id' 		=> $field->field_id,
+						'slug' 		=> $field->field_key,
+						'name' 		=> $field->field_name,
+						'type' 		=> $field->field_type,
+						'options' 	=> $field->field_options,
 						'parent_id' => $field->field_parent,
-						'value' => $value
+						'value' 	=> esc_html( $value )
 					);
 				}
 			}
 			
 			/* Setup our entries data */
 			$entry = array(
-				'form_id' => $form_id,
-				'data' => serialize( $data ),
-				'subject' => $form_settings->form_subject,
-				'sender_name' => $form_settings->form_from_name,
-				'sender_email' => $form_settings->form_from,
-				'emails_to' => serialize( $form_settings->form_to ),
-				'date_submitted' => date_i18n( 'Y-m-d G:i:s' ),
-				'ip_address' => $_SERVER['REMOTE_ADDR']
+				'form_id' 			=> $form_id,
+				'data' 				=> serialize( $data ),
+				'subject' 			=> $form_settings->form_subject,
+				'sender_name' 		=> $form_settings->form_from_name,
+				'sender_email' 		=> $form_settings->form_from,
+				'emails_to' 		=> serialize( $form_settings->form_to ),
+				'date_submitted' 	=> date_i18n( 'Y-m-d G:i:s' ),
+				'ip_address' 		=> $_SERVER['REMOTE_ADDR']
 			);
 			
 			/* Insert this data into the entries table */
@@ -2471,65 +2462,42 @@ class Visual_Form_Builder{
 			/* Build complete HTML email */
 			$message = $header . $body . $footer;
 			
-			/* Initialize header filter vars */
-			$this->header_from_name = stripslashes( $form_settings->form_from_name );
-			$this->header_from = $form_settings->form_from;
+			// Initialize header filter vars
+			$this->header_from_name = stripslashes( $reply_to_name );
+			$this->header_from = $reply_to_email;
 			$this->header_content_type = 'text/html';
 			
-			/* Set wp_mail header filters to send an HTML email */
-			add_filter( 'wp_mail_from_name', array( &$this, 'mail_header_from_name' ) );
-			add_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
-			add_filter( 'wp_mail_content_type', array( &$this, 'mail_header_content_type' ) );
+			// Either prepend the notification message to the submitted entry, or send by itself				
+			if ( $form_settings->form_notification_entry !== '' )
+				$auto_response_email = $header . $notify_message . $body . $footer;
+			else
+				$auto_response_email = $header . '<table cellspacing="0" border="0" cellpadding="0" width="100%"><tr><td colspan="2" class="mainbar" align="left" valign="top" width="600" style="' . $alt_row . ';">' . $notify_message . '</td></tr>' . $footer;
 			
-			/* Setup headers */
+			
+			// Build email headers			
 			$from_name = ( $this->header_from_name == '' ) ? 'WordPress' : $this->header_from_name;
-			$from_email = 'wordpress@' . $_SERVER['SERVER_NAME'];
+			$from_email = get_site_option( 'admin_email' );
 			$reply_to = "\"$this->header_from_name\" <$this->header_from>";
 			$headers = "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 			
-			/* Send the mail */
+			// Send the mail
 			foreach ( $form_settings->form_to as $email ) {
-				wp_mail( $email, esc_html( $form_settings->form_subject ), $message, $headers, $attachments );
+				wp_mail( $email, wp_specialchars_decode( $form_settings->form_subject, ENT_QUOTES ), $message, $headers, $attachments );
 			}
 			
-			/* Kill the values stored for header name and email */
-			unset( $this->header_from_name );
-			unset( $this->header_from );
-			
-			/* Remove wp_mail header filters in case we need to override for notifications */
-			remove_filter( 'wp_mail_from_name', array( &$this, 'mail_header_from_name' ) );
-			remove_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
-			
-			/* Send auto-responder email */
+			// Send auto-responder email
 			if ( $form_settings->form_notification_setting !== '' ) :
-				
-				/* Assign notify header filter vars */
-				$this->header_from_name = stripslashes( $form_settings->form_notification_email_name );
-				$this->header_from = $form_settings->form_notification_email_from;
-				
-				/* Set the wp_mail header filters for notification email */
-				add_filter( 'wp_mail_from_name', array( &$this, 'mail_header_from_name' ) );
-				add_filter( 'wp_mail_from', array( &$this, 'mail_header_from' ) );
 				
 				$attachments = ( $form_settings->form_notification_entry !== '' ) ? $attachments : '';
 				
-				/* Decode HTML for message so it outputs properly */
-				$notify_message = ( $form_settings->form_notification_message !== '' ) ? html_entity_decode( $form_settings->form_notification_message ) : '';
-				
-				/* Either prepend the notification message to the submitted entry, or send by itself */				
-				if ( $form_settings->form_notification_entry !== '' )
-					$auto_response_email = $header . '<p style="font-size: 12px; font-weight: normal; margin: 14px 0 14px 0; color: black; padding: 0;">' . $notify_message . '</p>' . $body . $footer;
-				else
-					$auto_response_email = $header . '<table cellspacing="0" border="0" cellpadding="0" width="100%"><tr><td colspan="2" class="mainbar" align="left" valign="top" width="600"><p style="font-size: 12px; font-weight: normal; margin: 14px 0 14px 0; color: black; padding: 0;">' . $notify_message . '</p></td></tr>' . $footer;
-				
 				// Reset headers for notification email
-				$from_name 	= ( $this->header_from_name == '' ) ? 'WordPress' : $this->header_from_name;
-				$from_email = 'wordpress@' . $_SERVER['SERVER_NAME'];
-				$reply_to 	= "\"$this->header_from_name\" <$this->header_from>";
+				$reply_name = stripslashes( $form_settings->form_notification_email_name );
+				$reply_email = $form_settings->form_notification_email_from;
+				$reply_to 	= "\"$reply_name\" <$reply_email>";
 				$headers 	= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 				
-				/* Send the mail */
-				wp_mail( $copy_email, esc_html( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
+				// Send the mail
+				wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
 			endif;
 			
 		endif;
@@ -2543,36 +2511,67 @@ class Visual_Form_Builder{
 	public function validate_input( $data, $name, $type, $required ) {
 		
 		if ( 'yes' == $required && strlen( $data ) == 0 )
-			wp_die( "<h1>$name</h1><br>" . __( 'This field is required and cannot be empty.', 'visual-form-builder-pro' ), $name, array( 'back_link' => true ) );
+			wp_die( "<h1>$name</h1><br>" . __( 'This field is required and cannot be empty.', 'visual-form-builder' ), $name, array( 'back_link' => true ) );
 		
 		if ( strlen( $data ) > 0 ) :
 			switch( $type ) {
 				
 				case 'email' :
 					if ( !is_email( $data ) )
-						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid email address', 'visual-form-builder-pro' ), '', array( 'back_link' => true ) );
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid email address', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
 				case 'number' :
 				case 'currency' :
 					if ( !is_numeric( $data ) )
-						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid number', 'visual-form-builder-pro' ), '', array( 'back_link' => true ) );
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid number', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
 				case 'phone' :
 					if ( strlen( $data ) > 9 && preg_match( '/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/', $data ) )
 						return true; 
 					else
-						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid phone number. Most US/Canada and International formats accepted.', 'visual-form-builder-pro' ), '', array( 'back_link' => true ) );
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid phone number. Most US/Canada and International formats accepted.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
 				case 'url' :
 					if ( !preg_match( '|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $data ) )
-						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid URL.', 'visual-form-builder-pro' ), '', array( 'back_link' => true ) );
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid URL.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 				break;
 				
 				default :
 					return true;
+				break;
+			}
+		endif;
+	}
+
+	/**
+	 * Sanitize the input
+	 * 
+	 * @since 2.5
+	 */
+	public function sanitize_input( $data, $type ) {
+		if ( strlen( $data ) > 0 ) :
+			switch( $type ) {
+				case 'text' :
+					return sanitize_text_field( $data );
+				break;
+				
+				case 'textarea' :
+					return wpautop( $data );
+				break;
+				
+				case 'email' :
+					return sanitize_email( $data );
+				break;
+				
+				case 'username' :
+					return sanitize_user( $data );
+				break;
+				
+				default :
+					return $data;
 				break;
 			}
 		endif;
@@ -2597,34 +2596,7 @@ class Visual_Form_Builder{
 			$isBot = true;
 	 
 		return $isBot;
-	}
-	
-	/**
-	 * Set the wp_mail_from_name
-	 * 
-	 * @since 1.7
-	 */
-	public function mail_header_from_name() {
-		return $this->header_from_name;		
-	}
-	
-	/**
-	 * Set the wp_mail_from
-	 * 
-	 * @since 1.7
-	 */
-	public function mail_header_from() {
-		return $this->header_from;		
-	}
-	
-	/**
-	 * Set the wp_mail_content_type
-	 * 
-	 * @since 1.7
-	 */
-	public function mail_header_content_type() {
-		return $this->header_content_type;		
-	}
+	}	
 }
 
 /* On plugin activation, install the databases and add/update the DB version */
