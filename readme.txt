@@ -2,9 +2,9 @@
 Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
-Requires at least: 3.3
-Tested up to: 3.4.1
-Stable tag: 2.5
+Requires at least: 3.4.1
+Tested up to: 3.5
+Stable tag: 2.6
 License: GPLv2 or later
 
 Build beautiful, fully functional forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -86,18 +86,17 @@ Build beautiful, fully functional forms in only a few minutes without writing PH
 
 == Installation ==
 
-1. Upload `visual-form-builder` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Go to <em>Settings > Visual Form Builder</em>
-1. Create and configure a form (for help, refer to the FAQ or the Help on the plugin page)
-1. Copy the form shortcode from the Shortcode box on the plugin page
-1. Create a new page and add the shortcode to the content.
+1. Go to Plugins > Add New
+1. Click the Upload link
+1. Click Browse and locate the `visual-form-builder.x.x.zip` file
+1. Click Install Now
+1. After WordPress installs, click on the Activate Plugin link
 
 == Frequently Asked Questions ==
 
 = How do I build my form? =
 
-1. Click on the + tab, give your form a name and click Create Form.
+1. Click on the New Form button and enter a few form details
 1. Click the form fields from the box on the left to add it to your form.
 1. Edit the information for each form field by clicking on the down arrow.
 1. Drag and drop the elements to put them in order.
@@ -210,6 +209,18 @@ To Export Selected:
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.6**
+
+* Move plugin into its own menu
+* Add new 'All Forms' view with an alphabetical group list
+* Add new New Form screen
+* Add customizable columns to admin form builder (see Screen Options tab)
+* Update meta boxes to be reordered or hidden (see Screen Options tab)
+* Update and clean up entry form design
+* Update email headers to send from admin email for servers having trouble with sending
+* Fix bug where form rendering would behave erratically in Internet Explorer 9
+* Fix bug where sender emails would be cut off after 25 characters in the entries database
 
 **Version 2.5**
 
@@ -390,6 +401,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.6 =
+VFB now in its own menu, new All Forms UI, other bug fixes
 
 = 2.5 =
 Improved Export entries page, improved server side validation
