@@ -15,19 +15,19 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function __construct(){
 		global $status, $page, $wpdb;
 		
-		/* Setup global database table names */
+		// Setup global database table names
 		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
 		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
 		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
 		
-		/* Set parent defaults */
+		// Set parent defaults
 		parent::__construct( array(
 			'singular'  => 'entry',
 			'plural'    => 'entries',
 			'ajax'      => false
 		) );
 		
-		/* Handle our bulk actions */
+		// Handle our bulk actions
 		$this->process_bulk_action();
 	}
 
@@ -56,7 +56,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	 */
 	function column_form( $item ){
 		 
-		/* Build row actions */
+		// Build row actions
 		$actions = array(
 			'view' 		=> sprintf( '<a href="?page=%s&action=%s&entry=%s" id="%3$s" class="view-entry">View</a>', $_REQUEST['page'], 'view', $item['entry_id'] ),
 			'delete' 	=> sprintf( '<a href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['entry_id'] ),
@@ -103,7 +103,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function get_entries( $orderby = 'date', $order = 'ASC', $per_page, $offset = 0, $search = '' ){
 		global $wpdb;
 		
-		/* Set OFFSET for pagination */
+		// Set OFFSET for pagination
 		$offset = ( $offset > 0 ) ? "OFFSET $offset" : '';
  		
  		switch ( $orderby ) {
@@ -123,17 +123,17 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		$where = '';
 		
-		/* If the form filter dropdown is used */
+		// If the form filter dropdown is used
 		if ( $this->current_filter_action() )
 			$where .= 'AND forms.form_id = ' . $this->current_filter_action();
 		
-		/* Get the month and year from the dropdown */
+		// Get the month and year from the dropdown
 		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
 		
-		/* If a month/year has been selected, parse out the month/year and build the clause */
+		// If a month/year has been selected, parse out the month/year and build the clause
 		if ( $m > 0 ) {
-			$year = substr( $m, 0, 4 );
-			$month = substr( $m, -2 );
+			$year 	= substr( $m, 0, 4 );
+			$month 	= substr( $m, -2 );
 			
 			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
 		}
@@ -387,7 +387,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		$cols = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" ) );
 		
-		/* Only display the dropdown on the top of the table */
+		// Only display the dropdown on the top of the table
 		if ( 'top' == $which ) {
 			echo '<div class="alignleft actions">';
 				$this->months_dropdown();
@@ -477,36 +477,36 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function prepare_items() {
 		global $wpdb;
 		
-		/* Get screen options from the wp_options table */
+		// Get screen options from the wp_options table
 		$options = get_option( 'visual-form-builder-screen-options' );
 		
-		/* Get the date/time format that is saved in the options table */
+		// Get the date/time format that is saved in the options table
 		$date_format = get_option('date_format');
 		$time_format = get_option('time_format');
 		
-		/* How many to show per page */
+		// How many to show per page
 		$per_page = $options['per_page'];
 		
-		/* What page are we looking at? */
+		// What page are we looking at?
 		$current_page = $this->get_pagenum();
 		
-		/* Use offset for pagination */
+		// Use offset for pagination
 		$offset = ( $current_page - 1 ) * $per_page;
 		
-		/* Get column headers */
+		// Get column headers
 		$columns = $this->get_columns();
 		$hidden = array();
 		
-		/* Get sortable columns */
+		// Get sortable columns
 		$sortable = $this->get_sortable_columns();
 		
-		/* Build the column headers */
+		// Build the column headers
 		$this->_column_headers = array($columns, $hidden, $sortable);
 		
-		/* Get entries search terms */
+		// Get entries search terms
 		$search_terms = ( !empty( $_REQUEST['s'] ) ) ? explode( ' ', $_REQUEST['s'] ) : array();
 		
-		/* Loop through search terms and build query */
+		// Loop through search terms and build query
 		foreach( $search_terms as $term ) {
 			$term = esc_sql( like_escape( $term ) );
 			
@@ -516,16 +516,16 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		
 		$search = ( !empty($search) ) ? " AND ({$search}) " : '';
 				
-		/* Set our ORDER BY and ASC/DESC to sort the entries */
+		// Set our ORDER BY and ASC/DESC to sort the entries
 		$orderby = ( !empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'date';
 		$order = ( !empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'desc';
 		
-		/* Get the sorted entries */
+		// Get the sorted entries
 		$entries = $this->get_entries( $orderby, $order, $per_page, $offset, $search );
 		
 		$data = array();
 
-		/* Loop trough the entries and setup the data to be displayed for each row */
+		// Loop trough the entries and setup the data to be displayed for each row
 		foreach ( $entries as $entry ) {
 			$data[] = 
 				array(
@@ -542,14 +542,14 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 
 		$where = '';
 		
-		/* If the form filter dropdown is used */
+		// If the form filter dropdown is used
 		if ( $this->current_filter_action() )
 			$where .= 'AND form_id = ' . $this->current_filter_action();
 		
-		/* Get the month/year from the dropdown */
+		// Get the month/year from the dropdown
 		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
 		
-		/* Parse month/year and build the clause */
+		// Parse month/year and build the clause
 		if ( $m > 0 ) {
 			$year = substr( $m, 0, 4 );
 			$month = substr( $m, -2 );
@@ -557,13 +557,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
 		}
 		
-		/* How many entries do we have? */
+		// How many entries do we have?
 		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE 1=1 $where" ) );
 
-		/* Add sorted data to the items property */
+		// Add sorted data to the items property
 		$this->items = $data;
 
-		/* Register our pagination */
+		// Register our pagination
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
 			'per_page'    => $per_page,
@@ -594,7 +594,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 
 		$page_links = array();
 		
-		/* Added to pick up the months dropdown */
+		// Added to pick up the months dropdown
 		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
 		
 		$disable_first = $disable_last = '';
@@ -610,7 +610,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'&laquo;'
 		);
 		
-		/* Modified the add_query_args to include my custom dropdowns */
+		// Modified the add_query_args to include my custom dropdowns
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page' ),
@@ -637,7 +637,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'&rsaquo;'
 		);
 		
-		/* Modified the add_query_args to include my custom dropdowns */
+		// Modified the add_query_args to include my custom dropdowns
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
 			'last-page' . $disable_last,
 			esc_attr__( 'Go to the last page' ),

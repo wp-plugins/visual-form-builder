@@ -6,15 +6,13 @@
  */
 class VisualFormBuilder_Export {
 	
-	protected $export_version = 2.5;
-	
 	public function __construct(){
 		global $wpdb;
 		
 		// Setup global database table names
-		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
-		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
-		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
+		$this->field_table_name 	= $wpdb->prefix . 'visual_form_builder_fields';
+		$this->form_table_name 		= $wpdb->prefix . 'visual_form_builder_forms';
+		$this->entries_table_name 	= $wpdb->prefix . 'visual_form_builder_entries';
 		
 		add_action( 'admin_init', array( &$this, 'display' ) );
 		

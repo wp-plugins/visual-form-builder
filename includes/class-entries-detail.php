@@ -8,10 +8,10 @@ class VisualFormBuilder_Entries_Detail{
 	public function __construct(){
 		global $wpdb;
 		
-		/* Setup global database table names */
-		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
-		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
-		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
+		// Setup global database table names
+		$this->field_table_name 	= $wpdb->prefix . 'visual_form_builder_fields';
+		$this->form_table_name 		= $wpdb->prefix . 'visual_form_builder_forms';
+		$this->entries_table_name 	= $wpdb->prefix . 'visual_form_builder_entries';
 		
 		add_action( 'admin_init', array( &$this, 'entries_detail' ) );
 	}
@@ -137,7 +137,6 @@ class VisualFormBuilder_Entries_Detail{
 			if ( $count > 0 )
 				echo '</div></div>';
 		
-			//echo '</div></div></div>';
 		}
 		echo '</table></div>';
 		echo '<br class="clear"></div>';

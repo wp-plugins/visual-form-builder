@@ -25,10 +25,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Set to true to load uncompressed and unminified scripts and stylesheets
 define( 'VFB_SCRIPT_DEBUG', true );
 
-/* Instantiate new class */
+// Instantiate new class
 $visual_form_builder = new Visual_Form_Builder();
 
-/* Restrict Categories class */
+// Visual Form Builder class
 class Visual_Form_Builder{
 	
 	protected $vfb_db_version = '2.5',
@@ -122,11 +122,11 @@ class Visual_Form_Builder{
 	public function includes(){
 		global $entries_list, $entries_detail;
 		
-		/* Load the Entries List class */
+		// Load the Entries List class
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-entries-list.php' );
 		$entries_list = new VisualFormBuilder_Entries_List();
 		
-		/* Load the Entries Details class */
+		// Load the Entries Details class
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-entries-detail.php' );
 		$entries_detail = new VisualFormBuilder_Entries_Detail();		
 	}
@@ -179,10 +179,10 @@ class Visual_Form_Builder{
 	public function display_media_button(){
 		global $wpdb;
 		
-		/* Sanitize the sql orderby */
+		// Sanitize the sql orderby
 		$order = sanitize_sql_orderby( 'form_id ASC' );
 		
-		/* Build our forms as an object */
+		// Build our forms as an object
 		$forms = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, form_title FROM $this->form_table_name ORDER BY $order" ) );
 	?>
 		<script type="text/javascript">
@@ -439,7 +439,7 @@ class Visual_Form_Builder{
 		$form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
 		$entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
 		
-		/* Explicitly set the character set and collation when creating the tables */
+		// Explicitly set the character set and collation when creating the tables
 		$charset = ( defined( 'DB_CHARSET' && '' !== DB_CHARSET ) ) ? DB_CHARSET : 'utf8';
 		$collate = ( defined( 'DB_COLLATE' && '' !== DB_COLLATE ) ) ? DB_COLLATE : 'utf8_general_ci';
 		
@@ -500,7 +500,7 @@ class Visual_Form_Builder{
 				UNIQUE KEY  (entries_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
-		/* Create or Update database tables */
+		// Create or Update database tables
 		dbDelta( $field_sql );
 		dbDelta( $form_sql );
 		dbDelta( $entries_sql );
@@ -513,7 +513,6 @@ class Visual_Form_Builder{
 	 */
 	public function admin_css() {
 		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin$this->load_dev_files.css" ) );
-		//wp_enqueue_style( 'visual-form-builder-main', plugins_url( "visual-form-builder/css/nav-menu$this->load_dev_files.css" ) );
 	}
 	
 	/**
@@ -588,63 +587,63 @@ class Visual_Form_Builder{
 						'form_email_to'			=> $form_to
 					);					
 					
-					/* Create the form */
+					// Create the form
 					$wpdb->insert( $this->form_table_name, $newdata );
 					
-					/* Get form ID to add our first field */
+					// Get form ID to add our first field
 					$new_form_selected = $wpdb->insert_id;
 					
-					/* Setup the initial fieldset */
+					// Setup the initial fieldset
 					$initial_fieldset = array(
-						'form_id' => $wpdb->insert_id,
-						'field_key' => 'fieldset',
-						'field_type' => 'fieldset',
-						'field_name' => 'Fieldset',
-						'field_sequence' => 0
+						'form_id' 			=> $wpdb->insert_id,
+						'field_key' 		=> 'fieldset',
+						'field_type' 		=> 'fieldset',
+						'field_name' 		=> 'Fieldset',
+						'field_sequence' 	=> 0
 					);
 					
-					/* Add the first fieldset to get things started */ 
+					// Add the first fieldset to get things started 
 					$wpdb->insert( $this->field_table_name, $initial_fieldset );
 					
 					$verification_fieldset = array(
-						'form_id' => $new_form_selected,
-						'field_key' => 'verification',
-						'field_type' => 'verification',
-						'field_name' => 'Verification',
+						'form_id' 			=> $new_form_selected,
+						'field_key' 		=> 'verification',
+						'field_type' 		=> 'verification',
+						'field_name' 		=> 'Verification',
 						'field_description' => '(This is for preventing spam)',
-						'field_sequence' => 1
+						'field_sequence' 	=> 1
 					);
 					
-					/* Insert the submit field */ 
+					// Insert the submit field 
 					$wpdb->insert( $this->field_table_name, $verification_fieldset );
 					
 					$verify_fieldset_parent_id = $wpdb->insert_id;
 					
 					$secret = array(
-						'form_id' => $new_form_selected,
-						'field_key' => 'secret',
-						'field_type' => 'secret',
-						'field_name' => 'Please enter any two digits with no spaces (Example: 12)',
-						'field_size' => 'medium',
-						'field_required' => 'yes',
-						'field_parent' => $verify_fieldset_parent_id,
-						'field_sequence' => 2
+						'form_id' 			=> $new_form_selected,
+						'field_key' 		=> 'secret',
+						'field_type' 		=> 'secret',
+						'field_name' 		=> 'Please enter any two digits with no spaces (Example: 12)',
+						'field_size' 		=> 'medium',
+						'field_required' 	=> 'yes',
+						'field_parent' 		=> $verify_fieldset_parent_id,
+						'field_sequence' 	=> 2
 					);
 					
-					/* Insert the submit field */ 
+					// Insert the submit field 
 					$wpdb->insert( $this->field_table_name, $secret );
 					
-					/* Make the submit last in the sequence */
+					// Make the submit last in the sequence
 					$submit = array(
-						'form_id' => $new_form_selected,
-						'field_key' => 'submit',
-						'field_type' => 'submit',
-						'field_name' => 'Submit',
-						'field_parent' => $verify_fieldset_parent_id,
-						'field_sequence' => 3
+						'form_id' 			=> $new_form_selected,
+						'field_key' 		=> 'submit',
+						'field_type' 		=> 'submit',
+						'field_name' 		=> 'Submit',
+						'field_parent' 		=> $verify_fieldset_parent_id,
+						'field_sequence' 	=> 3
 					);
 					
-					/* Insert the submit field */ 
+					// Insert the submit field 
 					$wpdb->insert( $this->field_table_name, $submit );
 					
 					// Redirect to keep the URL clean (use AJAX in the future?)
@@ -674,7 +673,7 @@ class Visual_Form_Builder{
 					$form_notification_entry 		= isset( $_REQUEST['form_notification_entry'] ) ? esc_html( $_REQUEST['form_notification_entry'] ) : '';
 					$form_label_alignment 			= esc_html( $_REQUEST['form_label_alignment'] );
 					
-					/* Add confirmation based on which type was selected */
+					// Add confirmation based on which type was selected
 					switch ( $form_success_type ) {
 						case 'text' :
 							$form_success_message = wp_richedit_pre( $_REQUEST['form_success_message_text'] );
@@ -690,70 +689,70 @@ class Visual_Form_Builder{
 					check_admin_referer( 'update_form-' . $form_id );
 					
 					$newdata = array(
-						'form_key' => $form_key,
-						'form_title' => $form_title,
-						'form_email_subject' => $form_subject,
-						'form_email_to' => $form_to,
-						'form_email_from' => $form_from,
-						'form_email_from_name' => $form_from_name,
-						'form_email_from_override' => $form_from_override,
+						'form_key' 						=> $form_key,
+						'form_title' 					=> $form_title,
+						'form_email_subject' 			=> $form_subject,
+						'form_email_to' 				=> $form_to,
+						'form_email_from' 				=> $form_from,
+						'form_email_from_name' 			=> $form_from_name,
+						'form_email_from_override' 		=> $form_from_override,
 						'form_email_from_name_override' => $form_from_name_override,
-						'form_success_type' => $form_success_type,
-						'form_success_message' => $form_success_message,
-						'form_notification_setting' => $form_notification_setting,
-						'form_notification_email_name' => $form_notification_email_name,
-						'form_notification_email_from' => $form_notification_email_from,
-						'form_notification_email' => $form_notification_email,
-						'form_notification_subject' => $form_notification_subject,
-						'form_notification_message' => $form_notification_message,
-						'form_notification_entry' => $form_notification_entry,
-						'form_label_alignment' => $form_label_alignment
+						'form_success_type' 			=> $form_success_type,
+						'form_success_message' 			=> $form_success_message,
+						'form_notification_setting' 	=> $form_notification_setting,
+						'form_notification_email_name' 	=> $form_notification_email_name,
+						'form_notification_email_from' 	=> $form_notification_email_from,
+						'form_notification_email' 		=> $form_notification_email,
+						'form_notification_subject' 	=> $form_notification_subject,
+						'form_notification_message' 	=> $form_notification_message,
+						'form_notification_entry' 		=> $form_notification_entry,
+						'form_label_alignment' 			=> $form_label_alignment
 					);
 					
 					$where = array(
 						'form_id' => $form_id
 					);
 					
-					/* Update form details */
+					// Update form details
 					$wpdb->update( $this->form_table_name, $newdata, $where );
 					
-					/* Initialize field sequence */
+					// Initialize field sequence
 					$field_sequence = 0;
 					
-					/* Loop through each field and update all at once */
+					// Loop through each field and update all at once
 					if ( !empty( $_REQUEST['field_id'] ) ) {
 						foreach ( $_REQUEST['field_id'] as $id ) {
-							$field_name = ( isset( $_REQUEST['field_name-' . $id] ) ) ? esc_html( $_REQUEST['field_name-' . $id] ) : '';
-							$field_key = sanitize_title( $field_name, $id );
-							$field_desc = ( isset( $_REQUEST['field_description-' . $id] ) ) ? esc_html( $_REQUEST['field_description-' . $id] ) : '';
-							$field_options = ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( array_map( 'esc_html', $_REQUEST['field_options-' . $id] ) ) : '';
-							$field_validation = ( isset( $_REQUEST['field_validation-' . $id] ) ) ? esc_html( $_REQUEST['field_validation-' . $id] ) : '';
-							$field_required = ( isset( $_REQUEST['field_required-' . $id] ) ) ? esc_html( $_REQUEST['field_required-' . $id] ) : '';
-							$field_size = ( isset( $_REQUEST['field_size-' . $id] ) ) ? esc_html( $_REQUEST['field_size-' . $id] ) : '';
-							$field_css = ( isset( $_REQUEST['field_css-' . $id] ) ) ? esc_html( $_REQUEST['field_css-' . $id] ) : '';
-							$field_layout = ( isset( $_REQUEST['field_layout-' . $id] ) ) ? esc_html( $_REQUEST['field_layout-' . $id] ) : '';
-							$field_default = ( isset( $_REQUEST['field_default-' . $id] ) ) ? esc_html( $_REQUEST['field_default-' . $id] ) : '';
+							$field_name 		= ( isset( $_REQUEST['field_name-' . $id] ) ) ? esc_html( $_REQUEST['field_name-' . $id] ) : '';
+							$field_key 			= sanitize_title( $field_name, $id );
+							$field_desc 		= ( isset( $_REQUEST['field_description-' . $id] ) ) ? esc_html( $_REQUEST['field_description-' . $id] ) : '';
+							$field_options 		= ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( array_map( 'esc_html', $_REQUEST['field_options-' . $id] ) ) : '';
+							$field_validation 	= ( isset( $_REQUEST['field_validation-' . $id] ) ) ? esc_html( $_REQUEST['field_validation-' . $id] ) : '';
+							$field_required 	= ( isset( $_REQUEST['field_required-' . $id] ) ) ? esc_html( $_REQUEST['field_required-' . $id] ) : '';
+							$field_size 		= ( isset( $_REQUEST['field_size-' . $id] ) ) ? esc_html( $_REQUEST['field_size-' . $id] ) : '';
+							$field_css 			= ( isset( $_REQUEST['field_css-' . $id] ) ) ? esc_html( $_REQUEST['field_css-' . $id] ) : '';
+							$field_layout 		= ( isset( $_REQUEST['field_layout-' . $id] ) ) ? esc_html( $_REQUEST['field_layout-' . $id] ) : '';
+							$field_default 		= ( isset( $_REQUEST['field_default-' . $id] ) ) ? esc_html( $_REQUEST['field_default-' . $id] ) : '';
 							
 							$field_data = array(
-								'field_key' => $field_key,
-								'field_name' => $field_name,
+								'field_key' 		=> $field_key,
+								'field_name' 		=> $field_name,
 								'field_description' => $field_desc,
-								'field_options' => $field_options,
-								'field_validation' => $field_validation,
-								'field_required' => $field_required,
-								'field_size' => $field_size,
-								'field_css' => $field_css,
-								'field_layout' => $field_layout,
-								'field_sequence' => $field_sequence,
-								'field_default' => $field_default
+								'field_options' 	=> $field_options,
+								'field_validation' 	=> $field_validation,
+								'field_required' 	=> $field_required,
+								'field_size' 		=> $field_size,
+								'field_css' 		=> $field_css,
+								'field_layout' 		=> $field_layout,
+								'field_sequence' 	=> $field_sequence,
+								'field_default' 	=> $field_default
 							);
 							
 							$where = array(
-								'form_id' => $_REQUEST['form_id'],
-								'field_id' => $id
+								'form_id' 	=> $_REQUEST['form_id'],
+								'field_id' 	=> $id
 							);
 							
-							/* Update all fields */
+							// Update all fields
 							$wpdb->update( $this->field_table_name, $field_data, $where );
 							
 							$field_sequence++;
@@ -764,75 +763,75 @@ class Visual_Form_Builder{
 						$is_secret = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = %d", $form_id ) );
 						$is_submit = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = %d", $form_id ) );
 						
-						/* Decrement sequence */
+						// Decrement sequence
 						$field_sequence--;
 						
 						$verification_id = '';
 						
-						/* If this form doesn't have a verification field, add one */
+						// If this form doesn't have a verification field, add one
 						if ( $is_verification == NULL ) {
-							/* Adjust the sequence */
+							// Adjust the sequence
 							$verification_fieldset = array(
-								'form_id' => $form_id,
-								'field_key' => 'verification',
-								'field_type' => 'verification',
-								'field_name' => 'Verification',
-								'field_sequence' => $field_sequence
+								'form_id' 			=> $form_id,
+								'field_key' 		=> 'verification',
+								'field_type' 		=> 'verification',
+								'field_name' 		=> 'Verification',
+								'field_sequence' 	=> $field_sequence
 							);
 							
-							/* Insert the verification fieldset */ 
+							// Insert the verification fieldset 
 							$wpdb->insert( $this->field_table_name, $verification_fieldset );
 							
 							$verification_id = $wpdb->insert_id;
 						}
 						
-						/* If the verification field was inserted, use that ID as a parent otherwise set no parent */
+						// If the verification field was inserted, use that ID as a parent otherwise set no parent
 						$verify_fieldset_parent_id = ( $verification_id !== false ) ? $verification_id : 0;
 						
-						/* If this form doesn't have a secret field, add one */
+						// If this form doesn't have a secret field, add one
 						if ( $is_secret == NULL ) {
 							
-							/* Adjust the sequence */
+							// Adjust the sequence
 							$secret = array(
-								'form_id' => $form_id,
-								'field_key' => 'secret',
-								'field_type' => 'secret',
-								'field_name' => 'Please enter any two digits with no spaces (Example: 12)',
-								'field_size' => 'medium',
-								'field_required' => 'yes',
-								'field_parent' => $verify_fieldset_parent_id,
-								'field_sequence' => ++$field_sequence
+								'form_id' 			=> $form_id,
+								'field_key' 		=> 'secret',
+								'field_type' 		=> 'secret',
+								'field_name' 		=> 'Please enter any two digits with no spaces (Example: 12)',
+								'field_size' 		=> 'medium',
+								'field_required' 	=> 'yes',
+								'field_parent' 		=> $verify_fieldset_parent_id,
+								'field_sequence' 	=> ++$field_sequence
 							);
 							
-							/* Insert the submit field */ 
+							// Insert the submit field 
 							$wpdb->insert( $this->field_table_name, $secret );
 						}
 						
-						/* If this form doesn't have a submit field, add one */
+						// If this form doesn't have a submit field, add one
 						if ( $is_submit == NULL ) {
 							
-							/* Make the submit last in the sequence */
+							// Make the submit last in the sequence
 							$submit = array(
-								'form_id' => $form_id,
-								'field_key' => 'submit',
-								'field_type' => 'submit',
-								'field_name' => 'Submit',
-								'field_parent' => $verify_fieldset_parent_id,
-								'field_sequence' => ++$field_sequence
+								'form_id' 			=> $form_id,
+								'field_key' 		=> 'submit',
+								'field_type' 		=> 'submit',
+								'field_name' 		=> 'Submit',
+								'field_parent' 		=> $verify_fieldset_parent_id,
+								'field_sequence' 	=> ++$field_sequence
 							);
 							
-							/* Insert the submit field */ 
+							// Insert the submit field 
 							$wpdb->insert( $this->field_table_name, $submit );
 						}
 						else {
-							/* Only update the Submit's parent ID if the Verification field is new */
+							// Only update the Submit's parent ID if the Verification field is new
 							$data = ( $is_verification == NULL ) ? array( 'field_parent' => $verify_fieldset_parent_id, 'field_sequence' => ++$field_sequence ) : array( 'field_sequence' => $field_sequence	);
 							$where = array(
-								'form_id' => $form_id,
-								'field_id' => $is_submit
+								'form_id' 	=> $form_id,
+								'field_id' 	=> $is_submit
 							);
 										
-							/* Update the submit field */
+							// Update the submit field
 							$wpdb->update( $this->field_table_name, $data, $where );
 						}
 					}
@@ -848,7 +847,7 @@ class Visual_Form_Builder{
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->form_table_name WHERE form_id = %d", $id ) );
 					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE form_id = %d", $id ) );
 					
-					/* Redirect to keep the URL clean (use AJAX in the future?) */
+					// Redirect to keep the URL clean (use AJAX in the future?)
 					wp_redirect( add_query_arg( 'action', 'deleted', 'options-general.php?page=visual-form-builder' ) );
 					exit();
 					
@@ -866,7 +865,7 @@ class Visual_Form_Builder{
 					$from_name = $wpdb->get_var( null, 1 );
 					$notify = $wpdb->get_var( null, 2 );
 					
-					/* Copy this form and force the initial title to denote a copy */
+					// Copy this form and force the initial title to denote a copy
 					foreach ( $forms as $form ) {
 						$data = array(
 							'form_key'						=> sanitize_title( $form->form_key . ' copy' ),
@@ -892,30 +891,30 @@ class Visual_Form_Builder{
 						$wpdb->insert( $this->form_table_name, $data );
 					}
 					
-					/* Get form ID to add our first field */
+					// Get form ID to add our first field
 					$new_form_selected = $wpdb->insert_id;
 					
-					/* Copy each field and data */
+					// Copy each field and data
 					foreach ( $fields as $field ) {
 						$data = array(
-							'form_id' => $new_form_selected,
-							'field_key' => $field->field_key,
-							'field_type' => $field->field_type,
-							'field_name' => $field->field_name,
+							'form_id' 			=> $new_form_selected,
+							'field_key' 		=> $field->field_key,
+							'field_type' 		=> $field->field_type,
+							'field_name' 		=> $field->field_name,
 							'field_description' => $field->field_description,
-							'field_options' => $field->field_options,
-							'field_sequence' => $field->field_sequence,
-							'field_validation' => $field->field_validation,
-							'field_required' => $field->field_required,
-							'field_size' => $field->field_size,
-							'field_css' => $field->field_css,
-							'field_layout' => $field->field_layout,
-							'field_parent' => $field->field_parent
+							'field_options' 	=> $field->field_options,
+							'field_sequence' 	=> $field->field_sequence,
+							'field_validation' 	=> $field->field_validation,
+							'field_required' 	=> $field->field_required,
+							'field_size' 		=> $field->field_size,
+							'field_css' 		=> $field->field_css,
+							'field_layout' 		=> $field->field_layout,
+							'field_parent' 		=> $field->field_parent
 						);
 						
 						$wpdb->insert( $this->field_table_name, $data );
 
-						/* If a parent field, save the old ID and the new ID to update new parent ID */
+						// If a parent field, save the old ID and the new ID to update new parent ID
 						if ( in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) )
 							$parents[ $field->field_id ] = $wpdb->insert_id;
 						
@@ -929,7 +928,7 @@ class Visual_Form_Builder{
 							$wpdb->update( $this->form_table_name, array( 'form_notification_email' => $wpdb->insert_id ), array( 'form_id' => $new_form_selected ) );
 					}
 					
-					/* Loop through our parents and update them to their new IDs */
+					// Loop through our parents and update them to their new IDs
 					foreach ( $parents as $k => $v ) {
 						$wpdb->update( $this->field_table_name, array( 'field_parent' => $v ), array( 'form_id' => $new_form_selected, 'field_parent' => $k ) );	
 					}
@@ -952,14 +951,14 @@ class Visual_Form_Builder{
 		foreach ( $_REQUEST['order'] as $k ) {
 			if ( 'root' !== $k['item_id'] ) {
 				$data[] = array(
-					'field_id' => $k['item_id'],
-					'parent' => $k['parent_id']
-					);
+					'field_id' 	=> $k['item_id'],
+					'parent' 	=> $k['parent_id']
+				);
 			}
 		}
 
 		foreach ( $data as $k => $v ) {
-			/* Update each field with it's new sequence and parent ID */
+			// Update each field with it's new sequence and parent ID
 			$wpdb->update( $this->field_table_name, array( 'field_sequence' => $k, 'field_parent' => $v['parent'] ), array( 'field_id' => $v['field_id'] ) );
 		}
 
@@ -988,7 +987,7 @@ class Visual_Form_Builder{
 			$field_name = esc_html( $_REQUEST['field_type'] );
 			$field_type = strtolower( sanitize_title( $_REQUEST['field_type'] ) );
 			
-			/* Set defaults for validation */
+			// Set defaults for validation
 			switch ( $field_type ) {
 				case 'select' :
 				case 'radio' :
@@ -1021,10 +1020,10 @@ class Visual_Form_Builder{
 			
 			check_ajax_referer( 'create-field-' . $data['form_id'], 'nonce' );
 			
-			/* Get the last row's sequence that isn't a Verification */
+			// Get the last row's sequence that isn't a Verification
 			$sequence_last_row = $wpdb->get_var( $wpdb->prepare( "SELECT field_sequence FROM $this->field_table_name WHERE form_id = %d AND field_type = 'verification' ORDER BY field_sequence DESC LIMIT 1", $form_id ) );
 			
-			/* If it's not the first for this form, add 1 */
+			// If it's not the first for this form, add 1
 			$field_sequence = ( !empty( $sequence_last_row ) ) ? $sequence_last_row : 0;
 
 			$newdata = array(
@@ -1037,7 +1036,7 @@ class Visual_Form_Builder{
 				'field_validation' 	=> $field_validation
 			);
 			
-			/* Create the field */
+			// Create the field
 			$wpdb->insert( $this->field_table_name, $newdata );
 			
 			$insert_id = $wpdb->insert_id;
@@ -1078,12 +1077,12 @@ class Visual_Form_Builder{
 				foreach ( $_REQUEST['child_ids'] as $children ) {
 					$parent = absint( $_REQUEST['parent_id'] );
 					
-					/* Update each child item with the new parent ID */
+					// Update each child item with the new parent ID
 					$wpdb->update( $this->field_table_name, array( 'field_parent' => $parent ), array( 'field_id' => $children ) );
 				}
 			}
 			
-			/* Delete the field */
+			// Delete the field
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE field_id = %d", $field_id ) );
 		}
 		
@@ -1100,19 +1099,19 @@ class Visual_Form_Builder{
 		get_currentuserinfo();
 		
 		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_form_settings' ) {
-			$form_id = absint( $_REQUEST['form'] );
-			$status = isset( $_REQUEST['status'] ) ? $_REQUEST['status'] : 'opened';
-			$accordion = isset( $_REQUEST['accordion'] ) ? $_REQUEST['accordion'] : 'general-settings';
-			$user_id = $current_user->ID;
+			$form_id 	= absint( $_REQUEST['form'] );
+			$status 	= isset( $_REQUEST['status'] ) ? $_REQUEST['status'] : 'opened';
+			$accordion 	= isset( $_REQUEST['accordion'] ) ? $_REQUEST['accordion'] : 'general-settings';
+			$user_id 	= $current_user->ID;
 			
 			$form_settings = get_user_meta( $user_id, 'vfb-form-settings', true );
 			
 			$array = array(
-				'form_setting_tab' => $status,
+				'form_setting_tab' 	=> $status,
 				'setting_accordion' => $accordion
 			);
 			
-			/* Set defaults if meta key doesn't exist */	
+			// Set defaults if meta key doesn't exist	
 			if ( !$form_settings || $form_settings == '' ) {
 				$meta_value[ $form_id ] = $array;
 				
@@ -1242,43 +1241,43 @@ class Visual_Form_Builder{
 		global $wpdb;
 		
 		$field_where = ( isset( $field_id ) && !is_null( $field_id ) ) ? "AND field_id = $field_id" : '';
-		/* Display all fields for the selected form */
+		// Display all fields for the selected form
 		$fields = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d $field_where ORDER BY field_sequence ASC", $form_nav_selected_id ) );
 		
 		$depth = 1;
 		$parent = $last = 0;
 		
-		/* Loop through each field and display */
+		// Loop through each field and display
 		foreach ( $fields as $field ) :		
-			/* If we are at the root level */
+			// If we are at the root level
 			if ( !$field->field_parent && $depth > 1 ) {
-				/* If we've been down a level, close out the list */
+				// If we've been down a level, close out the list
 				while ( $depth > 1 ) {
 					echo '</li>
 						</ul>';
 					$depth--;
 				}
 				
-				/* Close out the root item */
+				// Close out the root item
 				echo '</li>';
 			}
-			/* first item of <ul>, so move down a level */
+			// first item of <ul>, so move down a level
 			elseif ( $field->field_parent && $field->field_parent == $last ) {
 				echo '<ul class="parent">';
 				$depth++;				
 			}
-			/* Close up a <ul> and move up a level */
+			// Close up a <ul> and move up a level
 			elseif ( $field->field_parent && $field->field_parent != $parent ) {
 				echo '</li>
 					</ul>
 				</li>';
 				$depth--;
 			}
-			/* Same level so close list item */
+			// Same level so close list item
 			elseif ( $field->field_parent && $field->field_parent == $parent )
 				echo '</li>';
 			
-			/* Store item ID and parent ID to test for nesting */										
+			// Store item ID and parent ID to test for nesting										
 			$last = $field->field_id;
 			$parent = $field->field_parent;
 	?>
@@ -1354,7 +1353,7 @@ class Visual_Form_Builder{
 								</p>
 								
 								<?php
-									/* Display the Options input only for radio, checkbox, and select fields */
+									// Display the Options input only for radio, checkbox, and select fields
 									if ( in_array( $field->field_type, array( 'radio', 'checkbox', 'select' ) ) ) : ?>
 									<!-- Options -->
 									<p class="description description-wide">
@@ -1362,19 +1361,19 @@ class Visual_Form_Builder{
                                         <span class="vfb-tooltip" title="About Options" rel="This property allows you to set predefined options to be selected by the user.  Use the plus and minus buttons to add and delete options.  At least one option must exist.">(?)</span>
                                         <br />
 									<?php
-										/* If the options field isn't empty, unserialize and build array */
+										// If the options field isn't empty, unserialize and build array
 										if ( !empty( $field->field_options ) ) {
 											if ( is_serialized( $field->field_options ) )
 												$opts_vals = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
 										}
-										/* Otherwise, present some default options */
+										// Otherwise, present some default options
 										else
 											$opts_vals = array( 'Option 1', 'Option 2', 'Option 3' );
 										
-										/* Basic count to keep track of multiple options */
+										// Basic count to keep track of multiple options
 										$count = 1;
 										
-										/* Loop through the options */
+										// Loop through the options
 										foreach ( $opts_vals as $options ) {
 									?>
 									<div id="clone-<?php echo $field->field_id . '-' . $count; ?>" class="option">
@@ -1391,13 +1390,13 @@ class Visual_Form_Builder{
 										?>
 									</p>
 								<?php
-									/* Unset the options for any following radio, checkboxes, or selects */
+									// Unset the options for any following radio, checkboxes, or selects
 									unset( $opts_vals );
 									endif;
 								?>
                                 
 								<?php
-									/* Display the Options input only for radio, checkbox, select, and autocomplete fields */
+									// Display the Options input only for radio, checkbox, select, and autocomplete fields
 									if ( in_array( $field->field_type, array( 'file-upload' ) ) ) :
 								?>
                                 	<!-- File Upload Accepts -->
@@ -1405,13 +1404,13 @@ class Visual_Form_Builder{
                                         <?php
 										$opts_vals = array( '' );
 										
-										/* If the options field isn't empty, unserialize and build array */
+										// If the options field isn't empty, unserialize and build array
 										if ( !empty( $field->field_options ) ) {
 											if ( is_serialized( $field->field_options ) )
 												$opts_vals = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : unserialize( $field->field_options );
 										}
 
-										/* Loop through the options */
+										// Loop through the options
 										foreach ( $opts_vals as $options ) {
 									?>
 										<label for="edit-form-item-options-<?php echo $field->field_id; ?>">
@@ -1423,7 +1422,7 @@ class Visual_Form_Builder{
                                     </p>
                                 <?php
 										}
-									/* Unset the options for any following radio, checkboxes, or selects */
+									// Unset the options for any following radio, checkboxes, or selects
 									unset( $opts_vals );
 									endif;
 								?>
@@ -1571,7 +1570,7 @@ class Visual_Form_Builder{
 	<?php
 		endforeach;
 		
-		/* This assures all of the <ul> and <li> are closed */
+		// This assures all of the <ul> and <li> are closed
 		if ( $depth > 1 ) {
 			while( $depth > 1 ) {
 				echo '</li>
@@ -1580,7 +1579,7 @@ class Visual_Form_Builder{
 			}
 		}
 		
-		/* Close out last item */
+		// Close out last item
 		echo '</li>';
 	}
 	
@@ -1653,9 +1652,9 @@ class Visual_Form_Builder{
         <?php
         	$views = array();
         	$pages = array(
-        		'visual-form-builder' => array( 'page' 	=> __( 'Forms', 'visual-form-builder' ) ),
-        		'vfb-entries' => array( 'page' 	=> __( 'Entries', 'visual-form-builder' ) ),
-        		'vfb-export' => array( 'page' 	=> __( 'Export', 'visual-form-builder' ) )
+        		'visual-form-builder' 	=> array( 'page' 	=> __( 'Forms', 'visual-form-builder' ) ),
+        		'vfb-entries' 			=> array( 'page' 	=> __( 'Entries', 'visual-form-builder' ) ),
+        		'vfb-export' 			=> array( 'page' 	=> __( 'Export', 'visual-form-builder' ) )
         	);
         	
         	foreach ( $pages as $page => $args ) {
@@ -1669,7 +1668,7 @@ class Visual_Form_Builder{
         </ul>
         
         <?php
-			/* Display the Entries */
+			// Display the Entries
 			if ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-entries' ) ) ) : 
 									
 				if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'view' ) ) ) :
@@ -1689,7 +1688,7 @@ class Visual_Form_Builder{
 					include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-new-form.php' );
 			elseif ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-export' ) ) ) : 
 				$export->display();
-			/* Display the Forms */
+			// Display the Forms
 			else:
 				if ( empty( $form_nav_selected_id ) ) :
 		?>
@@ -1734,21 +1733,21 @@ class Visual_Form_Builder{
 		$form_id = ( isset( $_REQUEST['form_id'] ) ) ? $_REQUEST['form_id'] : '';
 		
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
-			/* Get forms */
+			// Get forms
 			$order = sanitize_sql_orderby( 'form_id DESC' );			
 			$forms 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
 			
 			foreach ( $forms as $form ) {
-				/* If text, return output and format the HTML for display */
+				// If text, return output and format the HTML for display
 				if ( 'text' == $form->form_success_type )
 					return stripslashes( html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) ) );
-				/* If page, redirect to the permalink */
+				// If page, redirect to the permalink
 				elseif ( 'page' == $form->form_success_type ) {
 					$page = get_permalink( $form->form_success_message );
 					wp_redirect( $page );
 					exit();
 				}
-				/* If redirect, redirect to the URL */
+				// If redirect, redirect to the URL
 				elseif ( 'redirect' == $form->form_success_type ) {
 					wp_redirect( $form->form_success_message );
 					exit();
@@ -1765,7 +1764,7 @@ class Visual_Form_Builder{
 	public function form_code( $atts ) {
 		global $wpdb;
 		
-		/* Extract shortcode attributes, set defaults */
+		// Extract shortcode attributes, set defaults
 		extract( shortcode_atts( array(
 			'id' => ''
 			), $atts ) 
@@ -1775,16 +1774,16 @@ class Visual_Form_Builder{
 		if ( !$this->add_scripts )
 			$this->scripts();
 		
-		/* Get form id.  Allows use of [vfb id=1] or [vfb 1] */
+		// Get form id.  Allows use of [vfb id=1] or [vfb 1]
 		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : key( $atts );
 		
 		$open_fieldset = $open_section = false;
 		$output = '';
 		
-		/* Default the submit value */
+		// Default the submit value
 		$submit = 'Submit';
 		
-		/* If form is submitted, show success message, otherwise the form */
+		// If form is submitted, show success message, otherwise the form
 		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
 			$output = $this->confirmation();
 		}
@@ -1797,7 +1796,7 @@ class Visual_Form_Builder{
 			$order_fields = sanitize_sql_orderby( 'field_sequence ASC' );
 			$fields = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d ORDER BY $order_fields", $form_id ) );
 
-			/* Setup count for fieldset and ul/section class names */
+			// Setup count for fieldset and ul/section class names
 			$count = 1;
 			
 			$verification = '';
@@ -1809,7 +1808,7 @@ class Visual_Form_Builder{
 				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 
 				foreach ( $fields as $field ) {
-					/* If field is required, build the span and add setup the 'required' class */
+					// If field is required, build the span and add setup the 'required' class
 					$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
 					$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
 					$validation 	= ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
@@ -1818,16 +1817,16 @@ class Visual_Form_Builder{
 					$layout 		= ( !empty( $field->field_layout ) ) ? " $field->field_layout" : '';
 					$default 		= ( !empty( $field->field_default ) ) ? html_entity_decode( stripslashes( $field->field_default ) ) : '';
 					
-					/* Close each section */
+					// Close each section
 					if ( $open_section == true ) {
-						/* If this field's parent does NOT equal our section ID */
+						// If this field's parent does NOT equal our section ID
 						if ( $sec_id && $sec_id !== $field->field_parent ) {
 							$output .= '</div><div class="vfb-clear"></div>';
 							$open_section = false;
 						}
 					}
 					
-					/* Force an initial fieldset and display an error message to strongly encourage user to add one */
+					// Force an initial fieldset and display an error message to strongly encourage user to add one
 					if ( $count === 1 && $field->field_type !== 'fieldset' ) {
 						$output .= '<fieldset class="fieldset"><div class="legend" style="background-color:#FFEBE8;border:1px solid #CC0000;"><h3>Oops! Missing Fieldset</h3><p style="color:black;">If you are seeing this message, it means you need to <strong>add a Fieldset to the beginning of your form</strong>. Your form may not function or display properly without one.</p></div><ul class="section section-' . $count . '">';
 						
@@ -1835,7 +1834,7 @@ class Visual_Form_Builder{
 					}
 					
 					if ( $field->field_type == 'fieldset' ) {
-						/* Close each fieldset */
+						// Close each fieldset
 						if ( $open_fieldset == true )
 							$output .= '</ul><br /></fieldset>';
 						
@@ -1846,7 +1845,7 @@ class Visual_Form_Builder{
 					elseif ( $field->field_type == 'section' ) {
 						$output .= '<div class="section-div vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id . '"><h4>' . stripslashes( $field->field_name ) . '</h4>';
 						
-						/* Save section ID for future comparison */
+						// Save section ID for future comparison
 						$sec_id = $field->field_id;
 						$open_section = true;
 					}
@@ -1864,28 +1863,28 @@ class Visual_Form_Builder{
 							$verification .= '<fieldset class="fieldset fieldset-' . $count . ' ' . $field->field_key . $css . '"><div class="legend"><h3>' . stripslashes( $field->field_name ) . '</h3></div><ul class="section section-' . $count . '">';
 						
 						if ( $field->field_type == 'secret' ) {
-							/* Default logged in values */
+							// Default logged in values
 							$logged_in_display = '';
 							$logged_in_value = '';
 
-							/* If the user is logged in, fill the field in for them */
+							// If the user is logged in, fill the field in for them
 							if ( is_user_logged_in() ) {
-								/* Hide the secret field if logged in */
+								// Hide the secret field if logged in
 								$logged_in_display = ' style="display:none;"';
 								$logged_in_value = 14;
 								
-								/* Get logged in user details */
+								// Get logged in user details
 								$user = wp_get_current_user();
 								$user_identity = ! empty( $user->ID ) ? $user->display_name : '';
 								
-								/* Display a message for logged in users */
+								// Display a message for logged in users
 								$verification .= '<li class="item">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. Verification not required.', 'visual-form-builder' ), admin_url( 'profile.php' ), $user_identity ) . '</li>';
 							}
 							
 							$validation = ' {digits:true,maxlength:2,minlength:2}';
 							$verification .= '<li class="item item-' . $field->field_type . '"' . $logged_in_display . '><label for="' . $id_attr . '" class="desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
 							
-							/* Set variable for testing if required is Yes/No */
+							// Set variable for testing if required is Yes/No
 							if ( $required == '' )
 								$verification .= '<input type="hidden" name="_vfb-required-secret" value="0" />';
 							
@@ -1932,7 +1931,7 @@ class Visual_Form_Builder{
 							
 							$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
 							
-							/* Loop through each option and output */
+							// Loop through each option and output
 							foreach ( $options as $option => $value ) {
 								$output .= '<option value="' . trim( stripslashes( $value ) ) . '"' . selected( $default, ++$option, 0 ) . '>'. trim( stripslashes( $value ) ) . '</option>';
 							}
@@ -1950,7 +1949,7 @@ class Visual_Form_Builder{
 							
 							$output .= '<div>';
 							
-							/* Loop through each option and output */
+							// Loop through each option and output
 							foreach ( $options as $option => $value ) {
 								// Increment the base index by one to match $default
 								$option++;
@@ -1974,7 +1973,7 @@ class Visual_Form_Builder{
 							
 							$output .= '<div>';
 
-							/* Loop through each option and output */
+							// Loop through each option and output
 							foreach ( $options as $option => $value ) {
 								// Increment the base index by one to match $default
 								$option++;
@@ -2043,37 +2042,37 @@ class Visual_Form_Builder{
 							if ( !empty( $field->field_description ) )
 								$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
 
-							/* Get the time format (12 or 24) */
+							// Get the time format (12 or 24)
 							$time_format = str_replace( 'time-', '', $validation );
 							$time_format = apply_filters( 'vfb_time_format', $time_format );
 							
-							/* Set whether we start with 0 or 1 and how many total hours */
+							// Set whether we start with 0 or 1 and how many total hours
 							$hour_start = ( $time_format == '12' ) ? 1 : 0;
 							$hour_total = ( $time_format == '12' ) ? 12 : 23;
 							
-							/* Hour */
+							// Hour
 							$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[hour]" id="' . $id_attr . '-hour" class="select' . $required . $css . '">';
 							for ( $i = $hour_start; $i <= $hour_total; $i++ ) {
-								/* Add the leading zero */
+								// Add the leading zero
 								$hour = ( $i < 10 ) ? "0$i" : $i;
 								$output .= "<option value='$hour'>$hour</option>";
 							}
 							$output .= '</select><label for="' . $id_attr . '-hour">HH</label></span>';
 							
-							/* Minute */
+							// Minute
 							$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[min]" id="' . $id_attr . '-min" class="select' . $required . $css . '">';
 							
-							$total_mins = apply_filters( 'vfb_time_min_total', 55 );
-							$min_interval = apply_filters( 'vfb_time_min_interval', 5 );
+							$total_mins 	= apply_filters( 'vfb_time_min_total', 55 );
+							$min_interval 	= apply_filters( 'vfb_time_min_interval', 5 );
 							
 							for ( $i = 0; $i <= $total_mins; $i += $min_interval ) {
-								/* Add the leading zero */
+								// Add the leading zero
 								$min = ( $i < 10 ) ? "0$i" : $i;
 								$output .= "<option value='$min'>$min</option>";
 							}
 							$output .= '</select><label for="' . $id_attr . '-min">MM</label></span>';
 							
-							/* AM/PM */
+							// AM/PM
 							if ( $time_format == '12' )
 								$output .= '<span class="time"><select name="vfb-' . $field->field_id . '[ampm]" id="' . $id_attr . '-ampm" class="select' . $required . $css . '"><option value="AM">AM</option><option value="PM">PM</option></select><label for="' . $id_attr . '-ampm">AM/PM</label></span>';
 							$output .= '<div class="clear"></div>';		
@@ -2118,15 +2117,15 @@ class Visual_Form_Builder{
 							echo '';
 					}
 
-					/* Closing </li> */
+					// Closing </li>
 					$output .= ( !in_array( $field->field_type , array( 'verification', 'secret', 'submit', 'fieldset', 'section' ) ) ) ? '</li>' : '';
 				}
 				
 				
-				/* Close user-added fields */
+				// Close user-added fields
 				$output .= '</ul><br /></fieldset>';
 				
-				/* Make sure the verification displays even if they have not updated their form */
+				// Make sure the verification displays even if they have not updated their form
 				if ( $verification == '' ) {
 					$verification = '<fieldset class="fieldset verification">
 							<div class="legend">
@@ -2141,7 +2140,7 @@ class Visual_Form_Builder{
 								</li>';
 				}
 				
-				/* Output our security test */
+				// Output our security test
 				$output .= $verification . '<li style="display:none;">
 									<label for="vfb-spam">' . __( 'This box is for spam protection' , 'visual-form-builder') . ' - <strong>' . __( 'please leave it blank' , 'visual-form-builder') . '</strong>:</label>
 									<div>
@@ -2170,9 +2169,9 @@ class Visual_Form_Builder{
 	public function email() {
 		global $wpdb, $post;
 		
-		$required = ( isset( $_REQUEST['_vfb-required-secret'] ) && $_REQUEST['_vfb-required-secret'] == '0' ) ? false : true;
-		$secret_field = ( isset( $_REQUEST['_vfb-secret'] ) ) ? $_REQUEST['_vfb-secret'] : '';
-		$honeypot = ( isset( $_REQUEST['vfb-spam'] ) ) ? $_REQUEST['vfb-spam'] : '';
+		$required 		= ( isset( $_REQUEST['_vfb-required-secret'] ) && $_REQUEST['_vfb-required-secret'] == '0' ) ? false : true;
+		$secret_field 	= ( isset( $_REQUEST['_vfb-secret'] ) ) ? $_REQUEST['_vfb-secret'] : '';
+		$honeypot 		= ( isset( $_REQUEST['vfb-spam'] ) ) ? $_REQUEST['vfb-spam'] : '';
 		
 		// If the verification is set to required, run validation check
 		if ( true == $required && !empty( $secret_field ) ) {
@@ -2232,7 +2231,7 @@ class Visual_Form_Builder{
 			// Notification send to email override query
 			$notification = $wpdb->get_results( $wpdb->prepare( "SELECT fields.field_id, fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_notification_email = fields.field_id WHERE forms.form_id = %d", $form_id ) );
 			
-			$reply_to_name = $form_settings->form_from_name;
+			$reply_to_name 	= $form_settings->form_from_name;
 			$reply_to_email = $form_settings->form_from;
 			
 			// Loop through name results and assign sender name to override, if needed
@@ -2257,17 +2256,17 @@ class Visual_Form_Builder{
 					$copy_email = $_POST[ 'vfb-' . $notify->field_id ];
 			}
 
-			/* Query to get all forms */
+			// Query to get all forms
 			$order = sanitize_sql_orderby( 'field_sequence ASC' );
 			$fields = $wpdb->get_results( $wpdb->prepare( "SELECT field_id, field_key, field_name, field_type, field_options, field_parent, field_required FROM $this->field_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
 			
-			/* Setup counter for alt rows */
+			// Setup counter for alt rows
 			$i = $points = 0;
 			
-			/* Setup HTML email vars */
+			// Setup HTML email vars
 			$header = $body = $message = $footer = $html_email = $auto_response_email = $attachments = '';
 			
-			/* Prepare the beginning of the content */
+			// Prepare the beginning of the content
 			$header = '<html>
 						<head>
 						<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
@@ -2275,68 +2274,68 @@ class Visual_Form_Builder{
 						</head>
 						<body><table rules="all" style="border-color: #666;" cellpadding="10">' . "\n";
 			
-			/* Loop through each form field and build the body of the message */
+			// Loop through each form field and build the body of the message
 			foreach ( $fields as $field ) {
-				/* Handle attachments */
+				// Handle attachments
 				if ( $field->field_type == 'file-upload' ) {
 					$value = ( isset( $_FILES[ 'vfb-' . $field->field_id ] ) ) ? $_FILES[ 'vfb-' . $field->field_id ] : '';
 					
 					if ( $value['size'] > 0 ) {
-						/* 25MB is the max size allowed */
+						// 25MB is the max size allowed
 						$size = apply_filters( 'vfb_max_file_size', 25 );
 						$max_attach_size = $size * 1048576;
 						
-						/* Display error if file size has been exceeded */
+						// Display error if file size has been exceeded
 						if ( $value['size'] > $max_attach_size )
 							wp_die( __( 'File size exceeds 25MB. Most email providers will reject emails with attachments larger than 25MB. Please decrease the file size and try again.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 						
-						/* Options array for the wp_handle_upload function. 'test_form' => false */
+						// Options array for the wp_handle_upload function. 'test_form' => false
 						$upload_overrides = array( 'test_form' => false ); 
 						
-						/* We need to include the file that runs the wp_handle_upload function */
+						// We need to include the file that runs the wp_handle_upload function
 						require_once( ABSPATH . 'wp-admin/includes/file.php' );
 						
-						/* Handle the upload using WP's wp_handle_upload function. Takes the posted file and an options array */
+						// Handle the upload using WP's wp_handle_upload function. Takes the posted file and an options array
 						$uploaded_file = wp_handle_upload( $value, $upload_overrides );
 						
-						/* If the wp_handle_upload call returned a local path for the image */
+						// If the wp_handle_upload call returned a local path for the image
 						if ( isset( $uploaded_file['file'] ) ) {
-							/* Retrieve the file type from the file name. Returns an array with extension and mime type */
+							// Retrieve the file type from the file name. Returns an array with extension and mime type
 							$wp_filetype = wp_check_filetype( basename( $uploaded_file['file'] ), null );
 							
-							/* Return the current upload directory location */
+							// Return the current upload directory location
  							$wp_upload_dir = wp_upload_dir();
 							
 							$media_upload = array(
-								'guid' => $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $uploaded_file['file'] ), 
-								'post_mime_type' => $wp_filetype['type'],
-								'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $uploaded_file['file'] ) ),
-								'post_content' => '',
-								'post_status' => 'inherit'
+								'guid' 				=> $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $uploaded_file['file'] ), 
+								'post_mime_type' 	=> $wp_filetype['type'],
+								'post_title' 		=> preg_replace( '/\.[^.]+$/', '', basename( $uploaded_file['file'] ) ),
+								'post_content' 		=> '',
+								'post_status' 		=> 'inherit'
 							);
 							
-							/* Insert attachment into Media Library and get attachment ID */
+							// Insert attachment into Media Library and get attachment ID
 							$attach_id = wp_insert_attachment( $media_upload, $uploaded_file['file'] );
 							
-							/* Include the file that runs wp_generate_attachment_metadata() */
+							// Include the file that runs wp_generate_attachment_metadata()
 							require_once( ABSPATH . 'wp-admin/includes/image.php' );
 							
-							/* Setup attachment metadata */
+							// Setup attachment metadata
 							$attach_data = wp_generate_attachment_metadata( $attach_id, $uploaded_file['file'] );
 							
-							/* Update the attachment metadata */
+							// Update the attachment metadata
 							wp_update_attachment_metadata( $attach_id, $attach_data );
 							
 							$attachments[ 'vfb-' . $field->field_id ] = $uploaded_file['file'];
 
 							$data[] = array(
-								'id' => $field->field_id,
-								'slug' => $field->field_key,
-								'name' => $field->field_name,
-								'type' => $field->field_type,
-								'options' => $field->field_options,
+								'id' 		=> $field->field_id,
+								'slug' 		=> $field->field_key,
+								'name' 		=> $field->field_name,
+								'type' 		=> $field->field_type,
+								'options' 	=> $field->field_options,
 								'parent_id' => $field->field_parent,
-								'value' => $uploaded_file['url']
+								'value' 	=> $uploaded_file['url']
 							);
 							
 							$body .= '<tr><td><strong>' . stripslashes( $field->field_name ) . ': </strong></td><td><a href="' . $uploaded_file['url'] . '">' . $uploaded_file['url'] . '</a></td></tr>' . "\n";
@@ -2347,14 +2346,14 @@ class Visual_Form_Builder{
 						$body .= '<tr><td><strong>' . stripslashes( $field->field_name ) . ': </strong></td><td>' . $value . '</td></tr>' . "\n";
 					}
 				}
-				/* Everything else */
+				// Everything else
 				else {
 					$value = ( isset( $_POST[ 'vfb-' . $field->field_id ] ) ) ? $_POST[ 'vfb-' . $field->field_id ] : '';
 					
-					/* If time field, build proper output */
+					// If time field, build proper output
 					if ( is_array( $value ) && array_key_exists( 'hour', $value ) && array_key_exists( 'min', $value ) )
 						$value = ( array_key_exists( 'ampm', $value ) ) ? substr_replace( implode( ':', $value ), ' ', 5, 1 ) : implode( ':', $value );
-					/* If address field, build proper output */
+					// If address field, build proper output
 					elseif ( is_array( $value ) && array_key_exists( 'address', $value ) && array_key_exists( 'address-2', $value ) ) {
 						$address = '';
 						
@@ -2394,19 +2393,19 @@ class Visual_Form_Builder{
 						
 						$value = html_entity_decode( stripslashes( esc_html( $address ) ), ENT_QUOTES, 'UTF-8' );
 					}
-					/* If multiple values, build the list */
+					// If multiple values, build the list
 					elseif ( is_array( $value ) )
 						$value = esc_html( implode( ', ', $value ) );
-					/* Lastly, handle single values */
+					// Lastly, handle single values
 					else
 						$value = html_entity_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES, 'UTF-8' );
 					
-					/* Setup spam catcher RegEx */
-					$exploits = '/(content-type|bcc:|cc:|document.cookie|onclick|onload|javascript|alert)/i';
-					$profanity = '/(beastial|bestial|blowjob|clit|cock|cum|cunilingus|cunillingus|cunnilingus|cunt|ejaculate|fag|felatio|fellatio|fuck|fuk|fuks|gangbang|gangbanged|gangbangs|hotsex|jism|jiz|kock|kondum|kum|kunilingus|orgasim|orgasims|orgasm|orgasms|phonesex|phuk|phuq|porn|pussies|pussy|spunk|xxx)/i';
-					$spamwords = '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|texas|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
+					// Setup spam catcher RegEx
+					$exploits 	= '/(content-type|bcc:|cc:|document.cookie|onclick|onload|javascript|alert)/i';
+					$profanity 	= '/(beastial|bestial|blowjob|clit|cock|cum|cunilingus|cunillingus|cunnilingus|cunt|ejaculate|fag|felatio|fellatio|fuck|fuk|fuks|gangbang|gangbanged|gangbangs|hotsex|jism|jiz|kock|kondum|kum|kunilingus|orgasim|orgasims|orgasm|orgasms|phonesex|phuk|phuq|porn|pussies|pussy|spunk|xxx)/i';
+					$spamwords 	= '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|texas|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
 					
-					/* Add up points for each spam hit */
+					// Add up points for each spam hit
 					if ( preg_match( $exploits, $value ) )
 						$points += 2;
 					elseif ( preg_match( $profanity, $value ) )
@@ -2441,7 +2440,7 @@ class Visual_Form_Builder{
 				}
 			}
 			
-			/* Setup our entries data */
+			// Setup our entries data
 			$entry = array(
 				'form_id' 			=> $form_id,
 				'data' 				=> serialize( $data ),
@@ -2453,19 +2452,19 @@ class Visual_Form_Builder{
 				'ip_address' 		=> $_SERVER['REMOTE_ADDR']
 			);
 			
-			/* Insert this data into the entries table */
+			// Insert this data into the entries table
 			$wpdb->insert( $this->entries_table_name, $entry );
 
-			/* Close out the content */
+			// Close out the content
 			$footer .= '<tr><td class="footer" height="61" align="left" valign="middle" colspan="2"><p style="font-size: 12px; font-weight: normal; margin: 0; line-height: 16px; padding: 0;">This email was built and sent using <a href="http://wordpress.org/extend/plugins/visual-form-builder/" style="font-size: 12px;">Visual Form Builder</a>.</p></td></tr></table></body></html>' . "\n";
 			
-			/* Build complete HTML email */
+			// Build complete HTML email
 			$message = $header . $body . $footer;
 			
 			// Initialize header filter vars
-			$this->header_from_name = stripslashes( $reply_to_name );
-			$this->header_from = $reply_to_email;
-			$this->header_content_type = 'text/html';
+			$this->header_from_name 	= stripslashes( $reply_to_name );
+			$this->header_from 			= $reply_to_email;
+			$this->header_content_type 	= 'text/html';
 			
 			// Either prepend the notification message to the submitted entry, or send by itself				
 			if ( $form_settings->form_notification_entry !== '' )
@@ -2475,10 +2474,10 @@ class Visual_Form_Builder{
 			
 			
 			// Build email headers			
-			$from_name = ( $this->header_from_name == '' ) ? 'WordPress' : $this->header_from_name;
+			$from_name 	= ( $this->header_from_name == '' ) ? 'WordPress' : $this->header_from_name;
 			$from_email = get_site_option( 'admin_email' );
-			$reply_to = "\"$this->header_from_name\" <$this->header_from>";
-			$headers = "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+			$reply_to 	= "\"$this->header_from_name\" <$this->header_from>";
+			$headers 	= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 			
 			// Send the mail
 			foreach ( $form_settings->form_to as $email ) {
@@ -2491,10 +2490,10 @@ class Visual_Form_Builder{
 				$attachments = ( $form_settings->form_notification_entry !== '' ) ? $attachments : '';
 				
 				// Reset headers for notification email
-				$reply_name = stripslashes( $form_settings->form_notification_email_name );
-				$reply_email = $form_settings->form_notification_email_from;
-				$reply_to 	= "\"$reply_name\" <$reply_email>";
-				$headers 	= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+				$reply_name 	= stripslashes( $form_settings->form_notification_email_name );
+				$reply_email 	= $form_settings->form_notification_email_from;
+				$reply_to 		= "\"$reply_name\" <$reply_email>";
+				$headers 		= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $this->header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 				
 				// Send the mail
 				wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
@@ -2599,6 +2598,6 @@ class Visual_Form_Builder{
 	}	
 }
 
-/* On plugin activation, install the databases and add/update the DB version */
+// On plugin activation, install the databases and add/update the DB version
 register_activation_hook( __FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
 ?>
