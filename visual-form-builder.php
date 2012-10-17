@@ -164,7 +164,7 @@ class Visual_Form_Builder{
 	 */
 	public function add_media_button( $context ){
 		if ( current_user_can( 'manage_options' ) )
-			$context .= '<a href="#TB_inline?width=450&inlineId=vfb_form" class="thickbox" title="Add Visual Form Builder form"><img src="'. plugins_url( 'visual-form-builder/css/vfb_icon.png' ) . '" alt="Add Visual Form Builder form" /></a>';
+			$context .= '<a href="#TB_inline?width=450&inlineId=vfb_form" class="thickbox" title="Add Visual Form Builder form"><img src="'. plugins_url( 'visual-form-builder/images/vfb_icon.png' ) . '" alt="Add Visual Form Builder form" /></a>';
     	
     	return $context;
 	}
@@ -493,7 +493,7 @@ class Visual_Form_Builder{
 				data TEXT NOT NULL,
 				subject TEXT,
 				sender_name VARCHAR(255),
-				sender_email VARCHAR(25),
+				sender_email VARCHAR(255),
 				emails_to TEXT,
 				date_submitted DATETIME,
 				ip_address VARCHAR(25),
