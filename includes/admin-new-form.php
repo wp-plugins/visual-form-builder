@@ -48,13 +48,3 @@
 		endif;
 	?>
 </form>
-<h3><?php _e( 'Need more help?' , 'visual-form-builder'); ?></h3>
-<ol>
-<li><?php _e( 'Click on the Help tab at the top of this page.' , 'visual-form-builder'); ?></li>
-<li><a href="http://wordpress.org/extend/plugins/visual-form-builder/faq/">FAQ</a></li>
-<li><a href="http://wordpress.org/support/plugin/visual-form-builder">Support Forum</a></li>
-</ol>
-
-<ul id="promote-vfb">
-<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
-</ul>
