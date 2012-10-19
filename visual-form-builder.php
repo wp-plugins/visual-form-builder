@@ -523,7 +523,7 @@ class Visual_Form_Builder{
 	public function admin_scripts() {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'postbox' );
-		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
+		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'form-elements-add', plugins_url( "visual-form-builder/js/visual-form-builder$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
 	}
@@ -537,7 +537,7 @@ class Visual_Form_Builder{
 		// Make sure scripts are only added once via shortcode
 		$this->add_scripts = true;
 		
-		wp_enqueue_script( 'jquery-form-validation', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
+		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
@@ -550,7 +550,7 @@ class Visual_Form_Builder{
 	 */
 	public function css() {
 		wp_enqueue_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( 'visual-form-builder/css/visual-form-builder.css' ) ) );
-		wp_enqueue_style( 'vfb-date-picker-css', apply_filters( 'vfb-date-picker-css','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/base/jquery-ui.css' ) );
+		wp_enqueue_style( 'vfb-date-picker-css', apply_filters( 'vfb-date-picker-css','https://ajax.aspnetcdn.com/ajax/jquery.ui/1.9.0/themes/base/jquery-ui.css' ) );
 		
 		wp_enqueue_script( 'visual-form-builder-quicktags', plugins_url( 'visual-form-builder/js/js_quicktags.js' ) );
 	}

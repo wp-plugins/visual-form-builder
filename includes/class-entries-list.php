@@ -1,6 +1,6 @@
 <?php
 
-/* Include the wp_list_table class if running <WP 3.1 */
+// Include the wp_list_table class if running <WP 3.1
 if( !class_exists( 'WP_List_Table' ) ) {
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
@@ -59,7 +59,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		// Build row actions
 		$actions = array(
 			'view' 		=> sprintf( '<a href="?page=%s&action=%s&entry=%s" id="%3$s" class="view-entry">View</a>', $_REQUEST['page'], 'view', $item['entry_id'] ),
-			'delete' 	=> sprintf( '<a href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['entry_id'] ),
+			'delete' 	=> sprintf( '<a href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['entry_id'] )
 		);
 	
 		return sprintf( '%1$s %2$s', $item['form'], $this->row_actions( $actions ) );
@@ -139,9 +139,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		}
 
 		$sql_order = sanitize_sql_orderby( "$order_col $order" );
-		$query = "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.subject, entries.sender_name, entries.sender_email, entries.emails_to, entries.date_submitted, entries.ip_address FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id $where $search ORDER BY $sql_order LIMIT $per_page $offset";
-		
-		$cols = $wpdb->get_results( $query );
+		$cols = $wpdb->get_results( "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.subject, entries.sender_name, entries.sender_email, entries.emails_to, entries.date_submitted, entries.ip_address FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id WHERE 1=1 $where $search ORDER BY $sql_order LIMIT $per_page $offset" );
 		
 		return $cols;
 	}
@@ -187,8 +185,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function process_bulk_action() {
 		switch( $this->current_action() ) {
 			case 'export-selected' :
-				$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? $_REQUEST['entry'] : array( $_REQUEST['entry'] );
-				$this->export_entries( $entry_id );
+				$entry_id = ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) ? (array) $_REQUEST['entry'] : '';
+				
+				$export = $this->export_entries( $entry_id );
+				
+				// Don't do anything if no entry was selected; otherwise, die() properly
+				if ( !is_wp_error( $export ) )
+					die();
 			break;
 			
 			case 'delete' :
@@ -413,9 +416,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		global $wpdb, $wp_locale;
 		
 	    $months = $wpdb->get_results( $wpdb->prepare( "
-			SELECT DISTINCT YEAR( date_submitted ) AS year, MONTH( date_submitted ) AS month
-			FROM $this->entries_table_name
-			ORDER BY date_submitted DESC
+			SELECT DISTINCT YEAR( forms.date_submitted ) AS year, MONTH( forms.date_submitted ) AS month
+			FROM $this->entries_table_name AS forms
+			ORDER BY forms.date_submitted DESC
 		" ) );
 
 		$month_count = count( $months );
@@ -516,6 +519,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		// Get entries search terms
 		$search_terms = ( !empty( $_REQUEST['s'] ) ) ? explode( ' ', $_REQUEST['s'] ) : array();
 		
+		$searchand = $search = '';
 		// Loop through search terms and build query
 		foreach( $search_terms as $term ) {
 			$term = esc_sql( like_escape( $term ) );
@@ -568,7 +572,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		}
 		
 		// How many entries do we have?
-		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE 1=1 $where" ) );
+		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name AS forms WHERE 1=1 $where" ) );
 
 		// Add sorted data to the items property
 		$this->items = $data;
