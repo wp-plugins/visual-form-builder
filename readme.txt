@@ -210,6 +210,12 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 2.6.2**
+
+* Fix bug where File Upload field would prevent validation
+* Fix bug when selecting entries export
+* Update JS and CSS from CDN to use HTTPS
+
 **Version 2.6.1**
 
 * Fix bug for missing Save Form button
@@ -406,6 +412,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.6.2 =
+Fix bug where File Upload field would prevent validation, JS and CSS now work on HTTPS, minor fixes.
 
 = 2.6 =
 VFB now in its own menu, new All Forms UI, other bug fixes
