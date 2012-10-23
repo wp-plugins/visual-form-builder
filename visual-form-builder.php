@@ -1667,7 +1667,6 @@ class Visual_Form_Builder{
         	foreach ( $pages as $page => $args ) {
         		$class = ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( $page ) ) ) ? 'current' : '';
         		
-        		//if ( current_user_can( $args['cap'] ) )
         		$views[ $args['page'] ] = "\t<li><a class='$class' href='" . admin_url( "admin.php?page=$page" ) . "'>{$args['page']}</a>";	
         	}
         	echo implode( ' |</li>', $views ) . '</li>';

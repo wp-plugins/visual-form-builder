@@ -214,6 +214,7 @@ To Export Selected:
 
 * Fix bug where File Upload field would prevent validation
 * Fix bug when selecting entries export
+* Fix bug for another missing Save Form button
 * Update JS and CSS from CDN to use HTTPS
 
 **Version 2.6.1**
