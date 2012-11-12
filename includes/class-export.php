@@ -35,31 +35,30 @@ class VisualFormBuilder_Export {
 
 		?>
         <form method="post" id="vfb-export">
-        	<p>Backup and save some or all of your Visual Form Builder Pro data.</p>
-        	<p>Once you've saved the file, you will be able to import Visual Form Builder data from this site into another site.</p>
-        	<h3>Choose what to export</h3>
+        	<p><?php _e( 'Backup and save some or all of your Visual Form Builder data.', 'visual-form-builder' ); ?></p>
+        	<p><?php _e( 'Once you have saved the file, you will be able to import Visual Form Builder Pro data from this site into another site.', 'visual-form-builder' ); ?></p>
+        	<h3><?php _e( 'Choose what to export', 'visual-form-builder' ); ?></h3>
         	
         	<p><label><input type="radio" name="content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder' ); ?></label></p>
-        	<p class="description">This will contain all of your forms, fields, entries, and email design settings.<br><strong>*Only available in Visual Form Builder Pro*</strong></p>
+        	<p class="description"><?php _e( 'This will contain all of your forms, fields, entries, and email design settings.', 'visual-form-builder' ); ?><br><strong>*<?php _e( 'Only available in Visual Form Builder Pro', 'visual-form-builder' ); ?>*</strong></p>
         	
         	<p><label><input type="radio" name="content" value="forms" disabled="disabled" /> <?php _e( 'Forms', 'visual-form-builder' ); ?></label></p>
-        	<p class="description">This will contain all of your forms, fields, and email design settings.<br><strong>*Only available in Visual Form Builder Pro*</strong></p>
+        	<p class="description"><?php _e( 'This will contain all of your forms, fields, and email design settings', 'visual-form-builder' ); ?>.<br><strong>*<?php _e( 'Only available in Visual Form Builder Pro', 'visual-form-builder' ); ?>*</strong></p>
         	
         	<p><label><input type="radio" name="content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder' ); ?></label></p>
         	
         	<ul id="entries-filters" class="vfb-export-filters">
-        		<li><p class="description">This will export entries in either a .csv or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.</p></li>
+        		<li><p class="description"><?php _e( 'This will export entries in either a .csv or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.', 'visual-form-builder' ); ?></p></li>
         		<li>
-        			<label for="format">Format:</label>
+        			<label for="format"><?php _e( 'Format', 'visual-form-builder' ); ?>:</label>
         			<select name="format">
         				<option value="csv" selected="selected"><?php _e( 'Comma Separated (.csv)', 'visual-form-builder' ); ?></option>
         				<option value="xls" disabled="disabled"><?php _e( 'Excel (.xls) - Pro only', 'visual-form-builder' ); ?></option>
         			</select>
         		</li>
         		<li>
-		        	<label for="form_id">Form:</label> 
+		        	<label for="form_id"><?php _e( 'Form', 'visual-form-builder' ); ?>:</label> 
 		            <select name="form_id">
-		            	<!--<option value="0">All</option>-->
 					<?php
 						foreach ( $forms as $form ) {
 							echo '<option value="' . $form->form_id . '" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</option>';
@@ -68,7 +67,7 @@ class VisualFormBuilder_Export {
 					</select>
         		</li>
         		<li>
-        			<label>Date Range:</label>
+        			<label><?php _e( 'Date Range', 'visual-form-builder' ); ?>:</label>
         			<select name="entries_start_date">
         				<option value="0">Start Date</option>
         				<?php $this->months_dropdown(); ?>
@@ -80,7 +79,7 @@ class VisualFormBuilder_Export {
         		</li>
         	</ul>
         	
-        <input type="submit" value="Download Export File" class="button" id="Submit" name="Submit">
+         <?php submit_button( __( 'Download Export File', 'visual-form-builder' ) ); ?>
         </form>
 <?php
 	}

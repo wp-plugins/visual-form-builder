@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.6.2
+Version: 2.6.3
 */
 
 /*
@@ -31,7 +31,7 @@ $visual_form_builder = new Visual_Form_Builder();
 // Visual Form Builder class
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.6.2',
+	protected $vfb_db_version = '2.6.3',
 			  $add_scripts = false;
 
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
@@ -86,7 +86,7 @@ class Visual_Form_Builder{
 			}
 			
 			// If database version doesn't match, update and run SQL install
-			if ( get_option( 'vfb_db_version' ) != $this->vfb_db_version ) {
+			if ( version_compare( get_option( 'vfb_db_version' ), $this->vfb_db_version, '<' ) ) {
 				update_option( 'vfb_db_version', $this->vfb_db_version );
 				$this->install_db();
 			}
@@ -435,9 +435,9 @@ class Visual_Form_Builder{
 	static function install_db() {
 		global $wpdb;
 		
-		$field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
-		$form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
-		$entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
+		$field_table_name     = $wpdb->prefix . 'visual_form_builder_fields';
+		$form_table_name      = $wpdb->prefix . 'visual_form_builder_forms';
+		$entries_table_name   = $wpdb->prefix . 'visual_form_builder_entries';
 		
 		// Explicitly set the character set and collation when creating the tables
 		$charset = ( defined( 'DB_CHARSET' && '' !== DB_CHARSET ) ) ? DB_CHARSET : 'utf8';
@@ -461,7 +461,7 @@ class Visual_Form_Builder{
 				field_css VARCHAR(255),
 				field_layout VARCHAR(255),
 				field_default TEXT,
-				UNIQUE KEY  (field_id)
+				PRIMARY KEY  (field_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 
 		$form_sql = "CREATE TABLE $form_table_name (
@@ -484,7 +484,7 @@ class Visual_Form_Builder{
 				form_notification_message TEXT,
 				form_notification_entry VARCHAR(25),
 				form_label_alignment VARCHAR(25),
-				UNIQUE KEY  (form_id)
+				PRIMARY KEY  (form_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
 		$entries_sql = "CREATE TABLE $entries_table_name (
@@ -497,7 +497,7 @@ class Visual_Form_Builder{
 				emails_to TEXT,
 				date_submitted DATETIME,
 				ip_address VARCHAR(25),
-				UNIQUE KEY  (entries_id)
+				PRIMARY KEY  (entries_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
 		// Create or Update database tables
@@ -523,7 +523,7 @@ class Visual_Form_Builder{
 	public function admin_scripts() {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'postbox' );
-		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js', array( 'jquery' ), '', true );
+		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'form-elements-add', plugins_url( "visual-form-builder/js/visual-form-builder$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
 	}
@@ -537,7 +537,7 @@ class Visual_Form_Builder{
 		// Make sure scripts are only added once via shortcode
 		$this->add_scripts = true;
 		
-		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js', array( 'jquery' ), '', true );
+		wp_enqueue_script( 'jquery-form-validation', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js', array( 'jquery' ), '', true );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
@@ -759,9 +759,9 @@ class Visual_Form_Builder{
 						}
 						
 						// Check if a submit field type exists for backwards compatibility upgrades
-						$is_verification = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'verification' AND form_id = %d", $form_id ) );
-						$is_secret = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = %d", $form_id ) );
-						$is_submit = $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = %d", $form_id ) );
+						$is_verification	= $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'verification' AND form_id = %d", $form_id ) );
+						$is_secret    		= $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'secret' AND form_id = %d", $form_id ) );
+						$is_submit 			= $wpdb->get_var( $wpdb->prepare( "SELECT field_id FROM $this->field_table_name WHERE field_type = 'submit' AND form_id = %d", $form_id ) );
 						
 						// Decrement sequence
 						$field_sequence--;
@@ -859,11 +859,11 @@ class Visual_Form_Builder{
 					check_admin_referer( 'copy-form-' . $id );
 					
 					// Get all fields and data for the request form					
-					$fields = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d", $id ) );
-					$forms = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d", $id ) );
-					$override = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_override, form_email_from_name_override, form_notification_email FROM $this->form_table_name WHERE form_id = %d", $id ) );
+					$fields    = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d", $id ) );
+					$forms     = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d", $id ) );
+					$override  = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_override, form_email_from_name_override, form_notification_email FROM $this->form_table_name WHERE form_id = %d", $id ) );
 					$from_name = $wpdb->get_var( null, 1 );
-					$notify = $wpdb->get_var( null, 2 );
+					$notify    = $wpdb->get_var( null, 2 );
 					
 					// Copy this form and force the initial title to denote a copy
 					foreach ( $forms as $form ) {
@@ -1626,7 +1626,7 @@ class Visual_Form_Builder{
 		add_menu_page( __( 'Visual Form Builder', 'visual-form-builder' ), __( 'Visual Form Builder', 'visual-form-builder' ), 'manage_options', 'visual-form-builder', array( &$this, 'admin' ), plugins_url( 'visual-form-builder/images/vfb_icon.png' ) );
 		
 		add_submenu_page( 'visual-form-builder', __( 'Visual Form Builder', 'visual-form-builder' ), __( 'All Forms', 'visual-form-builder' ), 'manage_options', 'visual-form-builder', array( &$this, 'admin' ) );
-		add_submenu_page( 'visual-form-builder', __( 'Add New Form', 'visual-form-builder' ), __( 'Add New Forms', 'visual-form-builder' ), 'manage_options', 'vfb-add-new', array( &$this, 'admin' ) );
+		add_submenu_page( 'visual-form-builder', __( 'Add New Form', 'visual-form-builder' ), __( 'Add New Form', 'visual-form-builder' ), 'manage_options', 'vfb-add-new', array( &$this, 'admin' ) );
 		add_submenu_page( 'visual-form-builder', __( 'Entries', 'visual-form-builder' ), __( 'Entries', 'visual-form-builder' ), 'manage_options', 'vfb-entries', array( &$this, 'admin' ) );
 		add_submenu_page( 'visual-form-builder', __( 'Export', 'visual-form-builder' ), __( 'Export', 'visual-form-builder' ), 'manage_options', 'vfb-export', array( &$this, 'admin' ) );
 	}
@@ -1767,74 +1767,122 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 1.0
 	 */
-	public function form_code( $atts ) {
-		global $wpdb;
+	public function form_code( $atts, $output = '' ) {
 		
-		// Extract shortcode attributes, set defaults
-		extract( shortcode_atts( array(
-			'id' => ''
-			), $atts ) 
-		);
+		require( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/form-output.php' );
 		
-		// Add JavaScript files to the front-end, only once
-		if ( !$this->add_scripts )
-			$this->scripts();
+		return $output;
+	}
+	
+	/**
+	 * Handle emailing the content
+	 * 
+	 * @since 1.0
+	 * @uses wp_mail() E-mails a message
+	 */
+	public function email() {
+		require( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/email.php' );
+	}
+	
+	/**
+	 * Validate the input
+	 * 
+	 * @since 2.2
+	 */
+	public function validate_input( $data, $name, $type, $required ) {
 		
-		// Get form id.  Allows use of [vfb id=1] or [vfb 1]
-		$form_id = ( isset( $id ) && !empty( $id ) ) ? $id : key( $atts );
+		if ( 'yes' == $required && strlen( $data ) == 0 )
+			wp_die( "<h1>$name</h1><br>" . __( 'This field is required and cannot be empty.', 'visual-form-builder' ), $name, array( 'back_link' => true ) );
 		
-		$open_fieldset = $open_section = false;
-		$output = '';
+		if ( strlen( $data ) > 0 ) :
+			switch( $type ) {
+				
+				case 'email' :
+					if ( !is_email( $data ) )
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid email address', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'number' :
+				case 'currency' :
+					if ( !is_numeric( $data ) )
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid number', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'phone' :
+					if ( strlen( $data ) > 9 && preg_match( '/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/', $data ) )
+						return true; 
+					else
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid phone number. Most US/Canada and International formats accepted.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				case 'url' :
+					if ( !preg_match( '|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $data ) )
+						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid URL.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+				break;
+				
+				default :
+					return true;
+				break;
+			}
+		endif;
+	}
+
+	/**
+	 * Sanitize the input
+	 * 
+	 * @since 2.5
+	 */
+	public function sanitize_input( $data, $type ) {
+		if ( strlen( $data ) > 0 ) :
+			switch( $type ) {
+				case 'text' :
+					return sanitize_text_field( $data );
+				break;
+				
+				case 'textarea' :
+					return wpautop( $data );
+				break;
+				
+				case 'email' :
+					return sanitize_email( $data );
+				break;
+				
+				case 'username' :
+					return sanitize_user( $data );
+				break;
+				
+				default :
+					return $data;
+				break;
+			}
+		endif;
+	}
+	
+	/**
+	 * Make sure the User Agent string is not a SPAM bot
+	 * 
+	 * @since 1.3
+	 */
+	public function isBot() {
+		$bots = apply_filters( 'vfb_blocked_spam_bots', array( 'archiver', 'binlar', 'casper', 'checkprivacy', 'clshttp', 'cmsworldmap', 'comodo', 'curl', 'diavol', 'dotbot', 'email', 'extract', 'feedfinder', 'flicky',  'grab', 'harvest', 'httrack', 'ia_archiver', 'jakarta', 'kmccrew', 'libwww', 'loader', 'miner', 'nikto', 'nutch', 'planetwork', 'purebot', 'pycurl', 'python', 'scan', 'skygrid', 'sucker', 'turnit', 'vikspider', 'wget', 'winhttp', 'youda', 'zmeu', 'zune' ) );
+	 
+		$isBot = false;
 		
-		// Default the submit value
-		$submit = 'Submit';
-		
-		// If form is submitted, show success message, otherwise the form
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
-			$output = $this->confirmation();
+		foreach ( $bots as $bot ) {
+			if ( stripos( $_SERVER['HTTP_USER_AGENT'], $bot ) !== false )
+				$isBot = true;
 		}
-		else {
-			// Get forms
-			$order = sanitize_sql_orderby( 'form_id DESC' );			
-			$forms = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
-			
-			// Get fields
-			$order_fields = sanitize_sql_orderby( 'field_sequence ASC' );
-			$fields = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d ORDER BY $order_fields", $form_id ) );
+	 
+		if ( empty($_SERVER['HTTP_USER_AGENT'] ) || $_SERVER['HTTP_USER_AGENT'] == ' ' )
+			$isBot = true;
+	 
+		return $isBot;
+	}	
+}
 
-			// Setup count for fieldset and ul/section class names
-			$count = 1;
-			
-			$verification = '';
-			
-			foreach ( $forms as $form ) :
-				$label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
-				$output = '<div class="visual-form-builder-container"><form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
-							<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
-				$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
-
-				foreach ( $fields as $field ) {
-					// If field is required, build the span and add setup the 'required' class
-					$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
-					$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
-					$validation 	= ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
-					$css 			= ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
-					$id_attr 		= 'vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id;
-					$layout 		= ( !empty( $field->field_layout ) ) ? " $field->field_layout" : '';
-					$default 		= ( !empty( $field->field_default ) ) ? html_entity_decode( stripslashes( $field->field_default ) ) : '';
-					
-					// Close each section
-					if ( $open_section == true ) {
-						// If this field's parent does NOT equal our section ID
-						if ( $sec_id && $sec_id !== $field->field_parent ) {
-							$output .= '</div><div class="vfb-clear"></div>';
-							$open_section = false;
-						}
-					}
-					
-					// Force an initial fieldset and display an error message to strongly encourage user to add one
-					if ( $count === 1 && $field->field_type !== 'fieldset' ) {
-						$output .= '<fieldset class="fieldset"><div class="legend" style="background-color:#FFEBE8;border:1px solid #CC0000;"><h3>Oops! Missing Fieldset</h3><p style="color:black;">If you are seeing this message, it means you need to <strong>add a Fieldset to the beginning of your form</strong>. Your form may not function or display properly without one.</p></div><ul class="section section-' . $count . '">';
+// On plugin activation, install the databases and add/update the DB version
+register_activation_hook( __FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
+?>m may not function or display properly without one.</p></div><ul class="section section-' . $count . '">';
 						
 						$count++;
 					}

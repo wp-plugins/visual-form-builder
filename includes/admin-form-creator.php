@@ -67,7 +67,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                        	<div class="vfb-major-publishing-actions">
 	                        		<label for="form-name" class="menu-name-label howto open-label">
 	                                    <span class="sender-labels"><?php _e( 'Form Name' , 'visual-form-builder'); ?></span>
-	                                    <input type="text" value="<?php echo ( isset( $form_title ) ) ? $form_title : ''; ?>" placeholder="Enter form name here" class="menu-name regular-text menu-item-textbox required" id="form-name" name="form_title" />
+	                                    <input type="text" value="<?php echo ( isset( $form_title ) ) ? $form_title : ''; ?>" placeholder="<?php _e( 'Enter form name here' , 'visual-form-builder'); ?>" class="menu-name regular-text menu-item-textbox required" id="form-name" name="form_title" />
 	                                </label>
 	                                <?php 
 										// Display sender details and confirmation message if we're on a form, otherwise just the form name
@@ -334,7 +334,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                                <?php endif; ?>
 	
 	                                <div class="publishing-action">
-	                                    <input type="submit" value="<?php echo __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
+                                    	<input type="submit" value="<?php echo __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
 	                                </div>
 	                            </div>
 	                        </div>
@@ -362,7 +362,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                    <div id="form-editor-footer">
 	                    	<div class="vfb-major-publishing-actions">
 	                            <div class="publishing-action">
-	                                <input type="submit" value="<?php echo __( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
+	                            	<input type="submit" value="<?php _e( 'Save Form' , 'visual-form-builder'); ?>" class="button-primary menu-save" id="save_form" name="save_form" />
 	                            </div> <!-- .publishing-action -->
 	                        </div> <!-- .vfb-major-publishing-actions -->
 	                    </div> <!-- #form-editor-footer -->
