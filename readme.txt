@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.4.1
 Tested up to: 3.5
-Stable tag: 2.6.3
+Stable tag: 2.6.4
 License: GPLv2 or later
 
 Build beautiful, fully functional forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -209,6 +209,9 @@ To Export Selected:
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.6.4**
+* Fix bug where SVN commit mangled code
 
 **Version 2.6.3**
 
