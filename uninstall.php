@@ -15,5 +15,5 @@
 	delete_option( 'vfb_db_version' );
 	delete_option( 'visual-form-builder-screen-options' );
 	
-	$wpdb->query( $wpdb->prepare( "DELETE FROM " . $wpdb->prefix . "usermeta WHERE meta_key IN ( 'vfb-form-settings', 'vfb_entries_per_page', 'managevisual-form-builder_page_vfb-entriescolumnshidden' )" ) );
+	$wpdb->query( "DELETE FROM " . $wpdb->prefix . "usermeta WHERE meta_key IN ( 'vfb-form-settings', 'vfb_entries_per_page', 'managevisual-form-builder_page_vfb-entriescolumnshidden' )" );
 ?>

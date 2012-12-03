@@ -15,9 +15,12 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function __construct(){
 		global $status, $page, $wpdb;
 		
+		// CSV delimiter
+		$this->delimiter = apply_filters( 'vfb_csv_delimiter', ',' );
+		
 		// Setup global database table names
-		$this->field_table_name = $wpdb->prefix . 'visual_form_builder_fields';
-		$this->form_table_name = $wpdb->prefix . 'visual_form_builder_forms';
+		$this->field_table_name   = $wpdb->prefix . 'visual_form_builder_fields';
+		$this->form_table_name    = $wpdb->prefix . 'visual_form_builder_forms';
 		$this->entries_table_name = $wpdb->prefix . 'visual_form_builder_entries';
 		
 		// Set parent defaults
@@ -344,7 +347,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			foreach ( $cols as $data ) {
 				// End our header row, if needed
 				if ( $csv_headers )
-					$csv_headers .= ',';
+					$csv_headers .= $this->delimiter;
 				
 				// Build our headers
 				$csv_headers .= "{$data['header']}";
@@ -353,7 +356,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 				for ( $i = 0; $i < $row; $i++ ) {
 					// End our row of data, if needed
 					if ( array_key_exists( $i, $csv_rows ) && !empty( $csv_rows[ $i ] ) )
-						$csv_rows[ $i ] .= ',';
+						$csv_rows[ $i ] .= $this->delimiter;
 					elseif ( !array_key_exists( $i, $csv_rows ) )
 						$csv_rows[ $i ] = '';
 					
@@ -388,7 +391,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function extra_tablenav( $which ) {
 		global $wpdb;
 		
-		$cols = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" ) );
+		$cols = $wpdb->get_results( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" );
 		
 		// Only display the dropdown on the top of the table
 		if ( 'top' == $which ) {
@@ -415,11 +418,11 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function months_dropdown() {
 		global $wpdb, $wp_locale;
 		
-	    $months = $wpdb->get_results( $wpdb->prepare( "
+	    $months = $wpdb->get_results( "
 			SELECT DISTINCT YEAR( forms.date_submitted ) AS year, MONTH( forms.date_submitted ) AS month
 			FROM $this->entries_table_name AS forms
 			ORDER BY forms.date_submitted DESC
-		" ) );
+		" );
 
 		$month_count = count( $months );
 
@@ -572,7 +575,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		}
 		
 		// How many entries do we have?
-		$total_items = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name AS forms WHERE 1=1 $where" ) );
+		$total_items = $wpdb->get_var( "SELECT COUNT(*) FROM $this->entries_table_name AS forms WHERE 1=1 $where" );
 
 		// Add sorted data to the items property
 		$this->items = $data;

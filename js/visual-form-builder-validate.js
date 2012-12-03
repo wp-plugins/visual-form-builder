@@ -1,1 +1,37 @@
-jQuery(document).ready(function(a){a(".visual-form-builder").each(function(){a(this).validate({rules:{"vfb-secret":{required:true,digits:true,maxlength:2}},errorPlacement:function(b,c){if(c.is(":radio")||c.is(":checkbox")){b.appendTo(c.parent().parent())}else{if(c.is(":password")){b.hide()}else{b.insertAfter(c)}}}})});a(".vfb-date-picker").datepicker();a.validator.addMethod("phone",function(c,b){c=c.replace(/[\+\s\(\)\.\-\ ]/g,"");return this.optional(b)||c.length>9&&c.match(/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/)},"Please enter a valid phone number. Most US/Canada and International formats accepted.")});
+jQuery(document).ready(function($) {
+	/* !Validate each form on the page */
+	$( '.visual-form-builder' ).each( function() {
+		$( this ).validate({
+			rules: {
+				"vfb-secret":{
+					required: true,
+					digits: true,
+					maxlength:2
+				}
+			},
+			errorPlacement: function(error, element) {
+				if ( element.is( ':radio' ) || element.is( ':checkbox' ) )
+					error.appendTo( element.parent().parent() );
+				else if ( element.is( ':password' ) )
+					error.hide();
+				else
+					error.insertAfter( element );
+			} 
+		});
+	});
+	
+	
+	/* !Display jQuery UI date picker */
+	$( '.vfb-date-picker' ).datepicker();	
+		
+	// !Custom validation method to check multiple emails
+	$.validator.addMethod( 'phone', function( value, element ) {
+		// Strip out all spaces, periods, dashes, parentheses, and plus signs
+		value = value.replace(/[\+\s\(\)\.\-\ ]/g, '');
+
+		return this.optional(element) || value.length > 9 &&
+			value.match( /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/ );
+
+		}, $.validator.format( 'Please enter a valid phone number. Most US/Canada and International formats accepted.' )
+	);	
+});

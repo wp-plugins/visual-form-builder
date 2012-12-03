@@ -9,6 +9,9 @@ class VisualFormBuilder_Export {
 	public function __construct(){
 		global $wpdb;
 		
+		// CSV delimiter
+		$this->delimiter = apply_filters( 'vfb_csv_delimiter', ',' );
+		
 		// Setup global database table names
 		$this->field_table_name 	= $wpdb->prefix . 'visual_form_builder_fields';
 		$this->form_table_name 		= $wpdb->prefix . 'visual_form_builder_forms';
@@ -48,11 +51,12 @@ class VisualFormBuilder_Export {
         	<p><label><input type="radio" name="content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder' ); ?></label></p>
         	
         	<ul id="entries-filters" class="vfb-export-filters">
-        		<li><p class="description"><?php _e( 'This will export entries in either a .csv or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.', 'visual-form-builder' ); ?></p></li>
+        		<li><p class="description"><?php _e( 'This will export entries in either a .csv, .txt, or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.', 'visual-form-builder' ); ?></p></li>
         		<li>
         			<label for="format"><?php _e( 'Format', 'visual-form-builder' ); ?>:</label>
         			<select name="format">
         				<option value="csv" selected="selected"><?php _e( 'Comma Separated (.csv)', 'visual-form-builder' ); ?></option>
+        				<option value="txt" disabled="disabled"><?php _e( 'Tab Delimited (.txt) - Pro only', 'visual-form-builder' ); ?></option>
         				<option value="xls" disabled="disabled"><?php _e( 'Excel (.xls) - Pro only', 'visual-form-builder' ); ?></option>
         			</select>
         		</li>
@@ -125,7 +129,7 @@ class VisualFormBuilder_Export {
 		if ( ! empty($sitename) ) $sitename .= '.';
 		$filename = $sitename . 'vfb.' . "$form_key." . date( 'Y-m-d' ) . ".{$args['format']}";
 		
-		$content_type = ( 'csv' == $args['format'] ) ? 'text/csv' : 'application/vnd.ms-excel';
+		$content_type = 'text/csv';
 		
 		header( 'Content-Description: File Transfer' );
 		header( 'Content-Disposition: attachment; filename=' . $filename );
@@ -255,16 +259,16 @@ class VisualFormBuilder_Export {
 		foreach ( $cols as $data ) {
 			// End our header row, if needed
 			if ( $csv_headers )
-				$csv_headers .= ',';
+				$csv_headers .= $this->delimiter;
 			
 			// Build our headers
-			$csv_headers .= "{$data['header']}";
+			$csv_headers .= stripslashes( htmlentities( $data['header'] ) );
 			
 			// Loop through each row of data and add to our CSV
 			for ( $i = 0; $i < $row; $i++ ) {
 				// End our row of data, if needed
 				if ( array_key_exists( $i, $csv_rows ) && !empty( $csv_rows[ $i ] ) )
-					$csv_rows[ $i ] .= ',';
+					$csv_rows[ $i ] .= $this->delimiter;
 				elseif ( !array_key_exists( $i, $csv_rows ) )
 					$csv_rows[ $i ] = '';
 				
@@ -330,7 +334,7 @@ class VisualFormBuilder_Export {
 		switch( $this->export_action() ) {
 			case 'entries' :
 				$this->export_entries( $args );
-				die();
+				die(1);
 			break;
 		}
 	}
@@ -362,12 +366,12 @@ class VisualFormBuilder_Export {
 		
 		$where = apply_filters( 'vfb_pre_get_entries', '' );
 		
-	    $months = $wpdb->get_results( $wpdb->prepare( "
+	    $months = $wpdb->get_results( "
 			SELECT DISTINCT YEAR( forms.date_submitted ) AS year, MONTH( forms.date_submitted ) AS month
 			FROM $this->entries_table_name AS forms
 			WHERE 1=1 $where
 			ORDER BY forms.date_submitted DESC
-		" ) );
+		" );
 
 		$month_count = count( $months );
 

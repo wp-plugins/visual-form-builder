@@ -98,8 +98,8 @@ $class = 'columns-' . get_current_screen()->get_columns();
 			                                
 	                                <div class="button-group">
 										<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Form Settings' , 'visual-form-builder'); ?><span class="button-icon arrow"></span></a>
-	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
-	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('options-general.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
+	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
+	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
 	                                </div>
 			                                                                            
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
@@ -341,20 +341,11 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                    </div>
 	                    <div id="post-body">
 	                        <div id="post-body-content">
-		                    <?php
-							if ( !empty( $form_nav_selected_id ) && $form_nav_selected_id !== '0' ) :
-								// Display help text for adding fields
-								printf( '<p>%s</p>', __( 'Note: to ensure your form displays and functions correctly, be sure a Fieldset is the first field.' , 'visual-form-builder') );
-		
-								// Output the fields for each form
-								echo '<ul id="menu-to-edit" class="menu ui-sortable droppable">';
-								
-								echo $this->field_output( $form_nav_selected_id );
-		
-								echo '</ul>';
-								
-							endif;
-							?>
+		                    <div id="vfb-fieldset-first-warning" class="error"><?php printf( '<p><strong>%1$s </strong><br>%2$s</p>', __( 'Warning &mdash; Missing Fieldset', 'visual-form-builder-pro' ), __( 'Your form may not function or display correctly. Please be sure to add or move a Fieldset to the beginning of your form.' , 'visual-form-builder-pro') ); ?></div>
+	                        <!-- !Field Items output -->
+							<ul id="menu-to-edit" class="menu ui-sortable droppable">
+							<?php echo $this->field_output( $form_nav_selected_id ); ?>
+							</ul>
 	                        </div>
 	                        <br class="clear" />
 	                     </div>

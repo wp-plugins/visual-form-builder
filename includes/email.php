@@ -54,39 +54,32 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		$form_settings = (object) apply_filters_ref_array( 'vfb_email_form_settings', array( $form_settings, $form_id ) );
 	}
 	
-	// Sender name override query
-	$senders = $wpdb->get_results( $wpdb->prepare( "SELECT fields.field_id, fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_name_override = fields.field_id WHERE forms.form_id = %d", $form_id ) );
+	// Sender name field ID
+	$sender = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_name_override FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
+	
+	// Sender email field ID
+	$email = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_override FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
+	
+	// Notifcation email field ID
+	$notify = $wpdb->get_var( $wpdb->prepare( "SELECT form_notification_email FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
 
-	// Sender email override query
-	$emails = $wpdb->get_results( $wpdb->prepare( "SELECT fields.field_id, fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_email_from_override = fields.field_id WHERE forms.form_id = %d", $form_id ) );
+	$reply_to_name	= $form_settings->form_from_name;
+	$reply_to_email	= $form_settings->form_from;
 	
-	// Notification send to email override query
-	$notification = $wpdb->get_results( $wpdb->prepare( "SELECT fields.field_id, fields.field_key FROM $this->form_table_name AS forms LEFT JOIN $this->field_table_name AS fields ON forms.form_notification_email = fields.field_id WHERE forms.form_id = %d", $form_id ) );
-	
-	$reply_to_name 	= $form_settings->form_from_name;
-	$reply_to_email = $form_settings->form_from;
-	
-	// Loop through name results and assign sender name to override, if needed
-	foreach( $senders as $sender ) {
-		if ( !empty( $sender->field_key ) ) {
-			$form_settings->form_from_name = $_POST[ 'vfb-' . $sender->field_id ];
-			$reply_to_name = $form_settings->form_from_name;
-		}
-	}
-
-	// Loop through email results and assign sender email to override, if needed
-	foreach ( $emails as $email ) {
-		if ( !empty( $email->field_key ) ) {
-			$form_settings->form_from = $_POST[ 'vfb-' . $email->field_id ];
-			$reply_to_email = $form_settings->form_from;
-		}
+	// Use field for sender name
+	if ( !empty( $sender ) ) {
+		$form_settings->form_from_name = wp_kses_data( $_POST[ 'vfb-' . $sender ] );
+		$reply_to_name = $form_settings->form_from_name;
 	}
 	
-	// Loop through email results and assign as blind carbon copy, if needed
-	foreach ( $notification as $notify ) {
-		if ( !empty( $notify->field_key ) )
-			$copy_email = $_POST[ 'vfb-' . $notify->field_id ];
+	// Use field for sender email	
+	if ( !empty( $email ) ) {
+		$form_settings->form_from = sanitize_email( $_POST[ 'vfb-' . $email ] );
+		$reply_to_email = $form_settings->form_from;
 	}
+	
+	// Use field for copy email	
+	$copy_email = ( !empty( $notify ) ) ? sanitize_email( $_POST[ 'vfb-' . $notify->field_id ] ) : '';
 
 	// Query to get all forms
 	$order = sanitize_sql_orderby( 'field_sequence ASC' );
@@ -333,8 +326,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 	
 	// Send the mail
 	foreach ( $form_settings->form_to as $email ) {
-		if ( !wp_mail( $email, wp_specialchars_decode( $form_settings->form_subject, ENT_QUOTES ), $message, $headers, $attachments ) )
-			wp_die( "<h1>Error: Mail function</h1><br>" . __( 'The e-mail could not be sent. Please report this error to the site owner.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+		wp_mail( $email, wp_specialchars_decode( $form_settings->form_subject, ENT_QUOTES ), $message, $headers, $attachments );
 	}
 	
 	// Send auto-responder email
@@ -349,8 +341,8 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		$headers 		= "From: \"$reply_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
 		
 		// Send the mail
-		if ( !wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments ) )
-			wp_die( "<h1>Error: Mail function</h1><br>" . __( 'The e-mail could not be sent. Please report this error to the site owner.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
+		wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
+		
 	endif;
 	
 endif;
