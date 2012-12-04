@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // Set to true to load uncompressed and unminified scripts and stylesheets
-define( 'VFB_SCRIPT_DEBUG', false );
+define( 'VFB_SCRIPT_DEBUG', true );
 
 // Instantiate new class
 $visual_form_builder = new Visual_Form_Builder();
@@ -1315,7 +1315,17 @@ class Visual_Form_Builder{
 									<input type="text" value="<?php echo stripslashes( htmlspecialchars_decode( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 								</label>
 							</p>
-							<?php if ( $field->field_type !== 'submit' ) : ?>
+							<?php if ( $field->field_type == 'submit' ) : ?>
+								<!-- CSS Classes -->
+	                            <p class="description description-wide">
+	                                <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
+	                                    <?php _e( 'CSS Classes' , 'visual-form-builder-pro'); ?>
+	                                    <span class="vfb-tooltip" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets." title="About CSS Classes">(?)</span>
+	                                    <br />
+	                                    <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
+	                                </label>
+	                            </p>
+							<?php elseif ( $field->field_type !== 'submit' ) : ?>
 								<!-- Description -->
 								<p class="description description-wide">
 									<label for="edit-form-item-description-<?php echo $field->field_id; ?>">

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.4.1
 Tested up to: 3.5
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 License: GPLv2 or later
 
 Build beautiful, fully functional forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -210,6 +210,17 @@ To Export Selected:
 
 == Changelog ==
 
+**Version 2.6.5**
+* Add confirmation to Delete field
+* Add new Address label filter
+* Add new CSV delimiter filter
+* Add CSS Class option to Submit button
+* Update some queries to be compatible with WordPress 3.5
+* Update first fieldset warning and output a more noticeable error
+* Update tooltip CSS
+* Fix media button to use correct action
+* Fix missing un-prefixed classes
+
 **Version 2.6.4**
 * Fix bug where SVN commit mangled code
 
@@ -218,7 +229,7 @@ To Export Selected:
 * Update CSS to now prefix all classes to help eliminate theme conflicts
 * Update email function to force a From email that exists on the same domain
 * Fix bug affecting File Upload field validation
-* Fix database instal to use PRIMARY KEY instead of UNIQUE KEY
+* Fix database install to use PRIMARY KEY instead of UNIQUE KEY
 * Fix bug preventing Export from displaying filtering options
 * Minor code cleanups
 
@@ -426,6 +437,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.6.5 =
+Update some queries to be compatible with WordPress 3.5
 
 = 2.6.2 =
 Fix bug where File Upload field would prevent validation, JS and CSS now work on HTTPS, minor fixes.
