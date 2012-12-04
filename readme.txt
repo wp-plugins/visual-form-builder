@@ -211,6 +211,7 @@ To Export Selected:
 == Changelog ==
 
 **Version 2.6.5**
+
 * Add confirmation to Delete field
 * Add new Address label filter
 * Add new CSV delimiter filter
@@ -222,6 +223,7 @@ To Export Selected:
 * Fix missing un-prefixed classes
 
 **Version 2.6.4**
+
 * Fix bug where SVN commit mangled code
 
 **Version 2.6.3**
