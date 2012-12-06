@@ -79,7 +79,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 	}
 	
 	// Use field for copy email	
-	$copy_email = ( !empty( $notify ) ) ? sanitize_email( $_POST[ 'vfb-' . $notify->field_id ] ) : '';
+	$copy_email = ( !empty( $notify ) ) ? sanitize_email( $_POST[ 'vfb-' . $notify ] ) : '';
 
 	// Query to get all forms
 	$order = sanitize_sql_orderby( 'field_sequence ASC' );
@@ -248,8 +248,12 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 					$body .= '<tr style="background-color:#393E40;color:white;font-size:14px;"><td colspan="2">' . stripslashes( $field->field_name ) . '</td></tr>' . "\n";
 				elseif ( $field->field_type == 'section' )
 					$body .= '<tr style="background-color:#6E7273;color:white;font-size:14px;"><td colspan="2">' . stripslashes( $field->field_name ) . '</td></tr>' . "\n";
-				else
-					$body .= '<tr><td><strong>' . stripslashes( $field->field_name ) . ': </strong></td><td>' . $value . '</td></tr>' . "\n";
+				else {
+					// Convert new lines to break tags for textarea in html
+					$display_value = ( 'textarea' == $field->field_type ) ? nl2br( $value ) : $value;
+					
+					$body .= '<tr><td><strong>' . stripslashes( $field->field_name ) . ': </strong></td><td>' . $display_value . '</td></tr>' . "\n";
+				}
 			}
 		
 			$data[] = array(
@@ -289,6 +293,9 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 	// Build complete HTML email
 	$message = $header . $body . $footer;
 	
+	// Wrap lines longer than 70 words to meet email standards
+	$message = wordwrap( $message, 70 );
+	
 	// Decode HTML for message so it outputs properly
 	$notify_message = ( $form_settings->form_notification_message !== '' ) ? html_entity_decode( $form_settings->form_notification_message ) : '';
 	
@@ -322,7 +329,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 	$from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
 	
 	$reply_to 	= "\"$header_from_name\" <$header_from>";
-	$headers 	= "From: \"$from_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+	$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
 	
 	// Send the mail
 	foreach ( $form_settings->form_to as $email ) {
@@ -338,10 +345,10 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		$reply_name 	= stripslashes( $form_settings->form_notification_email_name );
 		$reply_email 	= $form_settings->form_notification_email_from;
 		$reply_to 		= "\"$reply_name\" <$reply_email>";
-		$headers 		= "From: \"$reply_name\" <$from_email>\n" . "Reply-To: $reply_to\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\n";
+		$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
 		
 		// Send the mail
-		wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject ), $auto_response_email, $headers, $attachments );
+		wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject, ENT_QUOTES ), $auto_response_email, $headers, $attachments );
 		
 	endif;
 	
