@@ -31,11 +31,41 @@ $visual_form_builder = new Visual_Form_Builder();
 // Visual Form Builder class
 class Visual_Form_Builder{
 	
-	protected $vfb_db_version = '2.6.7',
-			  $add_scripts = false;
-
+	/**
+	 * The DB version. Used for SQL install and upgrades.
+	 *
+	 * Should only be changed when needing to change SQL
+	 * structure or custom capabilities.
+	 *
+	 * @since 1.0
+	 * @var string
+	 * @access protected
+	 */
+	protected $vfb_db_version = '2.6.7';
+	
+	/**
+	 * Flag used to add scripts to front-end only once
+	 *
+	 * @since 1.0
+	 * @var string
+	 * @access protected
+	 */
+	protected $add_scripts = false;
+	
+	/**
+	 * An array of countries to be used throughout plugin
+	 *
+	 * @since 1.0
+	 * @var array
+	 * @access public
+	 */
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d\'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia and Montenegro", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
 	
+	/**
+	 * Constructor. Register core filters and actions.
+	 *
+	 * @access public
+	 */
 	public function __construct(){
 		global $wpdb;
 		
@@ -79,17 +109,8 @@ class Visual_Form_Builder{
 			// Adds a Settings link to the Plugins page
 			add_filter( 'plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2 );
 			
-			// Add a database version to help with upgrades and run SQL install
-			if ( !get_option( 'vfb_db_version' ) ) {
-				update_option( 'vfb_db_version', $this->vfb_db_version );
-				$this->install_db();
-			}
-			
-			// If database version doesn't match, update and run SQL install
-			if ( version_compare( get_option( 'vfb_db_version' ), $this->vfb_db_version, '<' ) ) {
-				update_option( 'vfb_db_version', $this->vfb_db_version );
-				$this->install_db();
-			}
+			// Check the db version and run SQL install, if needed
+			add_action( 'plugins_loaded', array( &$this, 'update_db_check' ) );
 						
 			// Load the jQuery and CSS we need if we're on our plugin page
 			$current_pages = array( 'toplevel_page_visual-form-builder', 'visual-form-builder_page_vfb-add-new', 'visual-form-builder_page_vfb-entries', 'visual-form-builder_page_vfb-export' );
@@ -406,6 +427,26 @@ class Visual_Form_Builder{
     	</p>
 	<?php
 	}	
+	
+	/**
+	 * Check database version and run SQL install, if needed
+	 * 
+	 * @since 2.1
+	 */
+	public function update_db_check() {
+		// Add a database version to help with upgrades and run SQL install
+		if ( !get_option( 'vfb_db_version' ) ) {
+			update_option( 'vfb_db_version', $this->vfb_db_version );
+			$this->install_db();
+		}
+		
+		// If database version doesn't match, update and run SQL install
+		if ( version_compare( get_option( 'vfb_db_version' ), $this->vfb_db_version, '<' ) ) {
+			update_option( 'vfb_db_version', $this->vfb_db_version );
+			$this->install_db();
+		}
+	}
+	
 	/**
 	 * Install database tables
 	 * 
