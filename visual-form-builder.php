@@ -1300,7 +1300,7 @@ class Visual_Form_Builder{
                                 	<?php _e( 'Description (HTML tags allowed)', 'visual-form-builder' ); ?>
                                 	<span class="vfb-tooltip" title="About Instructions Description" rel="The Instructions field allows for long form explanations, typically seen at the beginning of Fieldsets or Sections. HTML tags are allowed.">(?)</span>
                                     <br />
-									<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat edit-menu-item-description" cols="20" rows="3" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( esc_textarea( $field->field_description ) ); ?></textarea>
+									<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat edit-menu-item-description" cols="20" rows="3" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 								</label>
 							</p>
 						
