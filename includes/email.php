@@ -329,7 +329,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 	$from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
 	
 	$reply_to 	= "\"$header_from_name\" <$header_from>";
-	$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
+	$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
 	
 	// Send the mail
 	foreach ( $form_settings->form_to as $email ) {
@@ -345,7 +345,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		$reply_name 	= stripslashes( $form_settings->form_notification_email_name );
 		$reply_email 	= $form_settings->form_notification_email_from;
 		$reply_to 		= "\"$reply_name\" <$reply_email>";
-		$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
+		$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
 		
 		// Send the mail
 		wp_mail( $copy_email, wp_specialchars_decode( $form_settings->form_notification_subject, ENT_QUOTES ), $auto_response_email, $headers, $attachments );
