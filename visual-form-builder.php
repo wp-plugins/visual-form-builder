@@ -124,7 +124,7 @@ class Visual_Form_Builder{
 		}
 		
 		// Load i18n
-		load_plugin_textdomain( 'visual-form-builder', false , 'visual-form-builder/languages' );
+		add_action( 'plugins_loaded', array( &$this, 'languages' ) );
 		
 		add_shortcode( 'vfb', array( &$this, 'form_code' ) );
 		add_action( 'init', array( &$this, 'email' ), 10 );
@@ -132,6 +132,15 @@ class Visual_Form_Builder{
 		
 		// Add CSS to the front-end
 		add_action( 'wp_enqueue_scripts', array( &$this, 'css' ) );
+	}
+	
+	/**
+	 * Load localization file
+	 * 
+	 * @since 2.7
+	 */
+	public function languages() {
+		load_plugin_textdomain( 'visual-form-builder', false , 'visual-form-builder/languages' );
 	}
 	
 	/**
