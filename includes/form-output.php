@@ -144,15 +144,24 @@ foreach ( $forms as $form ) :
 			case 'number' :
 			case 'phone' :
 				
+				// HTML5 types
+				if ( in_array( $field->field_type, array( 'email', 'url' ) ) )
+					$type = esc_attr( $field->field_type );
+				elseif ( 'phone' == $field->field_type )
+					$type = 'tel';
+				else
+					$type = 'text';
+				
 				$form_item = sprintf(
-					'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" />',
+					'<input type="%8$s" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" />',
 					absint( $field->field_id ),
 					$id_attr,
 					$default,
 					$size,
 					$required,
 					$validation,
-					$css
+					$css,
+					$type
 				);
 				
 				$output .= ( !empty( $description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
