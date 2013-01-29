@@ -144,57 +144,87 @@ foreach ( $forms as $form ) :
 			case 'number' :
 			case 'phone' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text ' . $size . $required . $validation . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-				else
-					$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text ' . $size . $required . $validation . $css . '" />';
-					
+				$form_item = sprintf(
+					'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" />',
+					absint( $field->field_id ),
+					$id_attr,
+					$default,
+					$size,
+					$required,
+					$validation,
+					$css
+				);
+				
+				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+									
 			break;
 			
 			case 'textarea' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-
-				$output .= '<textarea name="vfb-' . $field->field_id . '" id="' . $id_attr . '" class="vfb-textarea ' . $size . $required . $css . '">' . $default . '</textarea>';
+				$form_item = sprintf(
+					'<textarea name="vfb-%1$d" id="%2$s" class="vfb-textarea %4$s %5$s %6$s">%3$s</textarea>',
+					absint( $field->field_id ),
+					$id_attr,
+					$default,
+					$size,
+					$required,
+					$css
+				);
+				
+				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
 					
 			break;
 			
 			case 'select' :
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-						
-				$output .= '<select name="vfb-' . $field->field_id . '" id="' . $id_attr . '" class="vfb-select ' . $size . $required . $css . '">';
 				
-				$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
+				$field_options = maybe_unserialize( $field->field_options );
+				
+				$options = '';
 				
 				// Loop through each option and output
-				foreach ( $options as $option => $value ) {
-					$output .= '<option value="' . trim( stripslashes( $value ) ) . '"' . selected( $default, ++$option, 0 ) . '>'. trim( stripslashes( $value ) ) . '</option>';
+				foreach ( $field_options as $option => $value ) {
+					$options .= sprintf( '<option value="%1$s"%2$s>%1$s</option>', trim( stripslashes( $value ) ), selected( $default, ++$option, 0 ) );
 				}
 				
-				$output .= '</select>';
+				$form_item = sprintf(
+					'<select name="vfb-%1$d" id="%2$s" class="vfb-select %3$s %4$s %5$s">%6$s</select>',
+					absint( $field->field_id ),
+					$id_attr,
+					$size,
+					$required,
+					$css,
+					$options
+				);
+				
+				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
 				
 			break;
 			
 			case 'radio' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
+				$field_options = maybe_unserialize( $field->field_options );
 				
-				$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
+				$options = '';
+				
+				// Loop through each option and output
+				foreach ( $field_options as $option => $value ) {
+					$options .= sprintf(
+						'<span><input type="radio" name="vfb-%1$d" id="%2$s-%3$d" value="%6$s" class="vfb-radio %4$s %5$s"%7$s /><label for="%2$s-%3$d" class="vfb-choice">%6$s</label></span>',
+						absint( $field->field_id ),
+						$id_attr,
+						$option,
+						$required,
+						$css,
+						trim( stripslashes( $value ) ),
+						checked( $default, ++$option, 0 )
+					);
+				}
+				
+				$form_item = $options;
 				
 				$output .= '<div>';
 				
-				// Loop through each option and output
-				foreach ( $options as $option => $value ) {
-					// Increment the base index by one to match $default
-					$option++;
-					$output .= '<span>
-									<input type="radio" name="vfb-' . $field->field_id . '" id="' . $id_attr . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="vfb-radio' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
-								' <label for="' . $id_attr . '-' . $option . '" class="vfb-choice">' . trim( stripslashes( $value ) ) . '</label>' .
-								'</span>';
-				}
+				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
 				
 				$output .= '<div style="clear:both"></div></div>';
 				
@@ -202,20 +232,29 @@ foreach ( $forms as $form ) :
 			
 			case 'checkbox' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
+				$field_options = maybe_unserialize( $field->field_options );
 				
-				$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : explode( ',', unserialize( $field->field_options ) );
+				$options = '';
+				
+				// Loop through each option and output
+				foreach ( $field_options as $option => $value ) {
+					$options .= sprintf(
+						'<span><input type="checkbox" name="vfb-%1$d[]" id="%2$s-%3$d" value="%6$s" class="vfb-checkbox %4$s %5$s"%7$s /><label for="%2$s-%3$d" class="vfb-choice">%6$s</label></span>',
+						absint( $field->field_id ),
+						$id_attr,
+						$option,
+						$required,
+						$css,
+						trim( stripslashes( $value ) ),
+						checked( $default, ++$option, 0 )
+					);
+				}
+				
+				$form_item = $options;
 				
 				$output .= '<div>';
-
-				// Loop through each option and output
-				foreach ( $options as $option => $value ) {
-					// Increment the base index by one to match $default
-					$option++;
-					$output .= '<span><input type="checkbox" name="vfb-' . $field->field_id . '[]" id="' . $id_attr . '-' . $option . '" value="'. trim( stripslashes( $value ) ) . '" class="vfb-checkbox' . $required . $css . '"' . checked( $default, $option, 0 ) . ' />'. 
-						' <label for="' . $id_attr . '-' . $option . '" class="vfb-choice">' . trim( stripslashes( $value ) ) . '</label></span>';
-				}
+				
+				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
 				
 				$output .= '<div style="clear:both"></div></div>';
 			
