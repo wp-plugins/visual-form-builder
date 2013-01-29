@@ -1885,6 +1885,11 @@ class Visual_Form_Builder{
 					return intval( $data );
 				break;
 				
+				case 'address' :
+					$allowed_html = array( 'br' => array() );
+					return wp_kses( $data, $allowed_html );
+				break;
+				
 				default :
 					return wp_kses_data( $data );
 				break;
