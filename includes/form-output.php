@@ -54,6 +54,7 @@ foreach ( $forms as $form ) :
 		$size			= ( !empty( $field->field_size ) ) ? " vfb-$field->field_size" : '';
 		$layout 		= ( !empty( $field->field_layout ) ) ? " vfb-$field->field_layout" : '';
 		$default 		= ( !empty( $field->field_default ) ) ? html_entity_decode( stripslashes( $field->field_default ) ) : '';
+		$description	= ( !empty( $field->field_description ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ) ) : '';
 		
 		// Close each section
 		if ( $open_section == true ) {
@@ -103,8 +104,7 @@ foreach ( $forms as $form ) :
 			
 			if ( $field->field_type == 'secret' ) {
 				// Default logged in values
-				$logged_in_display = '';
-				$logged_in_value = '';
+				$logged_in_display = $logged_in_value = '';
 
 				// If the user is logged in, fill the field in for them
 				if ( is_user_logged_in() ) {
@@ -155,7 +155,7 @@ foreach ( $forms as $form ) :
 					$css
 				);
 				
-				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+				$output .= ( !empty( $description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
 									
 			break;
 			
@@ -171,7 +171,7 @@ foreach ( $forms as $form ) :
 					$css
 				);
 				
-				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 					
 			break;
 			
@@ -196,7 +196,7 @@ foreach ( $forms as $form ) :
 					$options
 				);
 				
-				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 				
 			break;
 			
@@ -224,7 +224,7 @@ foreach ( $forms as $form ) :
 				
 				$output .= '<div>';
 				
-				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 				
 				$output .= '<div style="clear:both"></div></div>';
 				
@@ -254,7 +254,7 @@ foreach ( $forms as $form ) :
 				
 				$output .= '<div>';
 				
-				$output .= ( !empty( $field->field_description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, html_entity_decode( stripslashes( $field->field_description ) ) ) : $form_item;
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 				
 				$output .= '<div style="clear:both"></div></div>';
 			
@@ -339,86 +339,130 @@ foreach ( $forms as $form ) :
 			
 			case 'date' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text vfb-date-picker ' . $size . $required . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-				else
-					$output .= '<input type="text" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text vfb-date-picker ' . $size . $required . $css . '" />';
+				$form_item = sprintf(
+					'<input type="date" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text vfb-date-picker %4$s %5$s %6$s" />',
+					absint( $field->field_id ),
+					$id_attr,
+					$default,
+					$size,
+					$required,
+					$css
+				);
 				
+				$output .= ( !empty( $description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
+								
 			break;
 			
 			case 'time' :
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-
+				
+				$hour = $minute = $ampm = '';
+				
 				// Get the time format (12 or 24)
 				$time_format = str_replace( 'time-', '', $validation );
 				
-				$time_format = apply_filters( 'vfb_time_format', $time_format, $form_id );
+				$time_format 	= apply_filters( 'vfb_time_format', $time_format, $form_id );
+				$total_mins 	= apply_filters( 'vfb_time_min_total', 55, $form_id );
+				$min_interval 	= apply_filters( 'vfb_time_min_interval', 5, $form_id );
 				
 				// Set whether we start with 0 or 1 and how many total hours
 				$hour_start = ( $time_format == '12' ) ? 1 : 0;
 				$hour_total = ( $time_format == '12' ) ? 12 : 23;
 				
 				// Hour
-				$output .= '<span class="vfb-time"><select name="vfb-' . $field->field_id . '[hour]" id="' . $id_attr . '-hour" class="vfb-select' . $required . $css . '">';
 				for ( $i = $hour_start; $i <= $hour_total; $i++ ) {
-					// Add the leading zero
-					$hour = ( $i < 10 ) ? "0$i" : $i;
-					$output .= "<option value='$hour'>$hour</option>";
+					$hour .= sprintf( '<option value="%1$02d">%1$02d</option>', $i );
 				}
-				$output .= '</select><label for="' . $id_attr . '-hour">HH</label></span>';
 				
 				// Minute
-				$output .= '<span class="vfb-time"><select name="vfb-' . $field->field_id . '[min]" id="' . $id_attr . '-min" class="vfb-select' . $required . $css . '">';
-				
-				$total_mins 	= apply_filters( 'vfb_time_min_total', 55, $form_id );
-				$min_interval 	= apply_filters( 'vfb_time_min_interval', 5, $form_id );
-				
 				for ( $i = 0; $i <= $total_mins; $i += $min_interval ) {
-					// Add the leading zero
-					$min = ( $i < 10 ) ? "0$i" : $i;
-					$output .= "<option value='$min'>$min</option>";
+					$minute .= sprintf( '<option value="%1$02d">%1$02d</option>', $i );
 				}
-				$output .= '</select><label for="' . $id_attr . '-min">MM</label></span>';
 				
 				// AM/PM
-				if ( $time_format == '12' )
-					$output .= '<span class="vfb-time"><select name="vfb-' . $field->field_id . '[ampm]" id="' . $id_attr . '-ampm" class="vfb-select' . $required . $css . '"><option value="AM">AM</option><option value="PM">PM</option></select><label for="' . $id_attr . '-ampm">AM/PM</label></span>';
-				$output .= '<div class="clear"></div>';		
+				if ( $time_format == '12' ) {
+					$ampm = sprintf(
+						'<span class="vfb-time"><select name="vfb-%1$d[ampm]" id="%2$s-ampm" class="vfb-select %5$s %6$s"><option value="AM">AM</option><option value="PM">PM</option></select><label for="%2$s-ampm">AM/PM</label></span>',
+						absint( $field->field_id ),
+						$id_attr,
+						$hour,
+						$minute,
+						$required,
+						$css
+					 );
+				}
+				
+				$form_item = sprintf(
+					'<span class="vfb-time"><select name="vfb-%1$d[hour]" id="%2$s-hour" class="vfb-select %5$s %6$s">%3$s</select><label for="%2$s-hour">HH</label></span>' .
+					'<span class="vfb-time"><select name="vfb-%1$d[min]" id="%2$s-min" class="vfb-select %5$s %6$s">%4$s</select><label for="%2$s-min">MM</label></span>' .
+					'%7$s',
+					absint( $field->field_id ),
+					$id_attr,
+					$hour,
+					$minute,
+					$required,
+					$css,
+					$ampm
+				);
+				
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
+				
+				$output .= '<div class="clear"></div>';
+				
 			break;
 			
 			case 'html' :
+								
+				$form_item = sprintf(
+					'<script type="text/javascript">edToolbar("%2$s");</script>' .
+					'<textarea name="vfb-%1$d" id="%2$s" class="vfb-textarea vfbEditor %4$s %5$s %6$s">%3$s</textarea>',
+					absint( $field->field_id ),
+					$id_attr,
+					$default,
+					$size,
+					$required,
+					$css
+				);
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-
-				$output .= '<script type="text/javascript">edToolbar("' . $id_attr . '");</script>';
-				$output .= '<textarea name="vfb-' . $field->field_id . '" id="' . $id_attr . '" class="vfb-textarea vfbEditor ' . $size . $required . $css . '">' . $default . '</textarea>';
+				$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 					
 			break;
 			
 			case 'file-upload' :
 				
-				$options = ( is_array( unserialize( $field->field_options ) ) ) ? unserialize( $field->field_options ) : unserialize( $field->field_options );
+				$options = maybe_unserialize( $field->field_options );
 				$accept = ( !empty( $options[0] ) ) ? " {accept:'$options[0]'}" : '';
-
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><input type="file" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text ' . $size . $required . $validation . $accept . $css . '" /><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-				else
-					$output .= '<input type="file" name="vfb-' . $field->field_id . '" id="' . $id_attr . '" value="' . $default . '" class="vfb-text ' . $size . $required . $validation . $accept . $css . '" />';
-			
-						
+				
+				
+				$form_item = sprintf(
+					'<input type="file" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s %8$s" />',
+					absint( $field->field_id ),
+					$id_attr,
+					$default,
+					$size,
+					$required,
+					$validation,
+					$css,
+					$accept
+				);
+				
+				$output .= ( !empty( $description ) ) ? sprintf( '<span>%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
+				
 			break;
 			
 			case 'instructions' :
 				
-				$output .= html_entity_decode( stripslashes( $field->field_description ) );
+				$output .= wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ) );
 			
 			break;
 			
 			case 'submit' :							
 				
-				$submit = '<li class="vfb-item vfb-item-submit" id="' . $id_attr . '"><input type="submit" name="visual-form-builder-submit" value="' . stripslashes( $field->field_name ) . '" class="vfb-submit' . $css . '" id="sendmail" /></li>';
+				$submit = sprintf(
+					'<li class="vfb-item vfb-item-submit" id="%2$s"><input type="submit" name="visual-form-builder-submit" value="%1$s" class="vfb-submit %3$s" id="sendmail" /></li>',
+					esc_attr( stripslashes( $field->field_name ) ),
+					$id_attr,
+					$css
+				);
 				
 			break;
 			
