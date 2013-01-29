@@ -176,10 +176,10 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 			$value = ( isset( $_POST[ 'vfb-' . $field->field_id ] ) ) ? $_POST[ 'vfb-' . $field->field_id ] : '';
 			
 			// If time field, build proper output
-			if ( is_array( $value ) && array_key_exists( 'hour', $value ) && array_key_exists( 'min', $value ) )
+			if ( is_array( $value ) && $field->field_type == 'time' )
 				$value = ( array_key_exists( 'ampm', $value ) ) ? substr_replace( implode( ':', $value ), ' ', 5, 1 ) : implode( ':', $value );
 			// If address field, build proper output
-			elseif ( is_array( $value ) && array_key_exists( 'address', $value ) && array_key_exists( 'address-2', $value ) ) {
+			elseif ( is_array( $value ) && $field->field_type == 'address' ) {
 				$address = '';
 				
 				if ( !empty( $value['address'] ) )

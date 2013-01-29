@@ -262,53 +262,79 @@ foreach ( $forms as $form ) :
 			
 			case 'address' :
 				
-				if ( !empty( $field->field_description ) )
-					$output .= '<span><label>' . html_entity_decode( stripslashes( $field->field_description ) ) . '</label></span>';
-					
-				$address_labels = array(
-				    'address'    => __( 'Address', 'visual-form-builder-pro' ),
-				    'address-2'  => __( 'Address Line 2', 'visual-form-builder-pro' ),
-				    'city'       => __( 'City', 'visual-form-builder-pro' ),
-				    'state'      => __( 'State / Province / Region', 'visual-form-builder-pro' ),
-				    'zip'        => __( 'Postal / Zip Code', 'visual-form-builder-pro' ),
-				    'country'    => __( 'Country', 'visual-form-builder-pro' )
+				$address = '';
+				
+				$address_parts = array(
+				    'address'    => array(
+				    	'label'    => __( 'Address', 'visual-form-builder-pro' ),
+				    	'layout'   => 'full'
+				    ),
+				    'address-2'  => array(
+				    	'label'    => __( 'Address Line 2', 'visual-form-builder-pro' ),
+				    	'layout'   => 'full'
+				    ),
+				    'city'       => array(
+				    	'label'    => __( 'City', 'visual-form-builder-pro' ),
+				    	'layout'   => 'left'
+				    ),
+				    'state'      => array(
+				    	'label'    => __( 'State / Province / Region', 'visual-form-builder-pro' ),
+				    	'layout'   => 'right'
+				    ),
+				    'zip'        => array(
+				    	'label'    => __( 'Postal / Zip Code', 'visual-form-builder-pro' ),
+				    	'layout'   => 'left'
+				    ),
+				    'country'    => array(
+				    	'label'    => __( 'Country', 'visual-form-builder-pro' ),
+				    	'layout'   => 'right'
+				    )
 				);
 				
-				$address_labels = apply_filters( 'vfb_address_labels', $address_labels, $form_id );
+				$address_parts = apply_filters( 'vfb_address_labels', $address_parts, $form_id );
 				
-				$output .= '<div>
-					<span class="vfb-full">
-						<input type="text" name="vfb-' . $field->field_id . '[address]" id="' . $id_attr . '-address" maxlength="150" class="vfb-text vfb-medium' . $required . $css . '" />
-						<label for="' . $id_attr . '-address">' . $address_labels['address'] . '</label>
-					</span>
-					<span class="vfb-full">
-						<input type="text" name="vfb-' . $field->field_id . '[address-2]" id="' . $id_attr . '-address-2" maxlength="150" class="vfb-text vfb-medium' . $css . '" />
-						<label for="' . $id_attr . '-address-2">' . $address_labels['address-2'] . '</label>
-					</span>
-					<span class="vfb-left">
-						<input type="text" name="vfb-' . $field->field_id . '[city]" id="' . $id_attr . '-city" maxlength="150" class="vfb-text vfb-medium' . $required . $css . '" />
-						<label for="' . $id_attr . '-city">' . $address_labels['city'] . '</label>
-					</span>
-					<span class="vfb-right">
-						<input type="text" name="vfb-' . $field->field_id . '[state]" id="' . $id_attr . '-state" maxlength="150" class="vfb-text vfb-medium' . $required . $css . '" />
-						<label for="' . $id_attr . '-state">' . $address_labels['state'] . '</label>
-					</span>
-					<span class="vfb-left">
-						<input type="text" name="vfb-' . $field->field_id . '[zip]" id="' . $id_attr . '-zip" maxlength="150" class="vfb-text vfb-medium' . $required . $css . '" />
-						<label for="' . $id_attr . '-zip">' . $address_labels['zip'] . '</label>
-					</span>
-					<span class="vfb-right">
-					<select class="vfb-select' . $required . $css . '" name="vfb-' . $field->field_id . '[country]" id="' . $id_attr . '-country">';
+				foreach ( $address_parts as $parts => $part ) :
 					
-					foreach ( $this->countries as $country ) {
-						$output .= "<option value=\"$country\" " . selected( $default, $country, 0 ) . ">$country</option>";
-					}
+					if ( 'country' == $parts ) :
+						
+						$options = '';
 					
-					$output .= '</select>
-						<label for="' . $id_attr . '-country">' . $address_labels['country'] . '</label>
-					</span>
-				</div>';
-
+						foreach ( $this->countries as $country ) {
+							$options .= sprintf( '<option value="%1$s"%2$s>%1$s</option>', $country, selected( $default, $country, 0 ) );
+						}
+											
+						$address .= sprintf(
+							'<span class="vfb-%3$s"><select name="vfb-%1$d[%4$s]" class="vfb-select %7$s %8$s" id="%2$s-%4$s">%6$s</select><label for="%2$s-%4$s">%5$s</label></span>',
+							absint( $field->field_id ),
+							$id_attr,
+							$part['layout'],
+							$parts,
+							$part['label'],
+							$options,
+							$required,
+							$css
+						);
+						
+					else : 
+						
+						$address .= sprintf(
+							'<span class="vfb-%3$s"><input type="text" name="vfb-%1$d[%4$s]" id="%2$s-%4$s" maxlength="150" class="vfb-text vfb-medium %7$s %8$s" /><label for="%2$s-%4$s">%5$s</label></span>',
+							absint( $field->field_id ),
+							$id_attr,
+							$part['layout'],
+							$parts,
+							$part['label'],
+							$size,
+							$required,
+							$css
+						);
+					
+					endif;
+					
+				endforeach;
+				
+				$output .= "<div>$address</div>";
+				
 			break;
 			
 			case 'date' :
