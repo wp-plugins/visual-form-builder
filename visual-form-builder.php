@@ -1385,7 +1385,7 @@ class Visual_Form_Builder{
 										<?php _e( 'Description' , 'visual-form-builder'); ?>
                                          <span class="vfb-tooltip" title="About Description" rel="A description is an optional piece of text that further explains the meaning of this field. Descriptions are displayed below the field. HTML tags are allowed.">(?)</span>
                                         <br />
-										<input type="text" value="<?php echo stripslashes( $field->field_description ); ?>" name="field_description-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-description-<?php echo $field->field_id; ?>" />
+										<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat edit-menu-item-description" cols="20" rows="3" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 									</label>
 								</p>
 								
