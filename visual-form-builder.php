@@ -1469,7 +1469,7 @@ class Visual_Form_Builder{
 										<?php _e( 'Validation' , 'visual-form-builder'); ?>
                                         <span class="vfb-tooltip" title="About Validation" rel="Ensures user-entered data is formatted properly. For more information on Validation, refer to the Help tab at the top of this page.">(?)</span>
                                         <br />
-										<select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( !in_array( $field->field_type, array( 'text', 'time' ) ) ) ? ' disabled="disabled"' : ''; ?>>
+									   <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( !in_array( $field->field_type, array( 'text', 'time' ) ) ) ? ' disabled="disabled"' : ''; ?>>
 											<?php if ( $field->field_type == 'time' ) : ?>
 											<option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>><?php _e( '12 Hour Format' , 'visual-form-builder'); ?></option>
 											<option value="time-24" <?php selected( $field->field_validation, 'time-24' ); ?>><?php _e( '24 Hour Format' , 'visual-form-builder'); ?></option>
@@ -1676,33 +1676,26 @@ class Visual_Form_Builder{
 		
 		// Set variables depending on which tab is selected
 		$form_nav_selected_id = ( isset( $_REQUEST['form'] ) ) ? $_REQUEST['form'] : '0';
+		
+		// Page titles
+		$pages = array(
+    		'visual-form-builder'	=> __( 'Visual Form Builder', 'visual-form-builder' ),
+    		'vfb-add-new'     		=> __( 'Add New Form', 'visual-form-builder' ),
+    		'vfb-entries'     		=> __( 'Entries', 'visual-form-builder' ),
+    		'vfb-export'      		=> __( 'Export', 'visual-form-builder' )
+    	);
 	?>
 	<div class="wrap">
 		<?php screen_icon( 'options-general' ); ?>
 		<h2>
 		<?php
-			_e('Visual Form Builder', 'visual-form-builder');
+			// Output the page titles
+			echo ( isset( $_REQUEST['page'] ) && array_key_exists( $_REQUEST['page'], $pages ) ) ? esc_html( $pages[ $_REQUEST['page' ] ] ) : '';
+			
+			// If searched, output the query
 			echo ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] ) && in_array( $_REQUEST['page'], array( 'vfb-entries' ) ) ) ? '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'visual-form-builder'), $_REQUEST['s'] ) : '';
 		?>
-		</h2>            
-        <ul class="sub-navigation">
-        <?php
-        	$views = array();
-        	$pages = array(
-        		'visual-form-builder' 	=> array( 'page' 	=> __( 'Forms', 'visual-form-builder' ) ),
-        		'vfb-entries' 			=> array( 'page' 	=> __( 'Entries', 'visual-form-builder' ) ),
-        		'vfb-export' 			=> array( 'page' 	=> __( 'Export', 'visual-form-builder' ) )
-        	);
-        	
-        	foreach ( $pages as $page => $args ) {
-        		$class = ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( $page ) ) ) ? 'current' : '';
-        		
-        		$views[ $args['page'] ] = "\t<li><a class='$class' href='" . admin_url( "admin.php?page=$page" ) . "'>{$args['page']}</a>";	
-        	}
-        	echo implode( ' |</li>', $views ) . '</li>';
-        ?>
-        </ul>
-        
+		</h2>
         <?php
 			// Display the Entries
 			if ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-entries' ) ) ) : 
