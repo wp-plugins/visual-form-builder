@@ -1469,7 +1469,7 @@ class Visual_Form_Builder{
 										<?php _e( 'Validation' , 'visual-form-builder'); ?>
                                         <span class="vfb-tooltip" title="About Validation" rel="Ensures user-entered data is formatted properly. For more information on Validation, refer to the Help tab at the top of this page.">(?)</span>
                                         <br />
-									   <select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( in_array( $field->field_type, array( 'radio', 'select', 'checkbox', 'address', 'date', 'textarea', 'html', 'file-upload', 'secret' ) ) ) ? ' disabled="disabled"' : ''; ?>>
+										<select name="field_validation-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-validation-<?php echo $field->field_id; ?>"<?php echo ( !in_array( $field->field_type, array( 'text', 'time' ) ) ) ? ' disabled="disabled"' : ''; ?>>
 											<?php if ( $field->field_type == 'time' ) : ?>
 											<option value="time-12" <?php selected( $field->field_validation, 'time-12' ); ?>><?php _e( '12 Hour Format' , 'visual-form-builder'); ?></option>
 											<option value="time-24" <?php selected( $field->field_validation, 'time-24' ); ?>><?php _e( '24 Hour Format' , 'visual-form-builder'); ?></option>
