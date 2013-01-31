@@ -306,8 +306,7 @@ class VisualFormBuilder_Export {
 		foreach ( $data as $row ) :
 			
 			foreach ( $fields as $label ) {
-				if ( isset( $row[ $label ] ) && in_array( $label, $fields ) )
-					$rows[ $label ] = $row[ $label ];
+				$rows[ $label ] =  ( isset( $row[ $label ] ) && in_array( $label, $fields ) ) ? $row[ $label ] : '';
 			}
 			
 			fputcsv( $fh, $rows, $this->delimiter );
