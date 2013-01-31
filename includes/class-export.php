@@ -129,6 +129,7 @@ class VisualFormBuilder_Export {
 						
 						$array = array_keys( $array );
 						$array = array_values( array_merge( $this->default_cols, $array ) );
+						$array = array_map( 'stripslashes', $array );
 						
 						foreach ( $array as $k => $v ) :
 							$selected = ( in_array( $v, $this->default_cols ) ) ? ' checked="checked"' : '';
@@ -216,6 +217,9 @@ class VisualFormBuilder_Export {
 		// Build array of fields to display
 		$fields = !is_array( $args['fields'] ) ? array_map( 'trim', explode( ',', $args['fields'] ) ) : $args['fields'];
 		
+		// Strip slashes from header values
+		$fields = array_map( 'stripslashes', $fields );
+		
 		// Build CSV
 		$this->csv( $data, $fields );
 	}
@@ -245,11 +249,11 @@ class VisualFormBuilder_Export {
 					case 'subject':
 					case 'sender_name':
 					case 'sender_email':
-						$output[ $row ][ $this->default_cols[ $key ] ] = $value;
+						$output[ $row ][ stripslashes( $this->default_cols[ $key ] ) ] = $value;
 					break;
 					
 					case 'emails_to':
-						$output[ $row ][ $this->default_cols[ $key ] ] = implode( ',', maybe_unserialize( $value ) );
+						$output[ $row ][ stripslashes( $this->default_cols[ $key ] ) ] = implode( ',', maybe_unserialize( $value ) );
 					break;
 					
 					case 'data':
@@ -272,7 +276,7 @@ class VisualFormBuilder_Export {
 								break;
 								
 								default :
-									$output[ $row ][ $obj->name ] = $obj->value;
+									$output[ $row ][ stripslashes( $obj->name ) ] = $obj->value;
 								break;
 							} //end $obj switch
 						endforeach; // end $fields loop
