@@ -202,8 +202,6 @@ class VisualFormBuilder_Export {
 		header( 'Expires: 0' );
 		header( 'Pragma: public' );
 		
-		$fh = @fopen( 'php://output', 'w' );
-		
 		// Get columns
 		$columns = $this->get_cols( $entries );
 		
@@ -213,31 +211,18 @@ class VisualFormBuilder_Export {
 		// Build array of fields to display
 		$fields = !is_array( $args['fields'] ) ? array_map( 'trim', explode( ',', $args['fields'] ) ) : $args['fields'];
 		
-		// Build headers
-		fputcsv( $fh, $fields );
-				
-		$test = array();
-		
-		// Build table rows and cells		
-		foreach ( $data as $row ) :
-			
-			foreach ( $fields as $label ) {
-				if ( isset( $row[ $label ] ) && in_array( $label, $fields ) )
-					$test[ $label ] = $row[ $label ];
-			}
-			
-			fputcsv( $fh, $test );
-			
-		endforeach;
-		
-		// Close the file
-		fclose( $fh );
-		
-		exit();
+		// Build CSV
+		$this->csv( $data, $fields );
 	}
-
+	
+	/**
+	 * Build the entries as JSON
+	 *
+	 * @since 1.7
+	 *
+	 * @param array $entries The resulting database query for entries
+	 */
 	public function get_cols( $entries ) {
-		
 		
 		// Initialize row index at 0
 		$row = 0;
@@ -300,50 +285,34 @@ class VisualFormBuilder_Export {
 	 *
 	 * @since 1.7
 	 *
-	 * @param array $cols The multidimensional array of entries data
-	 * @param int $row The row index
+	 * @param array $data The multidimensional array of entries data
+	 * @param array $fields The selected fields to export
 	 */
-	public function csv( $cols, $row ) {
-		// Setup our CSV vars
-		$csv_headers = NULL;
-		$csv_rows = array();
+	public function csv( $data, $fields ) {
+		// Open file with PHP wrapper
+		$fh = @fopen( 'php://output', 'w' );
 		
-		// Loop through each column
-		foreach ( $cols as $data ) {
-			// End our header row, if needed
-			if ( $csv_headers )
-				$csv_headers .= $this->delimiter;
+		// Build headers
+		fputcsv( $fh, $fields, $this->delimiter );
+				
+		$rows = array();
+		
+		// Build table rows and cells		
+		foreach ( $data as $row ) :
 			
-			// Build our headers
-			$csv_headers .= stripslashes( htmlentities( $data['header'] ) );
+			foreach ( $fields as $label ) {
+				if ( isset( $row[ $label ] ) && in_array( $label, $fields ) )
+					$rows[ $label ] = $row[ $label ];
+			}
 			
-			// Loop through each row of data and add to our CSV
-			for ( $i = 0; $i < $row; $i++ ) {
-				// End our row of data, if needed
-				if ( array_key_exists( $i, $csv_rows ) && !empty( $csv_rows[ $i ] ) )
-					$csv_rows[ $i ] .= $this->delimiter;
-				elseif ( !array_key_exists( $i, $csv_rows ) )
-					$csv_rows[ $i ] = '';
-				
-				// Add a starting quote for this row's data
-				$csv_rows[ $i ] .= '"';
-				
-				// If there's data at this point, add it to the row
-				if ( array_key_exists( $i, $data[ 'data' ] ) )
-					$csv_rows[ $i ] .=  $data[ 'data' ][ $i ];
-				
-				// Add a closing quote for this row's data
-				$csv_rows[ $i ] .= '"';				
-			}			
-		}
+			fputcsv( $fh, $rows, $this->delimiter );
+			
+		endforeach;
 		
-		// Print headers for the CSV
-		echo "$csv_headers\n";
+		// Close the file
+		fclose( $fh );
 		
-		// Print each row of data for the CSV
-		foreach ( $csv_rows as $row ) {
-			echo "$row\n";
-		}
+		exit();
 	}
 		
 	/**
@@ -394,24 +363,7 @@ class VisualFormBuilder_Export {
 			break;
 		}
 	}
-	
-	/**
-	 * Wrap given string in XML CDATA tag.
-	 *
-	 * @since 1.7
-	 *
-	 * @param string $str String to wrap in XML CDATA tag.
-	 * @return string
-	 */
-	function cdata( $str ) {
-		if ( seems_utf8( $str ) == false )
-			$str = utf8_encode( $str );
-
-		$str = '<![CDATA[' . str_replace( ']]>', ']]]]><![CDATA[>', $str ) . ']]>';
-
-		return $str;
-	}
-	
+		
 	/**
 	 * Display Year/Month filter
 	 * 
