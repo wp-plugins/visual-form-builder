@@ -919,3 +919,19 @@ ul.vfb-fields-col-1, ul.vfb-fields-col-2 {
     font-size: 12px;
     margin-top: 10px;
 }
+
+.vfb-export-label {
+	width: 10em;
+	float: left;
+}
+
+#vfb-export-entries-fields {
+	height:275px;
+	width:300px;
+	overflow: auto;
+	display: block;
+	border:1px solid #e8e8e8;
+	border-radius: 3px;
+	margin-left: 10em;
+	padding: 5px;
+}

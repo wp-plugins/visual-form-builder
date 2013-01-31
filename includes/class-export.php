@@ -83,7 +83,7 @@ class VisualFormBuilder_Export {
         	<ul id="entries-filters" class="vfb-export-filters">
         		<li><p class="description"><?php _e( 'This will export entries in either a .csv, .txt, or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.', 'visual-form-builder' ); ?></p></li>
         		<li>
-        			<label for="format"><?php _e( 'Format', 'visual-form-builder' ); ?>:</label>
+        			<label class="vfb-export-label" for="format"><?php _e( 'Format', 'visual-form-builder' ); ?>:</label>
         			<select name="format">
         				<option value="csv" selected="selected"><?php _e( 'Comma Separated (.csv)', 'visual-form-builder' ); ?></option>
         				<option value="txt" disabled="disabled"><?php _e( 'Tab Delimited (.txt) - Pro only', 'visual-form-builder' ); ?></option>
@@ -91,7 +91,7 @@ class VisualFormBuilder_Export {
         			</select>
         		</li>
         		<li>
-		        	<label for="form_id"><?php _e( 'Form', 'visual-form-builder' ); ?>:</label> 
+		        	<label class="vfb-export-label" for="form_id"><?php _e( 'Form', 'visual-form-builder' ); ?>:</label> 
 		            <select name="form_id">
 					<?php
 						foreach ( $forms as $form ) {
@@ -101,7 +101,7 @@ class VisualFormBuilder_Export {
 					</select>
         		</li>
         		<li>
-        			<label><?php _e( 'Date Range', 'visual-form-builder' ); ?>:</label>
+        			<label class="vfb-export-label"><?php _e( 'Date Range', 'visual-form-builder' ); ?>:</label>
         			<select name="entries_start_date">
         				<option value="0">Start Date</option>
         				<?php $this->months_dropdown(); ?>
@@ -111,30 +111,35 @@ class VisualFormBuilder_Export {
         				<?php $this->months_dropdown(); ?>
         			</select>
         		</li>
-        		<li id="vfb-export-entries-fields">
-        			<label><?php _e( 'Fields', 'visual-form-builder' ); ?>:</label>
+        		<li>
+        			<label class="vfb-export-label"><?php _e( 'Fields', 'visual-form-builder' ); ?>:</label>
         			<?php
-								if ( isset( $no_entries ) ) :
-									echo $no_entries;
-								else :
-									$array = array();
-									foreach ( $data as $row ) :
-										$array = array_merge( $row, $array );
-									endforeach;
-									
-									$array = array_keys( $array );
-									$array = array_values( array_merge( $this->default_cols, $array ) );
-									
-									foreach ( $array as $k => $v ) :
-										$selected = ( in_array( $v, $this->default_cols ) ) ? ' checked="checked"' : '';
-										
-										echo sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %4$s</label><br>', $k, $v, $selected, $v );
-									endforeach;
-							?>
+					if ( isset( $no_entries ) ) :
+						echo $no_entries;
+					else :
+						
+						echo sprintf( '<p><a id="vfb-export-select-all" href="#">%s</a></p>', __( 'Select All', 'visual-form-builder' ) );
+						
+						echo '<div id="vfb-export-entries-fields">';
+						
+						$array = array();
+						foreach ( $data as $row ) :
+							$array = array_merge( $row, $array );
+						endforeach;
+						
+						$array = array_keys( $array );
+						$array = array_values( array_merge( $this->default_cols, $array ) );
+						
+						foreach ( $array as $k => $v ) :
+							$selected = ( in_array( $v, $this->default_cols ) ) ? ' checked="checked"' : '';
 							
-							
-							
-							<?php endif; ?>
+							echo sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %4$s</label><br>', $k, $v, $selected, $v );
+						endforeach;
+						
+						echo '</div>';
+						
+					 endif;
+					 ?>
         		</li>
         	</ul>
         	
