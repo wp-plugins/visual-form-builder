@@ -89,6 +89,7 @@ class Visual_Form_Builder{
 			add_action( 'wp_ajax_visual_form_builder_form_settings', array( &$this, 'form_settings_callback' ) );
 			add_action( 'wp_ajax_visual_form_builder_media_button', array( &$this, 'display_media_button' ) );
 			
+			
 			add_action( 'load-toplevel_page_visual-form-builder', array( &$this, 'help' ) );
 
 			// Adds additional media button to insert form shortcode
@@ -96,7 +97,6 @@ class Visual_Form_Builder{
 			
 			// Load the includes files
 			add_action( 'load-visual-form-builder_page_vfb-entries', array( &$this, 'includes' ) );
-			add_action( 'load-visual-form-builder_page_vfb-export', array( &$this, 'include_export' ) );
 			
 			// Adds a Screen Options tab to the Entries screen
 			add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
@@ -160,19 +160,6 @@ class Visual_Form_Builder{
 		$entries_detail = new VisualFormBuilder_Entries_Detail();		
 	}
 	
-	/**
-	 * Include the Import/Export files later because current_screen isn't available yet
-	 * 
-	 * @since 1.4
-	 */
-	public function include_export(){
-		global $export;
-				
-		// Load the Export class
-		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-export.php' );
-		$export = new VisualFormBuilder_Export();		
-	}
-
 	/**
 	 * Add Settings link to Plugins page
 	 * 
@@ -1149,6 +1136,7 @@ class Visual_Form_Builder{
 		
 		die(1);
 	}
+			
 	/**
 	 * All Forms output in admin
 	 * 
@@ -1919,4 +1907,9 @@ class Visual_Form_Builder{
 
 // On plugin activation, install the databases and add/update the DB version
 register_activation_hook( __FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
+
+// Special case to load Export class so AJAX is registered
+require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-export.php' );
+if ( !isset( $export ) )
+	$export = new VisualFormBuilder_Export();
 ?>

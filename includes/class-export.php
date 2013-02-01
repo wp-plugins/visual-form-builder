@@ -28,7 +28,8 @@ class VisualFormBuilder_Export {
 		$this->form_table_name 		= $wpdb->prefix . 'visual_form_builder_forms';
 		$this->entries_table_name 	= $wpdb->prefix . 'visual_form_builder_entries';
 		
-		add_action( 'admin_init', array( &$this, 'display' ) );
+		// AJAX for loading new entry checkboxes
+		add_action( 'wp_ajax_vfb_display_entries_load_options', array( &$this, 'ajax_load_options' ) );
 		
 		$this->process_export_action();
 	}
@@ -92,7 +93,7 @@ class VisualFormBuilder_Export {
         		</li>
         		<li>
 		        	<label class="vfb-export-label" for="form_id"><?php _e( 'Form', 'visual-form-builder' ); ?>:</label> 
-		            <select name="form_id">
+		            <select id="vfb-export-entries-forms" name="form_id">
 					<?php
 						foreach ( $forms as $form ) {
 							echo '<option value="' . $form->form_id . '" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</option>';
@@ -321,6 +322,58 @@ class VisualFormBuilder_Export {
 		fclose( $fh );
 		
 		exit();
+	}
+
+	/**
+	 * Build the checkboxes when changing forms
+	 *
+	 * @since 2.6.8
+	 *
+	 * @return string Either no entries or the entry headers
+	 */
+	public function ajax_load_options() {
+		global $wpdb, $export;
+		
+		//if ( !isset( $_REQUEST['action'] ) && $_REQUEST['action'] !== 'vfb_display_entries_load_options' )
+		if ( !isset( $_REQUEST['action'] ) )
+			return;
+		
+		if ( $_REQUEST['action'] !== 'vfb_display_entries_load_options' )
+			return;
+			
+		$form_id = absint( $_REQUEST['id'] );
+		
+		// Safe to get entries now
+		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, data FROM $this->entries_table_name WHERE 1=1 AND form_id = %d", $form_id ), ARRAY_A );
+		
+		// Return nothing if no entries found
+		if ( !$entries ) {
+			echo __( 'No entries to pull field names from.', 'vfb_pro_display_entries' );
+			wp_die();
+		}
+		
+		// Get columns
+		$columns = $export->get_cols( $entries );
+		
+		// Get JSON data
+		$data = json_decode( $columns, true );
+		
+		$array = array();
+		foreach ( $data as $row ) :
+			$array = array_merge( $row, $array );
+		endforeach;
+		
+		$array = array_keys( $array );
+		$array = array_values( array_merge( $export->default_cols, $array ) );
+		$array = array_map( 'stripslashes', $array );
+		
+		foreach ( $array as $k => $v ) :
+			$selected = ( in_array( $v, $export->default_cols ) ) ? ' checked="checked"' : '';
+			
+			echo sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %4$s</label><br>', $k, $v, $selected, $v );
+		endforeach;
+		
+		wp_die();
 	}
 		
 	/**
