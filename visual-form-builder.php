@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // Set to true to load uncompressed and unminified scripts and stylesheets
-define( 'VFB_SCRIPT_DEBUG', false );
+define( 'VFB_SCRIPT_DEBUG', true );
 
 // Instantiate new class
 $visual_form_builder = new Visual_Form_Builder();
@@ -547,7 +547,7 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'form-elements-add', plugins_url( "visual-form-builder/js/visual-form-builder$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
 		
-		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin$this->load_dev_files.css" ) );
+		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin.css" ) );
 	}
 	
 	/**
@@ -561,7 +561,7 @@ class Visual_Form_Builder{
 		
 		wp_enqueue_script( 'jquery-form-validation', plugins_url( '/js/jquery.validate.min.js', __FILE__ ), array( 'jquery' ), '1.9.0', true );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 	}
 	
@@ -1226,28 +1226,31 @@ class Visual_Form_Builder{
 		        <p>Attention Visual Form Builder users!  I am happy to announce <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a>, available now for only <strong>$10</strong>.</p>
 		        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
 		        <ul>
+		        	<li><a href="http://vfb.matthewmuro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
+		            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Drag and Drop to add new form fields' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Nested Drag and Drop' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Conditional Logic' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( '10 new Form Fields (Username, Password, Color Picker, Autocomplete, Hidden, and more)' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Edit and Update Entries' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Import/Export forms, settings, and entries' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( '10+ new Form Fields' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Complete Entries Management' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Import/Export' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'PayPal Integration' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Scheduling' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Limit Form Entries' , 'visual-form-builder'); ?></li>
+		            <li><?php _e( 'Simple PayPal Integration' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Live Preview' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Unlimited Use' , 'visual-form-builder'); ?></li>
 		            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
 		        </ul>
 		        
 		        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
-		        <p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
+		        <p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
 		    </div> <!-- .vfb-pro-upgrade -->
 		    
 	   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
