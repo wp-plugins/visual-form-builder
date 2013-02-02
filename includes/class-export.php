@@ -29,7 +29,7 @@ class VisualFormBuilder_Export {
 		$this->entries_table_name 	= $wpdb->prefix . 'visual_form_builder_entries';
 		
 		// AJAX for loading new entry checkboxes
-		add_action( 'wp_ajax_vfb_display_entries_load_options', array( &$this, 'ajax_load_options' ) );
+		add_action( 'wp_ajax_visual_form_builder_export_load_options', array( &$this, 'ajax_load_options' ) );
 			
 		$this->process_export_action();
 	}
@@ -325,7 +325,7 @@ class VisualFormBuilder_Export {
 		if ( !isset( $_REQUEST['action'] ) )
 			return;
 		
-		if ( $_REQUEST['action'] !== 'vfb_display_entries_load_options' )
+		if ( $_REQUEST['action'] !== 'visual_form_builder_export_load_options' )
 			return;
 			
 		$form_id = absint( $_REQUEST['id'] );
