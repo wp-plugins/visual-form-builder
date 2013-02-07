@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.6.7
+Version: 2.6.8
 */
 
 /*
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // Set to true to load uncompressed and unminified scripts and stylesheets
-define( 'VFB_SCRIPT_DEBUG', true );
+define( 'VFB_SCRIPT_DEBUG', false );
 
 // Instantiate new class
 $visual_form_builder = new Visual_Form_Builder();
