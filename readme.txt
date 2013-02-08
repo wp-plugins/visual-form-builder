@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
 Requires at least: 3.4.1
 Tested up to: 3.5.1
-Stable tag: 2.6.8
+Stable tag: 2.6.9
 License: GPLv2 or later
 
 Build beautiful, fully functional forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -12,6 +12,10 @@ Build beautiful, fully functional forms in only a few minutes without writing PH
 == Description ==
 
 *Visual Form Builder* is a plugin that allows you to build and manage all kinds of forms for your website in a single place.  Building a fully functional form takes only a few minutes and you don't have to write one bit of PHP, CSS, or HTML!
+
+= Upgrade to Visual Form Builder Pro =
+
+If you are a fan of Visual Form Builder and want extra features and functionality, [Visual Form Builder Pro](http://vfb.matthewmuro.com) is available for only **$10**.
 
 = Features =
 
@@ -209,6 +213,10 @@ To Export Selected:
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.6.9**
+
+* Fix bug where Validation would be removed on saving predefined fields
 
 **Version 2.6.8**
 
@@ -464,6 +472,9 @@ To Export Selected:
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.6.9 =
+Fix bug where Validation would be removed on saving predefined fields
 
 = 2.6.8 =
 Add Reply-To to email headers for better compatibility with some email servers; updated CSV export 
