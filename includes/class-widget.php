@@ -46,7 +46,7 @@ class VisualFormBuilder_Widget extends WP_Widget {
 					absint( $form->form_id ),
 					esc_html( $form->form_key ),
 					selected( $form->form_id, $instance['id'], 1 ),
-					wp_specialchars_decode( stripslashes( esc_html( $form->form_title ) ) )
+					wp_specialchars_decode( esc_html( stripslashes( $form->form_title ) ), ENT_QUOTES )
 				);
 			}
 		?>

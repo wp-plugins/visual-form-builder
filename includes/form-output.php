@@ -58,8 +58,8 @@ foreach ( $fields as $field ) :
 	$id_attr 		= 'vfb-' . esc_html( $field->field_key ) . '-' . $field->field_id;
 	$size			= ( !empty( $field->field_size ) ) ? " vfb-$field->field_size" : '';
 	$layout 		= ( !empty( $field->field_layout ) ) ? " vfb-$field->field_layout" : '';
-	$default 		= ( !empty( $field->field_default ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_default ) ) ) : '';
-	$description	= ( !empty( $field->field_description ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ) ) : '';
+	$default 		= ( !empty( $field->field_default ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_default ) ), ENT_QUOTES ) : '';
+	$description	= ( !empty( $field->field_description ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ), ENT_QUOTES ) : '';
 	
 	// Close each section
 	if ( $open_section == true ) :
@@ -508,7 +508,7 @@ foreach ( $fields as $field ) :
 		
 		case 'instructions' :
 			
-			$output .= wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ) );
+			$output .= wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ), ENT_QUOTES );
 		
 		break;
 		
