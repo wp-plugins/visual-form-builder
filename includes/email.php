@@ -276,7 +276,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		'sender_email' 		=> $form_settings->form_from,
 		'emails_to' 		=> serialize( $form_settings->form_to ),
 		'date_submitted' 	=> date_i18n( 'Y-m-d G:i:s' ),
-		'ip_address' 		=> $_SERVER['REMOTE_ADDR']
+		'ip_address' 		=> esc_html( $_SERVER['REMOTE_ADDR'] )
 	);
 	
 	// Insert this data into the entries table
