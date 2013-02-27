@@ -640,7 +640,7 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'postbox' );
 		wp_enqueue_script( 'jquery-form-validation', plugins_url( '/js/jquery.validate.min.js', __FILE__ ), array( 'jquery' ), '1.9.0', true );
-		wp_enqueue_script( 'form-elements-add', plugins_url( "visual-form-builder/js/visual-form-builder$this->load_dev_files.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'form-elements-add', plugins_url( 'visual-form-builder/js/vfb-admin.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
 		
 		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin.css" ) );
@@ -657,7 +657,7 @@ class Visual_Form_Builder{
 		
 		wp_enqueue_script( 'jquery-form-validation', plugins_url( '/js/jquery.validate.min.js', __FILE__ ), array( 'jquery' ), '1.9.0', true );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( "visual-form-builder/js/visual-form-builder-validate.js" ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'visual-form-builder-validation', plugins_url( 'visual-form-builder/js/vfb-validation.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 		wp_enqueue_script( 'visual-form-builder-metadata', plugins_url( 'visual-form-builder/js/jquery.metadata.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
 	}
 	
