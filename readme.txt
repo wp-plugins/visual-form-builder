@@ -84,9 +84,7 @@ If you are a fan of Visual Form Builder and want extra features and functionalit
 = SPAM Protection =
 
 * Automatically included on every form
-* Uses a simple, yet effective, logic-based verification system
-* [WordPress Nonce](http://codex.wordpress.org/WordPress_Nonces)
-
+* Uses a simple and accessible, yet effective, [text CAPTCHA](http://textcaptcha.com/) verification system
 
 == Installation ==
 

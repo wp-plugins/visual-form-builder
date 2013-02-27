@@ -20,7 +20,7 @@ $form_id = ( isset( $id ) && !empty( $id ) ) ? (int) $id : key( $atts );
 
 
 // If form is submitted, show success message, otherwise the form
-if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
+if ( isset( $_REQUEST['visual-form-builder-submit'] ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
 	$output = $this->confirmation();
 	return;
 }
@@ -45,7 +45,6 @@ $verification = '';
 $label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
 $output = '<div class="visual-form-builder-container"><form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" enctype="multipart/form-data">
 			<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
-$output .= wp_nonce_field( 'visual-form-builder-nonce', '_wpnonce', false, false );
 
 foreach ( $fields as $field ) :
 	$field_id		= absint( $field->field_id );

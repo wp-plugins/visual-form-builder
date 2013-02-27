@@ -1888,7 +1888,7 @@ class Visual_Form_Builder{
 		
 		$form_id = ( isset( $_REQUEST['form_id'] ) ) ? (int) esc_html( $_REQUEST['form_id'] ) : '';
 		
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'visual-form-builder-nonce' ) ) {
+		if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) {
 			// Get forms
 			$order = sanitize_sql_orderby( 'form_id DESC' );
 			$forms 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );

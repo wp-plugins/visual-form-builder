@@ -15,11 +15,6 @@ if ( true == $required && !empty( $secret_field ) ) {
 		
 // Basic security check before moving any further
 if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
-	$nonce = $_REQUEST['_wpnonce'];
-	
-	// Security check to verify the nonce
-	if ( ! wp_verify_nonce( $nonce, 'visual-form-builder-nonce' ) )
-		wp_die( __( 'Security check: unable to verify nonce value.' , 'visual-form-builder' ), '', array( 'back_link' => true ) );
 	
 	// Test if it's a known SPAM bot
 	if ( $this->isBot() )
