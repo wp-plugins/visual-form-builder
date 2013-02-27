@@ -350,7 +350,7 @@ foreach ( $fields as $field ) :
 			foreach ( $address_parts as $parts => $part ) :
 				
 				// Make sure the second address line is not required
-				$required = ( 'address-2' !== $parts ) ? $required : '';
+				$addr_required = ( 'address-2' !== $parts ) ? $required : '';
 				
 				if ( 'country' == $parts ) :
 					
@@ -368,7 +368,7 @@ foreach ( $fields as $field ) :
 						$parts,
 						$part['label'],
 						$options,
-						$required,
+						$addr_required,
 						$css
 					);
 					
@@ -382,7 +382,7 @@ foreach ( $fields as $field ) :
 						$parts,
 						$part['label'],
 						$size,
-						$required,
+						$addr_required,
 						$css
 					);
 				
