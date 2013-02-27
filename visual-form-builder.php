@@ -84,10 +84,10 @@ class Visual_Form_Builder{
 			add_action( 'admin_init', array( &$this, 'save' ) );
 			add_action( 'admin_init', array( &$this, 'additional_plugin_setup' ) );
 			
-			add_action( 'wp_ajax_visual_form_builder_process_sort', array( &$this, 'process_sort_callback' ) );
-			add_action( 'wp_ajax_visual_form_builder_create_field', array( &$this, 'create_field_callback' ) );
-			add_action( 'wp_ajax_visual_form_builder_delete_field', array( &$this, 'delete_field_callback' ) );
-			add_action( 'wp_ajax_visual_form_builder_form_settings', array( &$this, 'form_settings_callback' ) );
+			add_action( 'wp_ajax_visual_form_builder_process_sort', array( &$this, 'ajax_sort_field' ) );
+			add_action( 'wp_ajax_visual_form_builder_create_field', array( &$this, 'ajax_create_field' ) );
+			add_action( 'wp_ajax_visual_form_builder_delete_field', array( &$this, 'ajax_delete_field' ) );
+			add_action( 'wp_ajax_visual_form_builder_form_settings', array( &$this, 'ajax_form_settings' ) );
 			add_action( 'wp_ajax_visual_form_builder_media_button', array( &$this, 'display_media_button' ) );
 			
 			
@@ -1062,7 +1062,7 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 1.0
 	 */
-	public function process_sort_callback() {
+	public function ajax_sort_field() {
 		global $wpdb;
 		
 		$data = array();
@@ -1080,6 +1080,8 @@ class Visual_Form_Builder{
 			// Update each field with it's new sequence and parent ID
 			$wpdb->update( $this->field_table_name, array( 'field_sequence' => $k, 'field_parent' => $v['parent'] ), array( 'field_id' => $v['field_id'] ) );
 		}
+		
+		return;
 
 		die(1);
 	}
@@ -1089,7 +1091,7 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 1.9
 	 */
-	public function create_field_callback() {
+	public function ajax_create_field() {
 		global $wpdb;
 		
 		$data = array();
@@ -1183,7 +1185,7 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 1.9
 	 */
-	public function delete_field_callback() {
+	public function ajax_delete_field() {
 		global $wpdb;
 
 		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'toplevel_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_delete_field' ) {
@@ -1213,7 +1215,7 @@ class Visual_Form_Builder{
 	 * 
 	 * @since 2.2
 	 */
-	public function form_settings_callback() {
+	public function ajax_form_settings() {
 		global $current_user;
 		get_currentuserinfo();
 		
