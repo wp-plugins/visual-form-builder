@@ -275,7 +275,7 @@ class Visual_Form_Builder{
 						
 		if ( !$entries ) :
 			echo sprintf(
-				'<p>%1$s<a href="%2$s">%3$s</a>.',
+				'<p>%1$s <a href="%2$s">%3$s</a>',
 				__( 'You currently do not have any forms.', 'visual-form-builder' ),
 				esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ),
 				__( 'Get started!', 'visual-form-builder' )
