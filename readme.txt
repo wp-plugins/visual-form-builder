@@ -233,7 +233,12 @@ function my_scripts_method() {
 * Fix bug where second address line was always required
 * Fix bug for misnamed Instructions CSS class
 * Fix bug where quotes were not converted on output
+* Fix bug where left/right aligned labels and content were not displaying correctly
+* Fix bug where export AJAX was not returning properly
+* Fix bug for Export Select All fields
+* Sanitize IP address before inserting into database
 * Rollback Date field type to non-HTML5 to prevent duplicate date pickers in Chrome
+* Update language .POT
 
 **Version 2.6.9**
 
