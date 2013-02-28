@@ -105,6 +105,12 @@ label.vfb-desc{
 		padding-top:2px;
 		text-align:right;
 	}
+	
+	.visual-form-builder.left-label li div,
+	.visual-form-builder.right-label li div {
+		float: left;
+		width: 65%;
+	}
 
 label.vfb-desc{
 	font-weight:bold;

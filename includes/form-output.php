@@ -224,7 +224,11 @@ foreach ( $fields as $field ) :
 				$css
 			);
 			
+			$output .= '<div>';
+			
 			$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
+			
+			$output .= '</div>';
 				
 		break;
 		
@@ -479,7 +483,11 @@ foreach ( $fields as $field ) :
 				$css
 			);
 			
+			$output .= '<div>';
+			
 			$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
+			
+			$output .= '</div>';
 				
 		break;
 		
