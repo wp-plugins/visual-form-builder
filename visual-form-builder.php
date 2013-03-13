@@ -1974,6 +1974,76 @@ class Visual_Form_Builder{
 	 
 		return $isBot;
 	}
+
+	public function build_array_form_item( $value, $type = '' ) {
+		
+		$output = '';
+		
+		// Basic check for type when not set
+		if ( empty( $type ) ) :
+			if ( array_key_exists( 'address', $value ) )
+				$type = 'address';
+			elseif ( array_key_exists( 'hour', $value ) && array_key_exists( 'min', $value ) )
+				$type = 'time';
+			else
+				$type = 'default';
+		endif;
+		
+		// Build array'd form item output
+		switch( $type ) :
+			
+			case 'time' :
+				$output = ( array_key_exists( 'ampm', $value ) ) ? substr_replace( implode( ':', $value ), ' ', 5, 1 ) : implode( ':', $value );
+			break;
+			
+			case 'address' :
+				
+				if ( !empty( $value['address'] ) )
+					$output .= $value['address'];
+				
+				if ( !empty( $value['address-2'] ) ) {
+					if ( !empty( $output ) )
+						$output .= '<br>';
+					$output .= $value['address-2'];
+				}
+				
+				if ( !empty( $value['city'] ) ) {
+					if ( !empty( $output ) )
+						$output .= '<br>';
+					$output .= $value['city'];
+				}
+				if ( !empty( $value['state'] ) ) {
+					if ( !empty( $output ) && empty( $value['city'] ) )
+						$output .= '<br>';
+					elseif ( !empty( $output ) && !empty( $value['city'] ) )
+						$output .= ', ';
+					$output .= $value['state'];
+				}
+				if ( !empty( $value['zip'] ) ) {
+					if ( !empty( $output ) && ( empty( $value['city'] ) && empty( $value['state'] ) ) )
+						$output .= '<br>';
+					elseif ( !empty( $output ) && ( !empty( $value['city'] ) || !empty( $value['state'] ) ) )
+						$output .= ' ';
+					$output .= $value['zip'];
+				}
+				if ( !empty( $value['country'] ) ) {
+					if ( !empty( $output ) )
+						$output .= '<br>';
+					$output .= $value['country'];
+				}
+				
+			break;
+						
+			default :
+				
+				$output = ( isset( $value['other'] ) ) ? wp_specialchars_decode( stripslashes( esc_html( $value['other'] ) ), ENT_QUOTES, 'UTF-8' ) : esc_html( implode( ', ', $value ) );
+				
+			break;
+			
+		endswitch;
+		
+		return $output;
+	}	
 }
 
 // On plugin activation, install the databases and add/update the DB version
