@@ -88,15 +88,15 @@ $class = 'columns-' . get_current_screen()->get_columns();
 										$opened_tab = ( $settings_tab == 'opened' ) ? 'current' : '';
 									?>
 			                                
-	                                <div class="button-group">
-										<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Form Settings' , 'visual-form-builder'); ?><span class="button-icon arrow"></span></a>
+	                                <div class="vfb-button-group">
+										<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Form Settings' , 'visual-form-builder'); ?><span class="button-icon vfb-small-arrow"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
 	                                </div>
 			                                                                            
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
 		                                    <!-- General settings section -->
-		                                    <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">1. General<span class="arrow"></span></a>
+			                                    <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">1. General<span class="vfb-large-arrow"></span></a>
 		                                    <div id="general-settings" class="form-details<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">
 		                                        <!-- Label Alignment -->
 		                                        <p class="description description-wide">
@@ -116,7 +116,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 		                                    
 		                                    
 		                                    <!-- Email section -->
-		                                    <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">2. Email<span class="arrow"></span></a>
+		                                    <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">2. Email<span class="vfb-large-arrow"></span></a>
 		                                    <div id="email-details" class="form-details<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">
 		                                        
 		                                        <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
@@ -221,7 +221,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 		                                    </div>
 		                                    
 		                                    <!-- Confirmation section -->
-		                                    <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">3. Confirmation<span class="arrow"></span></a>
+		                                    <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">3. Confirmation<span class="vfb-large-arrow"></span></a>
 		                                    <div id="confirmation-message" class="form-details<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">
 		                                        <p><em><?php _e( "After someone submits a form, you can control what is displayed. By default, it's a message but you can send them to another WordPress Page or a custom URL." , 'visual-form-builder'); ?></em></p>
 		                                        <label for="form-success-type-text" class="menu-name-label open-label">
@@ -264,7 +264,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 		                                    </div>
 		                                
 		                                    <!-- Notification section -->
-		                                    <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">4. Notification<span class="arrow"></span></a>
+		                                    <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">4. Notification<span class="vfb-large-arrow"></span></a>
 		                                    <div id="notification" class="form-details<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">
 		                                        <p><em><?php _e( "When a user submits their entry, you can send a customizable notification email." , 'visual-form-builder'); ?></em></p>
 		                                        <label for="form-notification-setting">
