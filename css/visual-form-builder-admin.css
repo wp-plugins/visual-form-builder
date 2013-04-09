@@ -54,10 +54,19 @@
 	    border-radius: 5px;
 	}
 	
+		.rtl .vfb-pro-upgrade {
+			float: right;
+		}
+		
 		.vfb-pro-upgrade ul {
 		    list-style: outside;
 		    margin-left: 10px;
 		}
+		
+			.rtl .vfb-pro-upgrade ul {
+				margin-left: 0;
+				margin-right: 10px;
+			}
 
 /* !Form View framework */		
 #vfb-form-builder-frame{
@@ -238,6 +247,13 @@
 	float: left;
 	padding-right:20px;
 }
+
+	.rtl .vfb-form-alpha-list {
+		float: right;
+		padding-right: 0;
+		padding-left: 20px;
+	}
+	
 	.vfb-form-alpha-list hr{
 		display:block;
 		margin:1em 0;
@@ -246,9 +262,6 @@
 		border:0;
 		border-top:1px solid #ccc;
 	}
-.vfb-form-alpha-group{
-	
-}
 
 	.vfb-form-alpha-group .letter,
 	.wrap h2.letter{
@@ -259,12 +272,23 @@
 		line-height: 17px;
 	}
 	
+		.rtl .vfb-form-alpha-group .letter,
+		.rtl .wrap h2.letter {
+			float: right;
+		}
+	
 	.vfb-form-alpha-form{
 		display: block;
 		margin:10px 0;
 		padding-left:150px;
 		width:auto;
 	}
+	
+		.rtl .vfb-form-alpha-form {
+			padding-left: 0;
+			padding-right: 150px;
+		}
+		
 		.vfb-form-alpha-form h3{
 			float:left;
 			margin: 0;
@@ -273,12 +297,21 @@
 			font-size:17px;
 		}
 		
+			.rtl .vfb-form-alpha-form h3 {
+				float: right;
+			}
+		
 		.vfb-form-alpha-form .vfb-publishing-actions,
 		.vfb-form-alpha-form .vfb-form-meta{
 			float:left;
 			width:20%;
 			text-align: center;
 		}
+		
+			.rtl .vfb-form-alpha-form .vfb-publishing-actions,
+			.rtl .vfb-form-alpha-form .vfb-form-meta {
+				float: right;
+			}
 		
 			.vfb-form-alpha-form .vfb-form-meta{
 				width: 30%;
@@ -295,6 +328,12 @@
 			margin:0;
 			text-align: left;
 		}
+		
+			.rtl .vfb-form-alpha-form .vfb-form-meta,
+			.rtl .vfb-form-alpha-form .paypal {
+				float: right;
+				text-align: right;
+			}
 
 /* !New Form box */
 #new-form{
@@ -686,21 +725,44 @@ label.error{
     width: 25%;
 }
 
+	.rtl #vfb-upgrade-column {
+		float: right;
+	}
+
 #promote-vfb li {
     padding-left: 20px;
 }
+
+	.rtl #promote-vfb li {
+		padding-left: 0;
+		padding-right: 20px;
+		text-align: left;
+	}
 
 #promote-vfb #twitter {
     background: url('../images/sprite.png?d=20120921') -10px -746px no-repeat transparent;
 }
 
+	.rtl #promote-vfb #twitter {
+		background-position: right -746px;	
+	}
+
 #promote-vfb #star {
     background: url('../images/sprite.png?d=20120921') -10px -710px no-repeat transparent;
 }
 
-#promote-vfb #paypal, .paypal {
+	.rtl #promote-vfb #star {
+		background-position: right -710px;
+	}
+
+#promote-vfb #paypal,
+.paypal {
     background: url('../images/sprite.png?d=20120921') -10px -777px no-repeat transparent;
 }
+
+	.rtl #promote-vfb #paypal {
+		background-position: right -777px;
+	}
 
 	.paypal {
 	    padding-top: 3px;
