@@ -731,12 +731,13 @@ label.error{
 
 #promote-vfb li {
     padding-left: 20px;
+    text-align: left;
 }
 
 	.rtl #promote-vfb li {
 		padding-left: 0;
-		padding-right: 20px;
-		text-align: left;
+		padding-right: 40px;
+		text-align: right;
 	}
 
 #promote-vfb #twitter {
