@@ -2046,9 +2046,6 @@ class Visual_Form_Builder{
 	}	
 }
 
-// On plugin activation, install the databases and add/update the DB version
-register_activation_hook( __FILE__, array( 'Visual_Form_Builder', 'install_db' ) );
-
 // The VFB widget
 require( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-widget.php' );
 
