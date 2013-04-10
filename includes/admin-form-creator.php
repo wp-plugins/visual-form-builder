@@ -92,6 +92,8 @@ $class = 'columns-' . get_current_screen()->get_columns();
 										<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Form Settings' , 'visual-form-builder'); ?><span class="button-icon vfb-small-arrow"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
+	                                    
+	                                    <?php submit_button( __( 'Save Form', 'visual-form-builder-pro' ), 'primary', 'save_form', false ); ?>
 	                                </div>
 			                                                                            
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
@@ -336,10 +338,6 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                                    </div>
 	                                </div>
 	                                <?php endif; ?>
-	
-	                                <div class="publishing-action">
-                                    	<?php submit_button( __( 'Save Form', 'visual-form-builder' ), 'primary', 'save_form', false ); ?>
-	                                </div>
 	                            </div>
 	                        </div>
 	                    </div>
