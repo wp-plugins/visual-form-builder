@@ -14,13 +14,13 @@ class VisualFormBuilder_Export {
 		
 		// Setup our default columns
 		$this->default_cols = array(
-			'entries_id' 		=> __( 'Entries ID' , 'vfb_pro_display_entries'),
-			'date_submitted' 	=> __( 'Date Submitted' , 'vfb_pro_display_entries'),
-			'ip_address' 		=> __( 'IP Address' , 'vfb_pro_display_entries'),
-			'subject' 			=> __( 'Subject' , 'vfb_pro_display_entries'),
-			'sender_name' 		=> __( 'Sender Name' , 'vfb_pro_display_entries'),
-			'sender_email' 		=> __( 'Sender Email' , 'vfb_pro_display_entries'),
-			'emails_to' 		=> __( 'Emailed To' , 'vfb_pro_display_entries'),
+			'entries_id' 		=> __( 'Entries ID' , 'visual-form-builder'),
+			'date_submitted' 	=> __( 'Date Submitted' , 'visual-form-builder'),
+			'ip_address' 		=> __( 'IP Address' , 'visual-form-builder'),
+			'subject' 			=> __( 'Subject' , 'visual-form-builder'),
+			'sender_name' 		=> __( 'Sender Name' , 'visual-form-builder'),
+			'sender_email' 		=> __( 'Sender Email' , 'visual-form-builder'),
+			'emails_to' 		=> __( 'Emailed To' , 'visual-form-builder'),
 		);
 		
 		// Setup global database table names
