@@ -601,10 +601,10 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'postbox' );
 		wp_enqueue_script( 'jquery-form-validation', plugins_url( '/js/jquery.validate.min.js', __FILE__ ), array( 'jquery' ), '1.9.0', true );
-		wp_enqueue_script( 'form-elements-add', plugins_url( 'visual-form-builder/js/vfb-admin.js' ) , array( 'jquery', 'jquery-form-validation' ), '', true );
-		wp_enqueue_script( 'nested-sortable', plugins_url( 'visual-form-builder/js/jquery.ui.nestedSortable.js' ) , array( 'jquery', 'jquery-ui-sortable' ), '', true );
+		wp_enqueue_script( 'vfb-admin', plugins_url( '/js/vfb-admin.js', __FILE__ ) , array( 'jquery', 'jquery-form-validation' ), '', true );
+		wp_enqueue_script( 'nested-sortable', plugins_url( '/js/jquery.ui.nestedSortable.js', __FILE__ ) , array( 'jquery', 'jquery-ui-sortable' ), '1.3.5', true );
 		
-		wp_enqueue_style( 'visual-form-builder-style', plugins_url( "visual-form-builder/css/visual-form-builder-admin.css" ) );
+		wp_enqueue_style( 'visual-form-builder-style', plugins_url( '/css/visual-form-builder-admin.css', __FILE__ ) );
 	}
 	
 	/**
@@ -968,12 +968,10 @@ class Visual_Form_Builder{
 
 		foreach ( $data as $k => $v ) {
 			// Update each field with it's new sequence and parent ID
-			$wpdb->update( $this->field_table_name, array( 'field_sequence' => $k, 'field_parent' => $v['parent'] ), array( 'field_id' => $v['field_id'] ) );
+			$update = $wpdb->update( $this->field_table_name, array( 'field_sequence' => $k, 'field_parent' => $v['parent'] ), array( 'field_id' => $v['field_id'] ) );
 		}
-		
-		return;
 
-		die(1);
+		wp_die();
 	}
 	
 	/**
@@ -1343,7 +1341,7 @@ class Visual_Form_Builder{
 			$last = $field->field_id;
 			$parent = $field->field_parent;
 	?>
-<li id="form_item_<?php echo $field->field_id; ?>" class="form-item<?php echo ( in_array( $field->field_type, array( 'submit', 'secret', 'verification' ) ) ) ? ' ui-state-disabled' : ''; ?><?php echo ( !in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) ) ? ' ui-nestedSortable-no-nesting' : ''; ?>">
+<li id="form_item_<?php echo $field->field_id; ?>" class="form-item<?php echo ( in_array( $field->field_type, array( 'submit', 'secret', 'verification' ) ) ) ? ' ui-state-disabled' : ''; ?><?php echo ( !in_array( $field->field_type, array( 'fieldset', 'section', 'verification' ) ) ) ? ' mjs-nestedSortable-no-nesting' : ''; ?>">
 		<dl class="menu-item-bar">
 			<dt class="vfb-menu-item-handle<?php echo ( $field->field_type == 'fieldset' ) ? ' fieldset' : ''; ?>">
 				<span class="item-title"><?php echo stripslashes( esc_attr( $field->field_name ) ); ?><?php echo ( $field->field_required == 'yes' ) ? ' <span class="is-field-required">*</span>' : ''; ?></span>
