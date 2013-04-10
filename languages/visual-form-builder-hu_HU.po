@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Visual Form Builder v2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-06 13:57-0600\n"
-"PO-Revision-Date: 2013-04-10 14:06:03+0000\n"
+"PO-Revision-Date: 2013-04-10 14:15:55+0000\n"
 "Last-Translator: glocs <inkabb.nem@gmail.kom>\n"
 "Language-Team: glocs\n"
 "MIME-Version: 1.0\n"
@@ -1034,39 +1034,44 @@ msgstr "Új űrlap"
 msgid "Export"
 msgstr "Export"
 
-#: visual-form-builder.php:1757
+#: visual-form-builder.php:1761
 #, php-format
 #@ visual-form-builder
 msgid "Search results for \"%s\""
 msgstr "Keresési találatok-\\\"%s\\\""
 
-#: visual-form-builder.php:1790
+#: visual-form-builder.php:1794
 #@ visual-form-builder
 msgid "New Form"
 msgstr "Új formája"
 
-#: visual-form-builder.php:1879
+#: visual-form-builder.php:1883
 #@ visual-form-builder
 msgid "This field is required and cannot be empty."
 msgstr "Ez a mező kötelező, és nem lehet üres."
 
-#: visual-form-builder.php:1886
+#: visual-form-builder.php:1890
 #@ visual-form-builder
 msgid "Not a valid email address"
 msgstr "Nem egy érvényes elektronikus levél cím"
 
-#: visual-form-builder.php:1892
+#: visual-form-builder.php:1896
 #@ visual-form-builder
 msgid "Not a valid number"
 msgstr "Nem érvényes szám"
 
-#: visual-form-builder.php:1899
+#: visual-form-builder.php:1903
 #@ visual-form-builder
 msgid "Not a valid phone number. Most US/Canada and International formats accepted."
 msgstr "Érvényes telefonszámhoz. Leg--bb minket / Kanada és nemzetközi formátumok."
 
-#: visual-form-builder.php:1904
+#: visual-form-builder.php:1908
 #@ visual-form-builder
 msgid "Not a valid URL."
 msgstr "Nem egy érvényes URL-t."
+
+#: visual-form-builder.php:1758
+#@ visual-form-builder
+msgid "Add New"
+msgstr "Új"
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Visual Form Builder v2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-03-12 00:48+0100\n"
-"PO-Revision-Date: 2013-04-10 13:59:33+0000\n"
+"PO-Revision-Date: 2013-04-10 14:15:33+0000\n"
 "Last-Translator: Samuel Aguilera <correo@samuelaguilera.com>\n"
 "Language-Team: Samuel Aguilera <correo@samuelaguilera.com>\n"
 "MIME-Version: 1.0\n"
@@ -1035,39 +1035,44 @@ msgstr "Añadir nueva forma"
 msgid "Export"
 msgstr "Exportación"
 
-#: visual-form-builder.php:1757
+#: visual-form-builder.php:1761
 #, php-format
 #@ visual-form-builder
 msgid "Search results for \"%s\""
 msgstr "Search results for \\\"%s\\\""
 
-#: visual-form-builder.php:1790
+#: visual-form-builder.php:1794
 #@ visual-form-builder
 msgid "New Form"
 msgstr "Nueva forma"
 
-#: visual-form-builder.php:1879
+#: visual-form-builder.php:1883
 #@ visual-form-builder
 msgid "This field is required and cannot be empty."
 msgstr "Este campo es necesario y no puede estar vacío."
 
-#: visual-form-builder.php:1886
+#: visual-form-builder.php:1890
 #@ visual-form-builder
 msgid "Not a valid email address"
 msgstr "No una dirección válida de correo electrónico"
 
-#: visual-form-builder.php:1892
+#: visual-form-builder.php:1896
 #@ visual-form-builder
 msgid "Not a valid number"
 msgstr "No es un número válido"
 
-#: visual-form-builder.php:1899
+#: visual-form-builder.php:1903
 #@ visual-form-builder
 msgid "Not a valid phone number. Most US/Canada and International formats accepted."
 msgstr "¿No es un número de teléfono válido. La mayoría de la U.S. / Canada y formatos internacionales aceptaron."
 
-#: visual-form-builder.php:1904
+#: visual-form-builder.php:1908
 #@ visual-form-builder
 msgid "Not a valid URL."
 msgstr "No una dirección URL válida."
+
+#: visual-form-builder.php:1758
+#@ visual-form-builder
+msgid "Add New"
+msgstr "Agregar nuevo"
 

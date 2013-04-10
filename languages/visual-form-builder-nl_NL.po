@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Visual Form Builder v2.7.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/visual-form-builder\n"
 "POT-Creation-Date: 2013-02-28 14:40:16+00:00\n"
-"PO-Revision-Date: 2013-04-10 14:08:06+0000\n"
+"PO-Revision-Date: 2013-04-10 14:16:23+0000\n"
 "Last-Translator: Hans van der Vlist / SiteCoach <hansvandervlist@gmail.com>\n"
 "Language-Team: SiteCoach <info@sitecoach.nl>\n"
 "MIME-Version: 1.0\n"
@@ -1014,38 +1014,38 @@ msgstr "Nieuw Formulier toevoegen"
 msgid "Export"
 msgstr "Exporteren"
 
-#: visual-form-builder.php:1757
+#: visual-form-builder.php:1761
 #, php-format
 #@ visual-form-builder
 msgid "Search results for \"%s\""
 msgstr "Zoek resultaten voor \"%s\""
 
-#: visual-form-builder.php:1790
+#: visual-form-builder.php:1794
 #@ visual-form-builder
 msgid "New Form"
 msgstr "Nieuw formulier"
 
-#: visual-form-builder.php:1879
+#: visual-form-builder.php:1883
 #@ visual-form-builder
 msgid "This field is required and cannot be empty."
 msgstr "Dit veld is vereist en kan niet leeg gelaten worden."
 
-#: visual-form-builder.php:1886
+#: visual-form-builder.php:1890
 #@ visual-form-builder
 msgid "Not a valid email address"
 msgstr "Geen geldig email adres"
 
-#: visual-form-builder.php:1892
+#: visual-form-builder.php:1896
 #@ visual-form-builder
 msgid "Not a valid number"
 msgstr "Geen geldig nummer"
 
-#: visual-form-builder.php:1899
+#: visual-form-builder.php:1903
 #@ visual-form-builder
 msgid "Not a valid phone number. Most US/Canada and International formats accepted."
 msgstr "Geen geldig telefoonnummer. De meeste US/Canada en Internationale formaten worden geaccepteerd."
 
-#: visual-form-builder.php:1904
+#: visual-form-builder.php:1908
 #@ visual-form-builder
 msgid "Not a valid URL."
 msgstr "Geen geldige URL."
@@ -1070,4 +1070,9 @@ msgstr "Pagina exporteren"
 #@ visual-form-builder
 msgid "A large number of entries have been detected for this form. Only 1000 entries can be exported at a time."
 msgstr "Dit formulier is een groot aantal vermeldingen herkend. Slechts 1000 vermeldingen kunnen tegelijk worden geëxporteerd."
+
+#: visual-form-builder.php:1758
+#@ visual-form-builder
+msgid "Add New"
+msgstr "Nieuwe toevoegen"
 
