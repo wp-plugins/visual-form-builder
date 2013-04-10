@@ -323,27 +323,27 @@ foreach ( $fields as $field ) :
 			
 			$address_parts = array(
 			    'address'    => array(
-			    	'label'    => __( 'Address', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'Address', 'visual-form-builder' ),
 			    	'layout'   => 'full'
 			    ),
 			    'address-2'  => array(
-			    	'label'    => __( 'Address Line 2', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'Address Line 2', 'visual-form-builder' ),
 			    	'layout'   => 'full'
 			    ),
 			    'city'       => array(
-			    	'label'    => __( 'City', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'City', 'visual-form-builder' ),
 			    	'layout'   => 'left'
 			    ),
 			    'state'      => array(
-			    	'label'    => __( 'State / Province / Region', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'State / Province / Region', 'visual-form-builder' ),
 			    	'layout'   => 'right'
 			    ),
 			    'zip'        => array(
-			    	'label'    => __( 'Postal / Zip Code', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'Postal / Zip Code', 'visual-form-builder' ),
 			    	'layout'   => 'left'
 			    ),
 			    'country'    => array(
-			    	'label'    => __( 'Country', 'visual-form-builder-pro' ),
+			    	'label'    => __( 'Country', 'visual-form-builder' ),
 			    	'layout'   => 'right'
 			    )
 			);

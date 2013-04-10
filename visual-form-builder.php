@@ -1407,7 +1407,7 @@ class Visual_Form_Builder{
 					<!-- CSS Classes -->
                     <p class="description description-wide">
                         <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
-                            <?php _e( 'CSS Classes' , 'visual-form-builder-pro'); ?>
+                            <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
                             <span class="vfb-tooltip" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets." title="About CSS Classes">(?)</span>
                             <br />
                             <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />

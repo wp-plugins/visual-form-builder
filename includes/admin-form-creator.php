@@ -93,7 +93,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate Form' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete Form' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
 	                                    
-	                                    <?php submit_button( __( 'Save Form', 'visual-form-builder-pro' ), 'primary', 'save_form', false ); ?>
+	                                    <?php submit_button( __( 'Save Form', 'visual-form-builder' ), 'primary', 'save_form', false ); ?>
 	                                </div>
 			                                                                            
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
@@ -343,7 +343,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 	                    </div>
 	                    <div id="post-body">
 	                        <div id="post-body-content">
-		                    <div id="vfb-fieldset-first-warning" class="error"><?php printf( '<p><strong>%1$s </strong><br>%2$s</p>', __( 'Warning &mdash; Missing Fieldset', 'visual-form-builder-pro' ), __( 'Your form may not function or display correctly. Please be sure to add or move a Fieldset to the beginning of your form.' , 'visual-form-builder-pro') ); ?></div>
+		                    <div id="vfb-fieldset-first-warning" class="error"><?php printf( '<p><strong>%1$s </strong><br>%2$s</p>', __( 'Warning &mdash; Missing Fieldset', 'visual-form-builder' ), __( 'Your form may not function or display correctly. Please be sure to add or move a Fieldset to the beginning of your form.' , 'visual-form-builder') ); ?></div>
 	                        <!-- !Field Items output -->
 							<ul id="vfb-menu-to-edit" class="menu ui-sortable droppable">
 							<?php echo $this->field_output( $form_nav_selected_id ); ?>
