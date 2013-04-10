@@ -2,8 +2,8 @@
 Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
-Requires at least: 3.4.1
-Tested up to: 3.5.1
+Requires at least: 3.6
+Tested up to: 3.6
 Stable tag: 2.7.1
 License: GPLv2 or later
 
@@ -224,6 +224,14 @@ function my_scripts_method() {
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.7.2**
+
+* Add 'Pages to Export' option when more than 1000 entries detected for a single form
+* Add Netherlands translation
+* Update admin to require WordPress 3.6 and jQuery UI 1.10
+* Update some translations
+* Fix bug where nesting and sorting would not save
 
 **Version 2.7.1**
 
@@ -503,6 +511,9 @@ function my_scripts_method() {
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.7.2 =
+Add 'Pages to Export' option. Update plugin to require WordPress 3.6 and jQuery UI 1.10
 
 = 2.7.1 =
 Fix bug in Export where fields did not load in certain cases
