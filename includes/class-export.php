@@ -480,6 +480,9 @@ class VisualFormBuilder_Export {
 			
 			if ( isset( $_REQUEST['entries_columns'] ) )
 				$args['fields'] = array_map( 'esc_html',  $_REQUEST['entries_columns'] );
+				
+			if ( isset( $_REQUEST['entries_page'] ) )
+				$args['page'] = absint( $_REQUEST['entries_page'] );
 		}
 		
 		switch( $this->export_action() ) {
