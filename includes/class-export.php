@@ -30,6 +30,9 @@ class VisualFormBuilder_Export {
 		
 		// AJAX for loading new entry checkboxes
 		add_action( 'wp_ajax_visual_form_builder_export_load_options', array( &$this, 'ajax_load_options' ) );
+
+		// AJAX for getting entries count
+		add_action( 'wp_ajax_visual_form_builder_export_entries_count', array( &$this, 'ajax_entries_count' ) );
 		
 		$this->process_export_action();
 	}
@@ -55,13 +58,17 @@ class VisualFormBuilder_Export {
 			);
 		endif;
 		
-		// Safe to get entries now
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, data FROM $this->entries_table_name WHERE 1=1 AND form_id = %d", $forms[0]->form_id ), ARRAY_A );
+		$entries_count = $this->count_entries( $forms[0]->form_id );
 		
 		// Return nothing if no entries found
-		if ( !$entries ) :
+		if ( !$entries_count ) :
 			$no_entries = __( 'No entries to pull field names from.', 'visual-form-builder' );
 		else :
+			$limit = $entries_count > 1000 ? 1000 : $entries_count;
+			
+			// Safe to get entries now
+			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, data FROM $this->entries_table_name WHERE 1=1 AND form_id = %d LIMIT %d", $forms[0]->form_id, $limit ), ARRAY_A );
+			
 			// Get columns
 			$columns = $this->get_cols( $entries );
 			
@@ -114,6 +121,25 @@ class VisualFormBuilder_Export {
         				<?php $this->months_dropdown(); ?>
         			</select>
         		</li>
+<?php
+				if ( $entries_count > 1000 ) :
+					$num_pages = ceil( $entries_count / 1000 );
+?>
+				<li id="vfb-export-entries-pages">
+					<label class="vfb-export-label"><?php _e( 'Page to Export', 'visual-form-builder' ); ?>:</label>
+					<select id="vfb-export-entries-rows" name="entries_page">
+<?php
+					for ( $i = 1; $i <= $num_pages; $i++ ) {
+						echo sprintf( '<option value="%1$d">%1$s</option>', $i );
+					}
+?>
+					</select>
+					<p class="description"><?php _e( 'A large number of entries have been detected for this form. Only 1000 entries can be exported at a time.', 'visual-form-builder' ); ?></p>
+				</li>
+<?php
+				endif;
+?>
+
         		<li>
         			<label class="vfb-export-label"><?php _e( 'Fields', 'visual-form-builder' ); ?>:</label>
         			
@@ -124,7 +150,7 @@ class VisualFormBuilder_Export {
 						if ( isset( $no_entries ) )
 							echo $no_entries;
 						else
-							$this->build_options( $data );
+							echo $this->build_options( $data );
 					 ?>
         			</div>
         		</li>
@@ -155,12 +181,15 @@ class VisualFormBuilder_Export {
 			'form_id' 		=> 0,
 			'start_date' 	=> false, 
 			'end_date' 		=> false,
+			'page'			=> 0,
 			'fields'		=> $initial_fields
 		);
 		
 		$args = wp_parse_args( $args, $defaults );
 		
 		$where = '';
+		
+		$limit = '0,1000';
 		
 		if ( 'entries' == $args['content'] ) {
 			if ( 0 !== $args['form_id'] )
@@ -171,9 +200,12 @@ class VisualFormBuilder_Export {
 				
 			if ( $args['end_date'] )
 				$where .= $wpdb->prepare( " AND date_submitted < %s", date( 'Y-m-d', strtotime('+1 month', strtotime( $args['end_date'] ) ) ) );
+			
+			if ( $args['page'] > 1 )
+				$limit = ( $args['page'] - 1 ) * 1000 . ',1000';
 		}
 		
-		$entries = $wpdb->get_results( "SELECT * FROM $this->entries_table_name WHERE 1=1 $where" );
+		$entries = $wpdb->get_results( "SELECT * FROM $this->entries_table_name WHERE 1=1 $where LIMIT $limit" );
 		$form_key = $wpdb->get_var( $wpdb->prepare( "SELECT form_key, form_title FROM $this->form_table_name WHERE form_id = %d", $args['form_id'] ) );
 		$form_title = $wpdb->get_var( null, 1 );
 		
@@ -274,6 +306,17 @@ class VisualFormBuilder_Export {
 		
 		return json_encode( $output );	
 	}
+
+	public function count_entries( $form_id ) {
+		global $wpdb;
+		
+		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE form_id = %d", $form_id ) );
+		
+		if ( !$count )
+			return 0;
+		
+		return $count;
+	}
 	
 	/**
 	 * Return the entries data formatted for CSV
@@ -327,12 +370,25 @@ class VisualFormBuilder_Export {
 			
 		$form_id = absint( $_REQUEST['id'] );
 		
+		$offset = '';
+		$limit = 1000;
+		
+		if ( isset( $_REQUEST['count'] ) )
+			$limit = absint( $_REQUEST['count'] );
+		elseif ( isset( $_REQUEST['offset'] ) ) {
+			$offset = absint( $_REQUEST['offset'] );
+			$offset_num = $offset * 1000;
+			
+			if ( $offset >= 1 )
+				$offset = "OFFSET $offset";
+		}
+		
 		// Safe to get entries now
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, data FROM $this->entries_table_name WHERE 1=1 AND form_id = %d", $form_id ), ARRAY_A );
+		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id LIMIT $limit $offset", ARRAY_A );
 		
 		// Return nothing if no entries found
 		if ( !$entries ) {
-			echo __( 'No entries to pull field names from.', 'vfb_pro_display_entries' );
+			echo __( 'No entries to pull field names from.', 'visual-form-builder' );
 			wp_die();
 		}
 		
@@ -342,12 +398,30 @@ class VisualFormBuilder_Export {
 		// Get JSON data
 		$data = json_decode( $columns, true );
 		
-		$this->build_options( $data );
+		echo $this->build_options( $data );
+		
+		wp_die();
+	}
+
+	public function ajax_entries_count() {
+		global $wpdb, $export;
+		
+		if ( !isset( $_REQUEST['action'] ) )
+			return;
+		
+		if ( $_REQUEST['action'] !== 'visual_form_builder_export_entries_count' )
+			return;
+			
+		$form_id = absint( $_REQUEST['id'] );
+		
+		echo $export->count_entries( $form_id );
 		
 		wp_die();
 	}
 
 	public function build_options( $data ) {
+		
+		$output = '';
 		
 		$array = array();
 		foreach ( $data as $row ) :
@@ -361,9 +435,10 @@ class VisualFormBuilder_Export {
 		foreach ( $array as $k => $v ) :
 			$selected = ( in_array( $v, $this->default_cols ) ) ? ' checked="checked"' : '';
 			
-			echo sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %2$s</label><br>', $k, $v, $selected );
+			$output .= sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %2$s</label><br>', $k, $v, $selected );
 		endforeach;
 		
+		return $output;
 	}
 		
 	/**
