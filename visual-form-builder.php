@@ -4,7 +4,7 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.7.1
+Version: 2.7.2
 */
 
 /*
@@ -232,15 +232,23 @@ class Visual_Form_Builder{
 		$widgets = get_option( 'vfb_dashboard_widget_options' );
 		$total_items = isset( $widgets['vfb_dashboard_recent_entries'] ) && isset( $widgets['vfb_dashboard_recent_entries']['items'] ) ? absint( $widgets['vfb_dashboard_recent_entries']['items'] ) : 5;
 		
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.sender_name, entries.sender_email, entries.date_submitted FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id ORDER BY entries.date_submitted DESC LIMIT %d", $total_items ) );
-						
-		if ( !$entries ) :
+		$forms = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->form_table_name}" );
+		
+		if ( !$forms ) :
 			echo sprintf(
-				'<p>%1$s<a href="%2$s">%3$s</a>.',
+				'<p>%1$s <a href="%2$s">%3$s</a></p>',
 				__( 'You currently do not have any forms.', 'visual-form-builder' ),
 				esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ),
 				__( 'Get started!', 'visual-form-builder' )
 			);
+			
+			return;
+		endif;
+		
+		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.sender_name, entries.sender_email, entries.date_submitted FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id ORDER BY entries.date_submitted DESC LIMIT %d", $total_items ) );
+						
+		if ( !$entries ) :
+			echo sprintf( '<p>%1$s</p>', __( 'You currently do not have any entries.', 'visual-form-builder' ) );
 		else :
 			
 			$content = '';
