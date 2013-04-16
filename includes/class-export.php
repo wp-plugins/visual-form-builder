@@ -82,13 +82,13 @@ class VisualFormBuilder_Export {
         	<p><?php _e( 'Once you have saved the file, you will be able to import Visual Form Builder Pro data from this site into another site.', 'visual-form-builder' ); ?></p>
         	<h3><?php _e( 'Choose what to export', 'visual-form-builder' ); ?></h3>
         	
-        	<p><label><input type="radio" name="content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder' ); ?></label></p>
+        	<p><label><input type="radio" name="vfb-content" value="all" disabled="disabled" /> <?php _e( 'All data', 'visual-form-builder' ); ?></label></p>
         	<p class="description"><?php _e( 'This will contain all of your forms, fields, entries, and email design settings.', 'visual-form-builder' ); ?><br><strong>*<?php _e( 'Only available in Visual Form Builder Pro', 'visual-form-builder' ); ?>*</strong></p>
         	
-        	<p><label><input type="radio" name="content" value="forms" disabled="disabled" /> <?php _e( 'Forms', 'visual-form-builder' ); ?></label></p>
+        	<p><label><input type="radio" name="vfb-content" value="forms" disabled="disabled" /> <?php _e( 'Forms', 'visual-form-builder' ); ?></label></p>
         	<p class="description"><?php _e( 'This will contain all of your forms, fields, and email design settings', 'visual-form-builder' ); ?>.<br><strong>*<?php _e( 'Only available in Visual Form Builder Pro', 'visual-form-builder' ); ?>*</strong></p>
         	
-        	<p><label><input type="radio" name="content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder' ); ?></label></p>
+        	<p><label><input type="radio" name="vfb-content" value="entries" checked="checked" /> <?php _e( 'Entries', 'visual-form-builder' ); ?></label></p>
         	
         	<ul id="entries-filters" class="vfb-export-filters">
         		<li><p class="description"><?php _e( 'This will export entries in either a .csv, .txt, or .xls and cannot be used with the Import.  If you need to import entries on another site, please use the All data option above.', 'visual-form-builder' ); ?></p></li>
@@ -449,8 +449,8 @@ class VisualFormBuilder_Export {
 	 * @return string|bool The type of export
 	 */
 	public function export_action() {
-		if ( isset( $_REQUEST['content'] ) )
-			return $_REQUEST['content'];
+		if ( isset( $_REQUEST['vfb-content'] ) )
+			return $_REQUEST['vfb-content'];
 	
 		return false;
 	}
@@ -465,7 +465,7 @@ class VisualFormBuilder_Export {
 		
 		$args = array();
 		
-		if ( !isset( $_REQUEST['content'] ) || 'entries' == $_REQUEST['content'] ) {
+		if ( !isset( $_REQUEST['vfb-content'] ) || 'entries' == $_REQUEST['vfb-content'] ) {
 			$args['content'] = 'entries';
 			
 			$args['format'] = 'csv';
