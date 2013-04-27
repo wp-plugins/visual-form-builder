@@ -56,6 +56,8 @@ class VisualFormBuilder_Export {
 				'<div class="vfb-form-alpha-list"><h3 id="vfb-no-forms">You currently do not have any forms.  Click on the <a href="%1$s">New Form</a> button to get started.</h3></div>',
 				esc_url( admin_url( 'admin.php?page=vfb-add-new' ) )
 			);
+			
+			return;
 		endif;
 		
 		$entries_count = $this->count_entries( $forms[0]->form_id );
