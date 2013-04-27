@@ -57,6 +57,15 @@ class Visual_Form_Builder{
 	 * @access public
 	 */
 	public $countries = array( "", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombi", "Comoros", "Congo (Brazzaville)", "Congo", "Costa Rica", "Cote d\'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor (Timor Timur)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepa", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" );
+
+	/**
+	 * Admin page menu hooks
+	 *
+	 * @since 2.7.2
+	 * @var array
+	 * @access private
+	 */
+	private $_admin_pages = array();
 	
 	/**
 	 * Constructor. Register core filters and actions.
@@ -102,17 +111,6 @@ class Visual_Form_Builder{
 			
 			// Adds a Dashboard widget
 			add_action( 'wp_dashboard_setup', array( &$this, 'add_dashboard_widget' ) );
-			
-			// Load the includes files
-			add_action( 'load-visual-form-builder_page_vfb-entries', array( &$this, 'includes' ) );
-			
-			// Adds a Screen Options tab to the Entries screen
-			add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
-			add_filter( 'load-toplevel_page_visual-form-builder', array( &$this, 'screen_options' ) );
-			add_filter( 'load-visual-form-builder_page_vfb-entries', array( &$this, 'screen_options' ) );
-			
-			// Add meta boxes to the form builder admin page
-			add_action( 'load-toplevel_page_visual-form-builder', array( &$this, 'add_meta_boxes' ) );
 			
 			// Adds a Settings link to the Plugins page
 			add_filter( 'plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2 );
@@ -397,8 +395,11 @@ class Visual_Form_Builder{
 	public function screen_options(){
 		$screen = get_current_screen();
 		
+		$page_main		= $this->_admin_pages[ 'vfb' ];
+		$page_entries 	= $this->_admin_pages[ 'vfb-entries' ];
+		
 		switch( $screen->id ) {
-			case 'visual-form-builder_page_vfb-entries' :
+			case $page_entries :
 				add_screen_option( 'per_page', array(
 					'label'		=> __( 'Entries per page', 'visual-form-builder' ),
 					'default'	=> 20,
@@ -406,7 +407,7 @@ class Visual_Form_Builder{
 				) );
 			break;
 			
-			case 'toplevel_page_visual-form-builder' :
+			case $page_main :
 				if ( !isset( $_REQUEST['form'] ) )
 					break;
 				
@@ -1723,13 +1724,111 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 * @uses add_options_page() Creates a menu item under the Settings menu.
 	 */
-	public function add_admin() {  
-		add_menu_page( __( 'Visual Form Builder', 'visual-form-builder' ), __( 'Visual Form Builder', 'visual-form-builder' ), 'manage_options', 'visual-form-builder', array( &$this, 'admin' ), plugins_url( 'visual-form-builder/images/vfb_icon.png' ) );
+	public function add_admin() {
+		$current_pages = array();
+		
+		$current_pages[ 'vfb' ] = add_menu_page( __( 'Visual Form Builder', 'visual-form-builder' ), __( 'Visual Form Builder', 'visual-form-builder' ), 'manage_options', 'visual-form-builder', array( &$this, 'admin' ), plugins_url( 'visual-form-builder/images/vfb_icon.png' ) );
 		
 		add_submenu_page( 'visual-form-builder', __( 'Visual Form Builder', 'visual-form-builder' ), __( 'All Forms', 'visual-form-builder' ), 'manage_options', 'visual-form-builder', array( &$this, 'admin' ) );
-		add_submenu_page( 'visual-form-builder', __( 'Add New Form', 'visual-form-builder' ), __( 'Add New Form', 'visual-form-builder' ), 'manage_options', 'vfb-add-new', array( &$this, 'admin' ) );
-		add_submenu_page( 'visual-form-builder', __( 'Entries', 'visual-form-builder' ), __( 'Entries', 'visual-form-builder' ), 'manage_options', 'vfb-entries', array( &$this, 'admin' ) );
-		add_submenu_page( 'visual-form-builder', __( 'Export', 'visual-form-builder' ), __( 'Export', 'visual-form-builder' ), 'manage_options', 'vfb-export', array( &$this, 'admin' ) );
+		$current_pages[ 'vfb-add-new' ] = add_submenu_page( 'visual-form-builder', __( 'Add New Form', 'visual-form-builder' ), __( 'Add New Form', 'visual-form-builder' ), 'manage_options', 'vfb-add-new', array( &$this, 'admin_add_new' ) );
+		$current_pages[ 'vfb-entries' ] = add_submenu_page( 'visual-form-builder', __( 'Entries', 'visual-form-builder' ), __( 'Entries', 'visual-form-builder' ), 'manage_options', 'vfb-entries', array( &$this, 'admin_entries' ) );
+		$current_pages[ 'vfb-export' ] = add_submenu_page( 'visual-form-builder', __( 'Export', 'visual-form-builder' ), __( 'Export', 'visual-form-builder' ), 'manage_options', 'vfb-export', array( &$this, 'admin_export' ) );
+		
+		// All plugin page load hooks
+		foreach ( $current_pages as $key => $page ) :
+			// Load the jQuery and CSS we need if we're on our plugin page
+			add_action( "load-$page", array( &$this, 'admin_scripts' ) );
+			
+			// Load the Help tab on all pages
+			add_action( "load-$page", array( &$this, 'help' ) );
+		endforeach;
+		
+		// Save pages array for filter/action use throughout plugin
+		$this->_admin_pages = $current_pages;
+		
+		// Adds a Screen Options tab to the Entries screen
+		add_filter( 'load-' . $current_pages['vfb'], array( &$this, 'screen_options' ) );
+		add_filter( 'load-' . $current_pages['vfb-entries'], array( &$this, 'screen_options' ) );
+		
+		// Add meta boxes to the form builder admin page
+		add_action( 'load-' . $current_pages['vfb'], array( &$this, 'add_meta_boxes' ) );
+		
+		// Include Entries and Import files
+		add_action( 'load-' . $current_pages['vfb-entries'], array( &$this, 'includes' ) );
+	}
+
+	/**
+	 * Display Add New Form page
+	 * 
+	 * 
+	 * @since 2.7.2
+	 */
+	public function admin_add_new() {		
+?>
+	<div class="wrap">
+		<?php screen_icon( 'options-general' ); ?>
+		<h2><?php _e( 'Add New Form', 'visual-form-builder' ); ?></h2>
+<?php
+		include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-new-form.php' );
+?>
+	</div>
+<?php
+	}
+
+	/**
+	 * Display Entries
+	 * 
+	 * 
+	 * @since 2.7.2
+	 */
+	public function admin_entries() {
+		global $entries_list, $entries_detail;
+?>
+	<div class="wrap">
+		<?php screen_icon( 'options-general' ); ?>
+		<h2>
+			<?php _e( 'Entries', 'visual-form-builder' ); ?>
+<?php
+			// If searched, output the query
+			if ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] ) )
+				echo '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'visual-form-builder' ), $_REQUEST['s'] );
+?>
+		</h2>
+<?php
+		if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'view', 'edit', 'update_entry' ) ) ) :
+			$entries_detail->entries_detail();
+		else :
+			$entries_list->views();
+			$entries_list->prepare_items();
+?>
+    	<form id="entries-filter" method="post" action="">             
+<?php
+        	$entries_list->search_box( 'search', 'search_id' );
+        	$entries_list->display();
+?>
+        </form>
+	<?php endif; ?>
+	</div>
+<?php
+	}
+
+	/**
+	 * Display Export
+	 * 
+	 * 
+	 * @since 2.7.2
+	 */
+	public function admin_export() {
+		global $export;		
+?>
+	<div class="wrap">
+		<?php screen_icon( 'options-general' ); ?>
+		<h2><?php _e( 'Export', 'visual-form-builder' ); ?></h2>
+<?php
+		$export->display();
+?>
+	</div>
+<?php
 	}
 	
 	/**
@@ -1747,83 +1846,39 @@ class Visual_Form_Builder{
 		
 		// Set variables depending on which tab is selected
 		$form_nav_selected_id = ( isset( $_REQUEST['form'] ) ) ? $_REQUEST['form'] : '0';
-		
-		// Page titles
-		$pages = array(
-    		'visual-form-builder'	=> __( 'Visual Form Builder', 'visual-form-builder' ),
-    		'vfb-add-new'     		=> __( 'Add New Form', 'visual-form-builder' ),
-    		'vfb-entries'     		=> __( 'Entries', 'visual-form-builder' ),
-    		'vfb-export'      		=> __( 'Export', 'visual-form-builder' )
-    	);
 	?>
 	<div class="wrap">
 		<?php screen_icon( 'options-general' ); ?>
 		<h2>
-		<?php
-			// Output the page titles
-			echo ( isset( $_REQUEST['page'] ) && array_key_exists( $_REQUEST['page'], $pages ) ) ? esc_html( $pages[ $_REQUEST['page' ] ] ) : '';
-
-			// Add New link
-			if ( in_array( $_REQUEST['page'], array( 'visual-form-builder' ) ) )
-				echo sprintf( ' <a href="%1$s" class="add-new-h2">%2$s</a>', esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ), esc_html( __( 'Add New', 'visual-form-builder' ) ) );
+			<?php _e( 'Visual Form Builder', 'visual-form-builder' ); ?>
 			
-			// If searched, output the query
-			echo ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] ) && in_array( $_REQUEST['page'], array( 'vfb-entries' ) ) ) ? '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'visual-form-builder'), $_REQUEST['s'] ) : '';
+		<?php
+			// Add New link
+			echo sprintf( ' <a href="%1$s" class="add-new-h2">%2$s</a>', esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ), esc_html( __( 'Add New', 'visual-form-builder' ) ) );
 		?>
 		</h2>
-        <?php
-			// Display the Entries
-			if ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-entries' ) ) ) : 
-									
-				if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'view' ) ) ) :
-					$entries_detail->entries_detail();
-				else :
-					$entries_list->prepare_items();
+		<?php if ( empty( $form_nav_selected_id ) ) : ?>
+		<div id="vfb-form-list">
+			<div id="vfb-sidebar">
+				<div id="new-form" class="vfb-box">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ); ?>">
+                    	<img src="<?php echo plugins_url( 'visual-form-builder/images/plus-sign.png' ); ?>" width="50" height="50" />
+                    	<h3><?php _e( 'New Form', 'visual-form-builder' ); ?></h3>
+                    </a>
+				</div> <!-- #new-form -->
+				<div class="clear"></div>
+			</div> <!-- #vfb-sidebar -->
+			<div id="vfb-main" class="vfb-order-type-list">
+				<?php $this->all_forms(); ?>
+			</div> <!-- #vfb-main -->
+		</div> <!-- #vfb-form-list -->
+		<?php
+		elseif ( !empty( $form_nav_selected_id ) && $form_nav_selected_id !== '0' ) :
+			include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-form-creator.php' );
+		endif;
 		?>
-            <form id="entries-filter" method="post" action="">
-                <?php
-                	$entries_list->search_box( 'search', 'search_id' );
-                	$entries_list->display();
-                ?>
-            </form>
-        <?php
-				endif;
-			elseif ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-add-new' ) ) ) :
-					include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-new-form.php' );
-			elseif ( isset( $_REQUEST['page'] ) && in_array( $_REQUEST['page'], array( 'vfb-export' ) ) ) : 
-				$export->display();
-			// Display the Forms
-			else:
-				if ( empty( $form_nav_selected_id ) ) :
-		?>
-				<div id="vfb-form-list">
-					<div id="vfb-sidebar">
-						<div id="new-form" class="vfb-box">
-	                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ); ?>">
-	                        	<img src="<?php echo plugins_url( 'visual-form-builder/images/plus-sign.png' ); ?>" width="50" height="50" />
-	                        	<h3><?php _e( 'New Form', 'visual-form-builder' ); ?></h3>
-	                        </a>
-						</div> <!-- #new-form -->
-						<div class="clear"></div>
-					</div> <!-- #vfb-sidebar -->
-				<div id="vfb-main" class="vfb-order-type-list">
-				<?php
-					$this->all_forms();
-				?>
-				</div> <!-- #vfb-main -->
-				</div> <!-- #vfb-form-list -->
-				<?php
-			?>
-				
-				<?php
-				elseif ( !empty( $form_nav_selected_id ) && $form_nav_selected_id !== '0' ) :
-					include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-form-creator.php' );
-				endif;
-				?>   
-        
 	</div>
 	<?php
-		endif;
 	}
 	
 	/**
