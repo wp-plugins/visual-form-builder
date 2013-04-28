@@ -33,6 +33,8 @@ $emails = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE (form
 
 $screen = get_current_screen();
 $class = 'columns-' . get_current_screen()->get_columns();
+
+$page_main = $this->_admin_pages[ 'vfb' ];
 ?>
 <div id="vfb-form-builder-frame" class="metabox-holder <?php echo $class; ?>">
 	<div id="vfb-postbox-container-1" class='vfb-postbox-container'>
@@ -41,7 +43,7 @@ $class = 'columns-' . get_current_screen()->get_columns();
 			<input name="form_id" type="hidden" value="<?php echo $form_nav_selected_id; ?>" />
 			<?php
 			wp_nonce_field( 'create-field-' . $form_nav_selected_id );			
-			do_meta_boxes( 'toplevel_page_visual-form-builder', 'side', null );
+			do_meta_boxes( $page_main, 'side', null );
 			?>
 		</form>
 	</div> <!-- .vfb-postbox-container -->

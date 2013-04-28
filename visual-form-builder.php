@@ -102,9 +102,7 @@ class Visual_Form_Builder{
 			// Add all AJAX functions			
 			foreach( $actions as $name ) {
 				add_action( "wp_ajax_visual_form_builder_$name", array( &$this, "ajax_$name" ) );	
-			}			
-			
-			add_action( 'load-toplevel_page_visual-form-builder', array( &$this, 'help' ) );
+			}
 
 			// Adds additional media button to insert form shortcode
 			add_action( 'media_buttons', array( &$this, 'add_media_button' ), 999 );
@@ -118,13 +116,6 @@ class Visual_Form_Builder{
 			// Check the db version and run SQL install, if needed
 			add_action( 'plugins_loaded', array( &$this, 'update_db_check' ) );
 						
-			// Load the jQuery and CSS we need if we're on our plugin page
-			$current_pages = array( 'toplevel_page_visual-form-builder', 'visual-form-builder_page_vfb-add-new', 'visual-form-builder_page_vfb-entries', 'visual-form-builder_page_vfb-export' );
-			
-			foreach ( $current_pages as $page ) {
-				add_action( "load-$page", array( &$this, 'admin_scripts' ) );
-			}
-			
 			// Display update messages
 			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 		}
@@ -439,9 +430,11 @@ class Visual_Form_Builder{
 	public function add_meta_boxes() {
 		global $current_screen;
 		
-		if ( $current_screen->id == 'toplevel_page_visual-form-builder' && isset( $_REQUEST['form'] ) ) {
-			add_meta_box( 'vfb_form_items_meta_box', __( 'Form Items', 'visual-form-builder' ), array( &$this, 'meta_box_form_items' ), 'toplevel_page_visual-form-builder', 'side', 'high' );
-			add_meta_box( 'vfb_form_media_button_tip', __( 'Display Forms', 'visual-form-builder' ), array( &$this, 'meta_box_display_forms' ), 'toplevel_page_visual-form-builder', 'side', 'low' );
+		$page_main = $this->_admin_pages[ 'vfb' ];
+		
+		if ( $current_screen->id == $page_main && isset( $_REQUEST['form'] ) ) {
+			add_meta_box( 'vfb_form_items_meta_box', __( 'Form Items', 'visual-form-builder' ), array( &$this, 'meta_box_form_items' ), $page_main, 'side', 'high' );
+			add_meta_box( 'vfb_form_media_button_tip', __( 'Display Forms', 'visual-form-builder' ), array( &$this, 'meta_box_display_forms' ), $page_main, 'side', 'low' );
 		}
 	}
 	/**
@@ -1088,7 +1081,7 @@ class Visual_Form_Builder{
 	public function ajax_delete_field() {
 		global $wpdb;
 
-		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'toplevel_page_visual-form-builder' && isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_delete_field' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'visual_form_builder_delete_field' ) {
 			$form_id = absint( $_REQUEST['form'] );
 			$field_id = absint( $_REQUEST['field'] );
 			
