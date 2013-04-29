@@ -193,8 +193,13 @@ class Visual_Form_Builder{
 	 * @since 2.3
 	 */
 	public function add_media_button(){
-    	if ( current_user_can( 'manage_options' ) )
-			echo '<a href="' . add_query_arg( array( 'action' => 'visual_form_builder_media_button', 'width' => '450' ), admin_url( 'admin-ajax.php' ) ) . '" class="thickbox" title="Add Visual Form Builder form"><img width="18" height="18" src="' . plugins_url( 'visual-form-builder/images/vfb_icon.png' ) . '" alt="Add Visual Form Builder form" /></a>';
+    	if ( current_user_can( 'manage_options' ) ) :
+?>
+			<a href="<?php echo add_query_arg( array( 'action' => 'visual_form_builder_media_button', 'width' => '450' ), admin_url( 'admin-ajax.php' ) ); ?>" class="button add_media thickbox" title="Add Visual Form Builder form">
+				<img width="18" height="18" src="<?php echo plugins_url( 'visual-form-builder/images/vfb_icon.png' ); ?>" alt="<?php _e( 'Add Visual Form Builder form', 'visual-form-builder' ); ?>" style="vertical-align: middle; margin-left: -8px; margin-top: -2px;" /> <?php _e( 'Add Form', 'visual-form-builder' ); ?>
+			</a>
+<?php
+		endif;
 	}
 		
 	/**
@@ -607,6 +612,8 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'nested-sortable', plugins_url( '/js/jquery.ui.nestedSortable.js', __FILE__ ) , array( 'jquery', 'jquery-ui-sortable' ), '1.3.5', true );
 		
 		wp_enqueue_style( 'visual-form-builder-style', plugins_url( '/css/visual-form-builder-admin.css', __FILE__ ) );
+		
+		wp_localize_script( 'vfb-admin', 'VfbAdminPages', array( 'vfb_pages' => $this->_admin_pages ) );
 	}
 	
 	/**
