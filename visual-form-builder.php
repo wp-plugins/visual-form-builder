@@ -1789,61 +1789,61 @@ class Visual_Form_Builder{
 		<?php screen_icon( 'options-general' ); ?>
 		<h2>
 			<?php _e( 'Visual Form Builder', 'visual-form-builder' ); ?>
-			
-		<?php
+<?php
 			// Add New link
 			echo sprintf( ' <a href="%1$s" class="add-new-h2">%2$s</a>', esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ), esc_html( __( 'Add New', 'visual-form-builder' ) ) );
-		?>
+			
+			// If searched, output the query
+			if ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] ) )
+				echo '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'visual-form-builder' ), $_REQUEST['s'] );
+?>
 		</h2>
 		<?php if ( empty( $form_nav_selected_id ) ) : ?>
 		<div id="vfb-form-list">
 			<div id="vfb-sidebar">				
-				<!--<div class="vfb-pro-upgrade">
-					<h3>Visual Form Builder Pro</h3>
-		    		<p>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only <strong>$10</strong>strong</p>
-		    		<p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
-				</div>-->
 				<div id="vfb-upgrade-column">
-			<div class="vfb-pro-upgrade">
-		    	<h3>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only $10</h3>
-		        <p class="vfb-pro-call-to-action"><a href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><span class="cta-sign-up"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></span><span class="cta-price"><?php _e( 'Only $10' , 'visual-form-builder'); ?></span></a></p>
-		        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
-		        <ul>
-		        	<li><a href="http://vfb.matthewmuro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
-		            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Nested Drag and Drop' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Conditional Logic' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( '10+ new Form Fields' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Complete Entries Management' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Import/Export' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Scheduling' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Limit Form Entries' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Simple PayPal Integration' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Live Preview' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
-		            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
-		        </ul>
-		        
-		        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
-		    </div>
+					<div class="vfb-pro-upgrade">
+				    	<h2><a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a></h2>
+				        <p class="vfb-pro-call-to-action">
+				        	<a class="vfb-btn vfb-btn-primary" href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><?php _e( 'Buy Now for $10' , 'visual-form-builder'); ?></a>
+				        </p>
+				        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
+				        <ul>
+				        	<li><a href="http://vfb.matthewmuro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
+				            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Nested Drag and Drop' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Conditional Logic' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( '10+ new Form Fields' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Complete Entries Management' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Import/Export' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Quality HTML Email Template' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Plain Text Email Option' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Email Designer' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Analytics' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Data &amp; Form Migration' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Scheduling' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Limit Form Entries' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Simple PayPal Integration' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Live Preview' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
+				        </ul>
+				        
+				        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
+				    </div> <!-- .vfb-pro-upgrade -->
 		    
-	   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
-	        <ul id="promote-vfb">
-	        	<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
-	            <li id="star"><a href="http://wordpress.org/extend/plugins/visual-form-builder/"><?php _e( 'Rate Visual Form Builder on WordPress.org' , 'visual-form-builder'); ?></a></li>
-	            <li id="paypal">
-	                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" width="74" height="21"></a>
-	            </li>
-	        </ul>
-	    </div>
+			   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
+			        <ul id="promote-vfb">
+			        	<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
+			            <li id="star"><a href="http://wordpress.org/extend/plugins/visual-form-builder/"><?php _e( 'Rate Visual Form Builder on WordPress.org' , 'visual-form-builder'); ?></a></li>
+			            <li id="paypal">
+			                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" width="74" height="21"></a>
+			            </li>
+			        </ul>
+			    </div> <!-- #vfb-upgrade-column -->
 			</div> <!-- #vfb-sidebar -->
 			<div id="vfb-main" class="vfb-order-type-list">
 				<?php $this->all_forms(); ?>
