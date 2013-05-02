@@ -54,10 +54,15 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function column_form( $item ){
 		 
 		// Build row actions
-		$actions = array(
-			'view' 		=> sprintf( '<a href="?page=%s&action=%s&entry=%s" id="%3$s" class="view-entry">View</a>', $_REQUEST['page'], 'view', $item['entry_id'] ),
-			'delete' 	=> sprintf( '<a href="?page=%s&action=%s&entry=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['entry_id'] )
-		);
+		if ( !$this->get_entry_status() || 'all' == $this->get_entry_status() )
+			$actions['view'] = sprintf( '<a href="?page=%s&action=%s&entry=%s" id="%3$s" class="view-entry">View</a>', $_REQUEST['page'], 'view', $item['entry_id'] );
+		
+		if ( !$this->get_entry_status() || 'all' == $this->get_entry_status() )
+			$actions['trash'] = sprintf( '<a href="?page=%s&action=%s&entry=%s">Trash</a>', $_REQUEST['page'], 'trash', $item['entry_id'] );
+		elseif ( $this->get_entry_status() && 'trash' == $this->get_entry_status() ) {
+			$actions['restore'] = sprintf( '<a href="?page=%s&action=%s&entry=%s">%s</a>', $_REQUEST['page'], 'restore', $item['entry_id'], __( 'Restore', 'visual-form-builder' ) );
+			$actions['delete'] = sprintf( '<a href="?page=%s&action=%s&entry=%s">%s</a>', $_REQUEST['page'], 'delete', $item['entry_id'], __( 'Delete Permanently', 'visual-form-builder' ) );
+		}
 	
 		return sprintf( '%1$s %2$s', $item['form'], $this->row_actions( $actions ) );
 	}
@@ -134,6 +139,9 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			
 			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
 		}
+
+		// Entries type filter
+		$where .= ( $this->get_entry_status() && 'all' !== $this->get_entry_status() ) ? $wpdb->prepare( ' AND entries.entry_approved = %s', $this->get_entry_status() ) : '';
 
 		$sql_order = sanitize_sql_orderby( "$order_col $order" );
 		$cols = $wpdb->get_results( "SELECT forms.form_title, entries.entries_id, entries.form_id, entries.subject, entries.sender_name, entries.sender_email, entries.emails_to, entries.date_submitted, entries.ip_address FROM $this->form_table_name AS forms INNER JOIN $this->entries_table_name AS entries ON entries.form_id = forms.form_id WHERE 1=1 $where $search ORDER BY $sql_order LIMIT $per_page $offset" );
