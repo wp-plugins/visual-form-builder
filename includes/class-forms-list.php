@@ -6,8 +6,6 @@
  */
 class VisualFormBuilder_Forms_List extends WP_List_Table {
 	
-	public $errors;
-	
 	function __construct(){
 		global $status, $page, $wpdb;
 				
@@ -109,7 +107,7 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 			'cb' 			=> '<input type="checkbox" />', //Render a checkbox instead of text
 			'form_title' 	=> __( 'Form' , 'visual-form-builder'),
 			'form_id' 		=> __( 'Form ID' , 'visual-form-builder'),
-			'entries'		=> '<span class="vers"><div title="' . esc_attr__( 'Entries', 'visual-form-builder' ) . '" class="comment-grey-bubble"></div></span>',
+			'entries'		=> __( 'Entries', 'visual-form-builder' ),
 		);
 		
 		return $columns;
@@ -208,7 +206,7 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 		$actions = array();
 		
 		// Build the row actions
-		$actions['delete'] = __( 'Delete Permanently', 'visual-form-builder-pro' );
+		$actions['delete'] = __( 'Delete Permanently', 'visual-form-builder' );
 						
 		return $actions;
 	}
