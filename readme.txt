@@ -1,8 +1,8 @@
 === Visual Form Builder ===
 Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-Tags: form, forms, contact form, form to email, email form, email, input, validation, jquery, shortcode
-Requires at least: 3.6
+Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
+Requires at least: 3.5
 Tested up to: 3.6
 Stable tag: 2.7.1
 License: GPLv2 or later
@@ -227,10 +227,14 @@ function my_scripts_method() {
 
 **Version 2.7.2**
 
+* Add form search in admin
 * Add 'Pages to Export' option when more than 1000 entries detected for a single form
 * Add Netherlands translation
-* Update admin to require WordPress 3.6 and jQuery UI 1.10
+* Update forms list design
+* Update admin to require WordPress 3.5 and jQuery UI 1.9
 * Update some translations
+* Update Entries to allow trashing before deleting
+* Update style of "Add Form" button above post/page visual editor
 * Fix bug where nesting and sorting would not save
 
 **Version 2.7.1**
