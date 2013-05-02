@@ -360,6 +360,39 @@
 		background-color:#fbe3e4;
 		color:#8a1f11;
 	}
+			.vfb-meta-entries-total span,
+			.vfb-meta-entries-total-today span{
+				font-size: 11px;
+				font-weight: bold;
+				height: 1.4em;
+				line-height: 1.4em;
+				min-width: .7em;
+				padding: 0 6px;
+				display: inline-block;
+				border-radius: 5px;
+				background-color: #bbb;
+				color: white;
+				text-align: center;
+			}
+			
+			.vfb-meta-entries-total:hover span,
+			.vfb-meta-entries-total-today:hover span{
+				background-color: #d54e21;
+			}
+.fixed .column-entries,
+.fixed .column-form_id {
+	width: 8em;
+}
+
+strong .vfb-meta-entries-total span {
+    background-color: #21759B;
+}
+
+.entries-count-wrapper {
+	font-family: sans-serif;
+	min-width: 22px;
+	padding-bottom: 1px;
+}
 	
 /* !New Form box */
 #new-form{

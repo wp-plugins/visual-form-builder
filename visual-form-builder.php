@@ -38,7 +38,7 @@ class Visual_Form_Builder{
 	 * @var string
 	 * @access protected
 	 */
-	protected $vfb_db_version = '2.6.7';
+	protected $vfb_db_version = '2.7';
 	
 	/**
 	 * Flag used to add scripts to front-end only once
@@ -85,7 +85,7 @@ class Visual_Form_Builder{
 			// Build options and settings pages.
 			add_action( 'admin_menu', array( &$this, 'add_admin' ) );
 			add_action( 'admin_init', array( &$this, 'save' ) );
-			add_action( 'admin_init', array( &$this, 'additional_plugin_setup' ) );
+			add_action( 'admin_menu', array( &$this, 'additional_plugin_setup' ) );
 			
 			// Register AJAX functions
 			$actions = array(
@@ -138,7 +138,9 @@ class Visual_Form_Builder{
 	 * @since 2.7
 	 */
 	public function additional_plugin_setup() {
-			
+		
+		$page_main = $this->_admin_pages[ 'vfb' ];
+		
 		if ( !get_option( 'vfb_dashboard_widget_options' ) ) {
 			$widget_options['vfb_dashboard_recent_entries'] = array(
 				'items' => 5,
@@ -172,6 +174,14 @@ class Visual_Form_Builder{
 		// Load the Entries Details class
 		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-entries-detail.php' );
 		$entries_detail = new VisualFormBuilder_Entries_Detail();		
+	}
+	
+	public function include_forms_list() {
+		global $forms_list;
+		
+		// Load the Forms List class
+		require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-forms-list.php' );
+		$forms_list = new VisualFormBuilder_Forms_List();
 	}
 	
 	/**
@@ -396,21 +406,29 @@ class Visual_Form_Builder{
 		
 		switch( $screen->id ) {
 			case $page_entries :
+				
 				add_screen_option( 'per_page', array(
 					'label'		=> __( 'Entries per page', 'visual-form-builder' ),
 					'default'	=> 20,
 					'option'	=> 'vfb_entries_per_page'
 				) );
+				
 			break;
 			
 			case $page_main :
-				if ( !isset( $_REQUEST['form'] ) )
-					break;
-				
-				add_screen_option( 'layout_columns', array(
-					'max'		=> 2,
-					'default'	=> 2
-				) );
+			
+				if ( isset( $_REQUEST['form'] ) ) :
+					add_screen_option( 'layout_columns', array(
+						'max'		=> 2,
+						'default'	=> 2
+					) );
+				else :
+					add_screen_option( 'per_page', array(
+						'label'		=> __( 'Forms per page', 'visual-form-builder' ),
+						'default'	=> 20,
+						'option'	=> 'vfb_forms_per_page'
+					) );
+				endif;
 
 			break;
 		}		
@@ -424,6 +442,8 @@ class Visual_Form_Builder{
 	public function save_screen_options( $status, $option, $value ){
 		
 		if ( $option == 'vfb_entries_per_page' )
+				return $value;
+		elseif ( $option == 'vfb_forms_per_page' )
 				return $value;
 	}
 	
@@ -590,6 +610,7 @@ class Visual_Form_Builder{
 				emails_to TEXT,
 				date_submitted DATETIME,
 				ip_address VARCHAR(25),
+				entry_approved VARCHAR(20) DEFAULT '1',
 				PRIMARY KEY  (entries_id)
 			) DEFAULT CHARACTER SET $charset COLLATE $collate;";
 		
@@ -1197,71 +1218,27 @@ class Visual_Form_Builder{
 	 * @since 2.5
 	 */
 	public function all_forms() {
-		global $wpdb;
+		global $wpdb, $forms_list;
 		
 		$order = sanitize_sql_orderby( 'form_title ASC' );
 		
 		$where = apply_filters( 'vfb_pre_get_forms', '' );
-		$forms = $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
+		$forms = $wpdb->get_results( "SELECT form_id, form_title FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
+
+		if ( !$forms ) :
+			echo '<div class="vfb-form-alpha-list"><h3 id="vfb-no-forms">You currently do not have any forms.  <a href="' . esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ) . '">Click here to get started</a>.</h3></div>';
+			return;
+		endif;
+
+		echo '<form id="forms-filter" method="post" action="">';
 		
-		$a = array();
+		$forms_list->prepare_items();
+
+    	$forms_list->search_box( 'search', 'search_id' );
+    	$forms_list->display();
 		
-		if ( $forms ) :
-			// Loop through each for and build the tabs
-			foreach ( $forms as $form ) {
-				$form_id 		= $form->form_id;
-				$form_title 	= stripslashes( $form->form_title );
-				$entries_count 	= $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $this->entries_table_name WHERE form_id = %d", $form_id ) );
-				$sort 			= substr( strtoupper( $form_title ), 0, 1 );
-				
-				if ( preg_match( '/[0-9]/i', $sort ) )
-					$sort = '0-9';
-				
-				$a[ $sort ][] = array(
-					'id'			=> $form_id,
-					'title' 		=> $form_title,
-					'entries_count'	=> $entries_count
-				);
-						
-			}
-		?>
-		<div class="vfb-form-alpha-list">
-			<hr>
-				<?php
-				foreach ( $a as $alpha => $value ) :
-				?>
-				<div class="vfb-form-alpha-group">
-					<h2 class='letter'><?php echo $alpha; ?></h2>
-					<?php
-					foreach ( $value as $alphaForm ) {
-					?>
-					
-					<div class="vfb-form-alpha-form">
-						<h3><a class="" href="<?php echo esc_url( add_query_arg( array( 'form' => $alphaForm['id'] ), admin_url( 'admin.php?page=visual-form-builder' ) ) ); ?>"><?php echo $alphaForm['title']; ?></a></h3>
-						<div class="vfb-publishing-actions">
-                            <p>
-                            	<a class="" href="<?php echo esc_url( add_query_arg( array( 'form' => $alphaForm['id'] ), admin_url( 'admin.php?page=visual-form-builder' ) ) ); ?>">
-                            	<strong><?php _e( 'Edit Form', 'visual-form-builder' ); ?></strong>
-                            	</a> |
-                            	<a class="submitdelete menu-delete" href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $alphaForm['id'] ), 'delete-form-' . $alphaForm['id'] ) ); ?>" class=""><?php _e( 'Delete' , 'visual-form-builder'); ?></a> |
-                            	<a href="<?php echo esc_url( add_query_arg( array( 'form-filter' => $alphaForm['id'] ), admin_url( 'admin.php?page=vfb-entries' ) ) ); ?>"><?php echo $alphaForm['entries_count']; ?> Entries</a>
-                            
-                            </p>                            
-						</div> <!-- .vfb-publishing-actions -->
-					</div>
-					<div class="clear"></div>
-					<?php	
-					}
-			?>
-				</div> <!-- .vfb-form-alpha-group -->
-				<hr>
-			<?php endforeach; ?>
-		</div> <!-- .vfb-form-alpha-list -->
-		
-		<?php else : ?>
-			<div class="vfb-form-alpha-list"><h3 id="vfb-no-forms">You currently don't have any forms.  Click on the <a href="<?php echo esc_url( admin_url( 'admin.php?page=vfb-add-new' ) ); ?>">New Form</a> button to get started.</h3></div>
-		<?php endif; ?>
-		
+		echo '</form>';
+?>		
 		<div id="vfb-upgrade-column">
 			<div class="vfb-pro-upgrade"><!-- VFB Pro Upgrade -->
 		    	<h3>Upgrade to <a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a> for only $10</h3>
@@ -1755,6 +1732,8 @@ class Visual_Form_Builder{
 		
 		// Include Entries and Import files
 		add_action( 'load-' . $current_pages['vfb-entries'], array( &$this, 'includes' ) );
+		
+		add_action( 'load-' . $current_pages['vfb'], array( &$this, 'include_forms_list' ) );
 	}
 
 	/**
@@ -1837,7 +1816,7 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 */
 	public function admin() {
-		global $wpdb, $current_user, $entries_list, $entries_detail, $export;
+		global $wpdb, $current_user;
 		
 		get_currentuserinfo();
 		
