@@ -238,6 +238,7 @@ function my_scripts_method() {
 * Update style of "Add Form" button above post/page visual editor
 * Update and improve sticky sidebar behavior
 * Fix bug where nesting and sorting would not save
+* Fix bug during Export for certain encoded characters
 
 **Version 2.7.1**
 

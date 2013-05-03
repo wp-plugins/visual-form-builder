@@ -335,13 +335,19 @@ class VisualFormBuilder_Export {
 		// Build headers
 		fputcsv( $fh, $fields, $this->delimiter );
 				
-		$rows = array();
+		$rows = $fields_clean = array();
+		
+		// Decode special characters
+		foreach ( $fields as $field ) :
+			$fields_clean[] = wp_specialchars_decode( $field, ENT_QUOTES );
+		endforeach;
 		
 		// Build table rows and cells		
 		foreach ( $data as $row ) :
 			
-			foreach ( $fields as $label ) {
-				$rows[ $label ] =  ( isset( $row[ $label ] ) && in_array( $label, $fields ) ) ? $row[ $label ] : '';
+			foreach ( $fields_clean as $label ) {
+				$label = wp_specialchars_decode( $label );
+				$rows[ $label ] =  ( isset( $row[ $label ] ) && in_array( $label, $fields_clean ) ) ? $row[ $label ] : '';
 			}
 			
 			fputcsv( $fh, $rows, $this->delimiter );
