@@ -1805,9 +1805,9 @@ class Visual_Form_Builder{
 					<div class="vfb-pro-upgrade">
 				    	<h2><a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a></h2>
 				        <p class="vfb-pro-call-to-action">
-				        	<a class="vfb-btn vfb-btn-primary" href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><?php _e( 'Buy Now for $10' , 'visual-form-builder'); ?></a>
+				        	<a class="vfb-btn vfb-btn-primary" href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></a>
 				        </p>
-				        <h3><?php _e( 'New Features of Visual Form Builder Pro' , 'visual-form-builder'); ?></h3>
+				        <h3><?php _e( 'New Features' , 'visual-form-builder'); ?></h3>
 				        <ul>
 				        	<li><a href="http://vfb.matthewmuro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
 				            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
@@ -1832,7 +1832,7 @@ class Visual_Form_Builder{
 				            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
 				        </ul>
 				        
-				        <p><a href="http://matthewmuro.com/2012/02/07/introducing-visual-form-builder-pro/"><?php _e( 'Learn more about some of these features' , 'visual-form-builder'); ?></a>.</p>
+				        <p><a href="http://vfb.matthewmuro.com/#features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a>.</p>
 				    </div> <!-- .vfb-pro-upgrade -->
 		    
 			   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
