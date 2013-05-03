@@ -725,9 +725,10 @@ strong .vfb-meta-entries-total span {
 	    margin-top: 5px;
 	}
 	
-	.ui-state-disabled .menu-item-handle {
-	    cursor: default;
-	    background: #dfdfdf;
+	.ui-state-disabled .menu-item-handle{
+		background: #dfdfdf;
+		box-shadow: none;
+		cursor:default;
 	}
 	
 
