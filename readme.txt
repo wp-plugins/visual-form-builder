@@ -232,9 +232,11 @@ function my_scripts_method() {
 * Add Netherlands translation
 * Update forms list design
 * Update admin to require WordPress 3.5 and jQuery UI 1.9
+* Update behavior to allow deselecting Default values on Select/Radio/Checkbox options
 * Update some translations
 * Update Entries to allow trashing before deleting
 * Update style of "Add Form" button above post/page visual editor
+* Update and improve sticky sidebar behavior
 * Fix bug where nesting and sorting would not save
 
 **Version 2.7.1**
