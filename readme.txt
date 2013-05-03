@@ -15,7 +15,7 @@ Build beautiful, fully functional forms in only a few minutes without writing PH
 
 = Upgrade to Visual Form Builder Pro =
 
-If you are a fan of Visual Form Builder and want extra features and functionality, [Visual Form Builder Pro](http://vfb.matthewmuro.com) is available for only **$10**.
+If you are a fan of Visual Form Builder and want extra features and functionality, [Visual Form Builder Pro](http://vfb.matthewmuro.com) is available.
 
 = Features =
 
