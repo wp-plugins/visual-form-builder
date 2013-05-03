@@ -7,11 +7,11 @@ Tested up to: 3.6
 Stable tag: 2.7.1
 License: GPLv2 or later
 
-Build beautiful, fully functional forms in only a few minutes without writing PHP, CSS, or HTML.
+Build beautiful, fully functional contact forms in only a few minutes without writing PHP, CSS, or HTML.
 
 == Description ==
 
-*Visual Form Builder* is a plugin that allows you to build and manage all kinds of forms for your website in a single place.  Building a fully functional form takes only a few minutes and you don't have to write one bit of PHP, CSS, or HTML!
+*Visual Form Builder* is a plugin that allows you to build and manage all kinds of forms for your website in a single place.  Building a fully functional contact form takes only a few minutes and you don't have to write one bit of PHP, CSS, or HTML!
 
 = Upgrade to Visual Form Builder Pro =
 
