@@ -1306,7 +1306,7 @@ class Visual_Form_Builder{
 			
 				<p class="description description-wide">
 					<label for="edit-form-item-name-<?php echo $field->field_id; ?>"><?php echo ( in_array( $field->field_type, array( 'fieldset', 'verification' ) ) ) ? 'Legend' : 'Name'; ?>
-                    <span class="vfb-tooltip" rel="For Fieldsets, a Legend is simply the name of that group. Use general terms that describe the fields included in this Fieldset." title="About Legend">(?)</span>
+                    <span class="vfb-tooltip" rel="<?php esc_attr_e( 'For Fieldsets, a Legend is simply the name of that group. Use general terms that describe the fields included in this Fieldset.', 'visual-form-builder' ); ?>" title="<?php esc_attr_e( 'About Legend', 'visual-form-builder' ); ?>">(?)</span>
                         <br />
 						<input type="text" value="<?php echo stripslashes( esc_attr( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 					</label>
@@ -1314,7 +1314,7 @@ class Visual_Form_Builder{
                 <p class="description description-wide">
                     <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
                         <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
-                        <span class="vfb-tooltip" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets." title="About CSS Classes">(?)</span>
+                        <span class="vfb-tooltip" rel="<?php esc_attr_e( 'For each field, you can insert your own CSS class names which can be used in your own stylesheets.', 'visual-form-builder' ); ?>" title="<?php esc_attr_e( 'About CSS Classes', 'visual-form-builder' ); ?>">(?)</span>
                         <br />
                         <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
                     </label>
@@ -1325,7 +1325,7 @@ class Visual_Form_Builder{
 				<p class="description description-wide">
 					<label for="edit-form-item-name-<?php echo $field->field_id; ?>">
 							<?php _e( 'Name' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Name" rel="A field's name is the most visible and direct way to describe what that field is for.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Name', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( "A field's name is the most visible and direct way to describe what that field is for.", 'visual-form-builder' ); ?>">(?)</span>
                             <br />
 							<input type="text" value="<?php echo stripslashes( esc_attr( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 					</label>
@@ -1333,7 +1333,7 @@ class Visual_Form_Builder{
 				<p class="description description-wide">
 					<label for="edit-form-item-description-<?php echo $field->field_id; ?>">
                     	<?php _e( 'Description (HTML tags allowed)', 'visual-form-builder' ); ?>
-                    	<span class="vfb-tooltip" title="About Instructions Description" rel="The Instructions field allows for long form explanations, typically seen at the beginning of Fieldsets or Sections. HTML tags are allowed.">(?)</span>
+                    	<span class="vfb-tooltip" title="<?php esc_attr_e( 'About Instructions Description', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'The Instructions field allows for long form explanations, typically seen at the beginning of Fieldsets or Sections. HTML tags are allowed.', 'visual-form-builder' ); ?>">(?)</span>
                         <br />
 						<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat edit-menu-item-description" cols="20" rows="3" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 					</label>
@@ -1345,7 +1345,7 @@ class Visual_Form_Builder{
 				<p class="description description-wide">
 					<label for="edit-form-item-name-<?php echo $field->field_id; ?>">
 						<?php _e( 'Name' , 'visual-form-builder'); ?>
-                        <span class="vfb-tooltip" title="About Name" rel="A field's name is the most visible and direct way to describe what that field is for.">(?)</span>
+                        <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Name', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( "A field's name is the most visible and direct way to describe what that field is for.", 'visual-form-builder' ); ?>">(?)</span>
                         <br />
 						<input type="text" value="<?php echo stripslashes( esc_attr( $field->field_name ) ); ?>" name="field_name-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-name-<?php echo $field->field_id; ?>" maxlength="255" />
 					</label>
@@ -1355,7 +1355,7 @@ class Visual_Form_Builder{
                     <p class="description description-wide">
                         <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
                             <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets." title="About CSS Classes">(?)</span>
+                            <span class="vfb-tooltip" rel="<?php esc_attr_e( 'For each field, you can insert your own CSS class names which can be used in your own stylesheets.', 'visual-form-builder' ); ?>" title="<?php esc_attr_e( 'About CSS Classes', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
                             <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" />
                         </label>
@@ -1365,7 +1365,7 @@ class Visual_Form_Builder{
 					<p class="description description-wide">
 						<label for="edit-form-item-description-<?php echo $field->field_id; ?>">
 							<?php _e( 'Description' , 'visual-form-builder'); ?>
-                             <span class="vfb-tooltip" title="About Description" rel="A description is an optional piece of text that further explains the meaning of this field. Descriptions are displayed below the field. HTML tags are allowed.">(?)</span>
+                             <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Description', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'A description is an optional piece of text that further explains the meaning of this field. Descriptions are displayed below the field. HTML tags are allowed.', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
 							<textarea name="field_description-<?php echo $field->field_id; ?>" class="widefat edit-menu-item-description" cols="20" rows="3" id="edit-form-item-description-<?php echo $field->field_id; ?>" /><?php echo stripslashes( $field->field_description ); ?></textarea>
 						</label>
@@ -1377,7 +1377,7 @@ class Visual_Form_Builder{
 						<!-- Options -->
 						<p class="description description-wide">
 							<?php _e( 'Options' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Options" rel="This property allows you to set predefined options to be selected by the user.  Use the plus and minus buttons to add and delete options.  At least one option must exist.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Options', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'This property allows you to set predefined options to be selected by the user.  Use the plus and minus buttons to add and delete options.  At least one option must exist.', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
 						<?php
 							// If the options field isn't empty, unserialize and build array
@@ -1401,7 +1401,7 @@ class Visual_Form_Builder{
 								<input type="text" value="<?php echo stripslashes( esc_attr( $options ) ); ?>" name="field_options-<?php echo $field->field_id; ?>[]" class="widefat" id="edit-form-item-options-<?php echo $field->field_id . "-$count"; ?>" />
 							</label>
 							
-							<a href="#" class="addOption" title="Add an Option">Add</a> <a href="#" class="deleteOption" title="Delete Option">Delete</a>
+							<a href="#" class="addOption" title="Add an Option"><?php _e( 'Add', 'visual-form-builder' ); ?></a> <a href="#" class="deleteOption" title="Delete Option"><?php _e( 'Delete', 'visual-form-builder' ); ?></a>
 						</div>
 						   <?php 
 								$count++;
@@ -1434,7 +1434,7 @@ class Visual_Form_Builder{
 						?>
 							<label for="edit-form-item-options-<?php echo $field->field_id; ?>">
 								<?php _e( 'Accepted File Extensions' , 'visual-form-builder'); ?>
-                                <span class="vfb-tooltip" title="About Accepted File Extensions" rel="Control the types of files allowed.  Enter extensions without periods and separate multiples using the pipe character ( | ).">(?)</span>
+                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Accepted File Extensions', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Control the types of files allowed.  Enter extensions without periods and separate multiples using the pipe character ( | ).', 'visual-form-builder' ); ?>">(?)</span>
                         		<br />
                                 <input type="text" value="<?php echo stripslashes( esc_attr( $options ) ); ?>" name="field_options-<?php echo $field->field_id; ?>[]" class="widefat" id="edit-form-item-options-<?php echo $field->field_id; ?>" />
 							</label>
@@ -1449,7 +1449,7 @@ class Visual_Form_Builder{
 					<p class="description description-thin">
 						<label for="edit-form-item-validation">
 							<?php _e( 'Validation' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Validation" rel="Ensures user-entered data is formatted properly. For more information on Validation, refer to the Help tab at the top of this page.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Validation', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Ensures user-entered data is formatted properly. For more information on Validation, refer to the Help tab at the top of this page.', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
 						   
 						   <?php if ( in_array( $field->field_type , array( 'text', 'time' ) ) ) : ?>
@@ -1497,7 +1497,7 @@ class Visual_Form_Builder{
 					<p class="field-link-target description description-thin">
 						<label for="edit-form-item-required">
 							<?php _e( 'Required' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Required" rel="Requires the field to be completed before the form is submitted. By default, all fields are set to No.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Required', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Requires the field to be completed before the form is submitted. By default, all fields are set to No.', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
 							<select name="field_required-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-required-<?php echo $field->field_id; ?>">
 								<option value="no" <?php selected( $field->field_required, 'no' ); ?>><?php _e( 'No' , 'visual-form-builder'); ?></option>
@@ -1511,7 +1511,7 @@ class Visual_Form_Builder{
 						<p class="description description-thin">
 							<label for="edit-form-item-size">
 								<?php _e( 'Size' , 'visual-form-builder'); ?>
-                                <span class="vfb-tooltip" title="About Size" rel="Control the size of the field.  By default, all fields are set to Medium.">(?)</span>
+                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Size', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Control the size of the field.  By default, all fields are set to Medium.', 'visual-form-builder' ); ?>">(?)</span>
                                 <br />
 								<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>">
                                 	<option value="small" <?php selected( $field->field_size, 'small' ); ?>><?php _e( 'Small' , 'visual-form-builder'); ?></option>
@@ -1526,7 +1526,7 @@ class Visual_Form_Builder{
 						<p class="description description-thin">
 							<label for="edit-form-item-size">
 								<?php _e( 'Options Layout' , 'visual-form-builder'); ?>
-                                <span class="vfb-tooltip" title="About Options Layout" rel="Control the layout of radio buttons or checkboxes.  By default, options are arranged in One Column.">(?)</span>
+                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Options Layout', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Control the layout of radio buttons or checkboxes.  By default, options are arranged in One Column.', 'visual-form-builder' ); ?>">(?)</span>
                                 <br />
 								<select name="field_size-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-size-<?php echo $field->field_id; ?>"<?php echo ( $field->field_type == 'time' ) ? ' disabled="disabled"' : ''; ?>>
 									<option value="" <?php selected( $field->field_size, '' ); ?>><?php _e( 'One Column' , 'visual-form-builder'); ?></option>
@@ -1542,7 +1542,7 @@ class Visual_Form_Builder{
 						<p class="description description-thin">
 							<label for="edit-form-item-layout">
 								<?php _e( 'Field Layout' , 'visual-form-builder'); ?>
-                                <span class="vfb-tooltip" title="About Field Layout" rel="Used to create advanced layouts. Align fields side by side in various configurations.">(?)</span>
+                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Field Layout', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Used to create advanced layouts. Align fields side by side in various configurations.', 'visual-form-builder' ); ?>">(?)</span>
                                 <br />
 								<select name="field_layout-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-layout-<?php echo $field->field_id; ?>">
                                 	
@@ -1568,7 +1568,7 @@ class Visual_Form_Builder{
 					<p class="description description-wide">
                         <label for="edit-form-item-default-<?php echo $field->field_id; ?>">
                             <?php _e( 'Default Value' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Default Value" rel="Set a default value that will be inserted automatically.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Default Value', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Set a default value that will be inserted automatically.', 'visual-form-builder' ); ?>">(?)</span>
                         	<br />
                             <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_default ) ); ?>" name="field_default-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-default-<?php echo $field->field_id; ?>" maxlength="255" />
                         </label>
@@ -1578,7 +1578,7 @@ class Visual_Form_Builder{
 					<p class="description description-wide">
                         <label for="edit-form-item-default-<?php echo $field->field_id; ?>">
                             <?php _e( 'Default Country' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About Default Country" rel="Select the country you would like to be displayed by default.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Default Country', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Select the country you would like to be displayed by default.', 'visual-form-builder' ); ?>">(?)</span>
                         	<br />
                             <select name="field_default-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-default-<?php echo $field->field_id; ?>">
                             <?php
@@ -1594,7 +1594,7 @@ class Visual_Form_Builder{
 					<p class="description description-wide">
                         <label for="edit-form-item-css-<?php echo $field->field_id; ?>">
                             <?php _e( 'CSS Classes' , 'visual-form-builder'); ?>
-                            <span class="vfb-tooltip" title="About CSS Classes" rel="For each field, you can insert your own CSS class names which can be used in your own stylesheets.">(?)</span>
+                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About CSS Classes', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'For each field, you can insert your own CSS class names which can be used in your own stylesheets.', 'visual-form-builder' ); ?>">(?)</span>
                             <br />
                             <input type="text" value="<?php echo stripslashes( esc_attr( $field->field_css ) ); ?>" name="field_css-<?php echo $field->field_id; ?>" class="widefat" id="edit-form-item-css-<?php echo $field->field_id; ?>" maxlength="255" />
                         </label>

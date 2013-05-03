@@ -100,13 +100,13 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 			                                                                            
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
 		                                    <!-- General settings section -->
-			                                    <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">1. General<span class="vfb-large-arrow"></span></a>
+			                                    <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>"><?php _e( 'General', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="general-settings" class="form-details<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>">
 		                                        <!-- Label Alignment -->
 		                                        <p class="description description-wide">
 		                                        <label for="form-label-alignment">
 		                                            <?php _e( 'Label Alignment' , 'visual-form-builder'); ?>
-		                                            <span class="vfb-tooltip" title="About Label Alignment" rel="Set the field labels for this form to be aligned either on top, to the left, or to the right.  By default, all labels are aligned on top of the inputs.">(?)</span>
+		                                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Label Alignment', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Set the field labels for this form to be aligned either on top, to the left, or to the right.  By default, all labels are aligned on top of the inputs.' ); ?>">(?)</span>
 		                        					<br />
 		                                         </label>
 		                                            <select name="form_label_alignment" id="form-label-alignment" class="widefat">
@@ -120,7 +120,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                    
 		                                    
 		                                    <!-- Email section -->
-		                                    <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">2. Email<span class="vfb-large-arrow"></span></a>
+		                                    <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>"><?php _e( 'Email', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="email-details" class="form-details<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">
 		                                        
 		                                        <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
@@ -129,7 +129,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-wide">
 		                                        <label for="form-email-subject">
 		                                            <?php _e( 'E-mail Subject' , 'visual-form-builder'); ?>
-		                                            <span class="vfb-tooltip" title="About E-mail Subject" rel="This option sets the subject of the email that is sent to the emails you have set in the E-mail(s) To field.">(?)</span>
+		                                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About E-mail Subject', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'This option sets the subject of the email that is sent to the emails you have set in the E-mail(s) To field.', 'visual-form-builder' ); ?>">(?)</span>
 		                        					<br />
 		                                            <input type="text" value="<?php echo stripslashes( $form_subject ); ?>" class="widefat" id="form-email-subject" name="form_email_subject" />
 		                                        </label>
@@ -140,7 +140,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-thin">
 		                                        <label for="form-email-sender-name">
 		                                            <?php _e( 'Your Name or Company' , 'visual-form-builder'); ?>
-		                                            <span class="vfb-tooltip" title="About Your Name or Company" rel="This option sets the From display name of the email that is sent to the emails you have set in the E-mail(s) To field.">(?)</span>
+		                                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Your Name or Company', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'This option sets the From display name of the email that is sent to the emails you have set in the E-mail(s) To field.', 'visual-form-builder' ); ?>">(?)</span>
 		                        					<br />
 		                                            <input type="text" value="<?php echo $form_email_from_name; ?>" class="widefat" id="form-email-sender-name" name="form_email_from_name"<?php echo ( $form_email_from_name_override != '' ) ? ' readonly="readonly"' : ''; ?> />
 		                                        </label>
@@ -148,7 +148,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-thin">
 		                                        	<label for="form_email_from_name_override">
 		                                            	<?php _e( "User's Name (optional)" , 'visual-form-builder'); ?>
-		                                                <span class="vfb-tooltip" title="About User's Name" rel="Select a required text field from your form to use as the From display name in the email.">(?)</span>
+		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( "About User's Name", 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Select a required text field from your form to use as the From display name in the email.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
 		                                            <?php if ( empty( $emails ) ) : ?>
 		                                            <span><?php _e( 'No required text fields detected', 'visual-form-builder' ); ?></span>
@@ -170,7 +170,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-thin">
 		                                        <label for="form-email-sender">
 		                                            <?php _e( 'Reply-To E-mail' , 'visual-form-builder'); ?>
-		                                            <span class="vfb-tooltip" title="About Reply-To Email" rel="Manually set the email address that users will reply to.">(?)</span>
+		                                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Reply-To Email', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Manually set the email address that users will reply to.', 'visual-form-builder' ); ?>">(?)</span>
 		                        					<br />
 		                                            <input type="text" value="<?php echo $form_email_from; ?>" class="widefat" id="form-email-sender" name="form_email_from"<?php echo ( $form_email_from_override != '' ) ? ' readonly="readonly"' : ''; ?> />
 		                                        </label>
@@ -178,7 +178,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-thin">
 		                                            <label for="form_email_from_override">
 		                                            	<?php _e( "User's E-mail (optional)" , 'visual-form-builder'); ?>
-		                                                <span class="vfb-tooltip" title="About User's Email" rel="Select a required email field from your form to use as the Reply-To email.">(?)</span>
+		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( "About User's Email", 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Select a required email field from your form to use as the Reply-To email.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
 		                                            <?php if ( empty( $emails ) ) : ?>
 		                                            <span><?php _e( 'No required email fields detected', 'visual-form-builder' ); ?></span>
@@ -208,12 +208,12 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <p class="description description-wide">
 		                                                <label for="form-email-to-<?php echo "$count"; ?>" class="clonedOption">
 		                                                <?php _e( 'E-mail(s) To' , 'visual-form-builder'); ?>
-		                                                <span class="vfb-tooltip" title="About E-mail(s) To" rel="This option sets single or multiple emails to send the submitted form data to. At least one email is required.">(?)</span>
+		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About E-mail(s) To', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'This option sets single or multiple emails to send the submitted form data to. At least one email is required.', 'visual-form-builder' ); ?>">(?)</span>
 		                        					<br />
 		                                                    <input type="text" value="<?php echo stripslashes( $email_to ); ?>" name="form_email_to[]" class="widefat" id="form-email-to-<?php echo "$count"; ?>" />
 		                                                </label>
 		                                                
-		                                                <a href="#" class="addEmail" title="Add an Email">Add</a> <a href="#" class="deleteEmail" title="Delete Email">Delete</a>
+		                                                <a href="#" class="addEmail" title="<?php esc_attr_e( 'Add an Email', 'visua-form-builder' ); ?>"><?php _e( 'Add', 'visual-form-builder' ); ?></a> <a href="#" class="deleteEmail" title="<?php esc_attr_e( 'Delete Email', 'visual-form-builder' ); ?>"><?php _e( 'Delete', 'visual-form-builder' ); ?></a>
 		                                                
 		                                            </p>
 		                                            <br class="clear" />
@@ -225,7 +225,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                    </div>
 		                                    
 		                                    <!-- Confirmation section -->
-		                                    <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">3. Confirmation<span class="vfb-large-arrow"></span></a>
+		                                    <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>"><?php _e( 'Confirmation', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="confirmation-message" class="form-details<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">
 		                                        <p><em><?php _e( "After someone submits a form, you can control what is displayed. By default, it's a message but you can send them to another WordPress Page or a custom URL." , 'visual-form-builder'); ?></em></p>
 		                                        <label for="form-success-type-text" class="menu-name-label open-label">
@@ -268,7 +268,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                    </div>
 		                                
 		                                    <!-- Notification section -->
-		                                    <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">4. Notification<span class="vfb-large-arrow"></span></a>
+		                                    <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>"><?php _e( 'Notification', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="notification" class="form-details<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">
 		                                        <p><em><?php _e( "When a user submits their entry, you can send a customizable notification email." , 'visual-form-builder'); ?></em></p>
 		                                        <label for="form-notification-setting">
@@ -280,7 +280,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <p class="description description-wide">
 		                                            <label for="form-notification-email-name">
 		                                                <?php _e( 'Sender Name or Company' , 'visual-form-builder'); ?>
-		                                                <span class="vfb-tooltip" title="About Sender Name or Company" rel="Enter the name you would like to use for the email notification.">(?)</span>
+		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Sender Name or Company', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Enter the name you would like to use for the email notification.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
 		                                                <input type="text" value="<?php echo $form_notification_email_name; ?>" class="widefat" id="form-notification-email-name" name="form_notification_email_name" />
 		                                            </label>
@@ -289,7 +289,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <p class="description description-wide">
 		                                            <label for="form-notification-email-from">
 		                                                <?php _e( 'Reply-To E-mail' , 'visual-form-builder'); ?>
-		                                                <span class="vfb-tooltip" title="About Reply-To Email" rel="Manually set the email address that users will reply to.">(?)</span>
+		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Reply-To Email', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Manually set the email address that users will reply to.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
 		                                                <input type="text" value="<?php echo $form_notification_email_from; ?>" class="widefat" id="form-notification-email-from" name="form_notification_email_from" />
 		                                            </label>
@@ -298,7 +298,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <p class="description description-wide">
 		                                                <label for="form-notification-email">
 		                                                    <?php _e( 'E-mail To' , 'visual-form-builder'); ?>
-		                                                    <span class="vfb-tooltip" title="About E-mail To" rel="Select a required email field from your form to send the notification email to.">(?)</span>
+		                                                    <span class="vfb-tooltip" title="<?php esc_attr_e( 'About E-mail To', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Select a required email field from your form to send the notification email to.', 'visual-form-builder' ); ?>">(?)</span>
 		                        							<br />
 		                                                    <?php if ( empty( $emails ) ) : ?>
 				                                            <span><?php _e( 'No required email fields detected', 'visual-form-builder' ); ?></span>
@@ -318,7 +318,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <p class="description description-wide">
 		                                            <label for="form-notification-subject">
 		                                               <?php _e( 'E-mail Subject' , 'visual-form-builder'); ?>
-		                                               <span class="vfb-tooltip" title="About E-mail Subject" rel="This option sets the subject of the email that is sent to the emails you have set in the E-mail To field.">(?)</span>
+		                                               <span class="vfb-tooltip" title="<?php esc_attr_e( 'About E-mail Subject', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'This option sets the subject of the email that is sent to the emails you have set in the E-mail To field.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
 		                                                <input type="text" value="<?php echo $form_notification_subject; ?>" class="widefat" id="form-notification-subject" name="form_notification_subject" />
 		                                            </label>
@@ -326,7 +326,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <br class="clear" />
 		                                            <p class="description description-wide">
 		                                            <label for="form-notification-message"><?php _e( 'Message' , 'visual-form-builder'); ?></label>
-		                                            <span class="vfb-tooltip" title="About Message" rel="Insert a message to the user. This will be inserted into the beginning of the email body.">(?)</span>
+		                                            <span class="vfb-tooltip" title="<?php esc_attr_e( 'About Message', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Insert a message to the user. This will be inserted into the beginning of the email body.', 'visual-form-builder' ); ?>">(?)</span>
 		                        					<br />
 		                                            <textarea id="form-notification-message" class="form-notification-message widefat" name="form_notification_message"><?php echo $form_notification_message; ?></textarea>
 		                                            </p>
