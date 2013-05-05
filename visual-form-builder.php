@@ -1835,7 +1835,7 @@ class Visual_Form_Builder{
 				        <p><a href="http://vfb.matthewmuro.com/#features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a>.</p>
 				    </div> <!-- .vfb-pro-upgrade -->
 		    
-			   		<h3><?php _e( 'Help Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
+			   		<h3><?php _e( 'Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
 			        <ul id="promote-vfb">
 			        	<li id="twitter"><?php _e( 'Follow me on Twitter' , 'visual-form-builder'); ?>: <a href="http://twitter.com/#!/matthewmuro">@matthewmuro</a></li>
 			            <li id="star"><a href="http://wordpress.org/extend/plugins/visual-form-builder/"><?php _e( 'Rate Visual Form Builder on WordPress.org' , 'visual-form-builder'); ?></a></li>
