@@ -1989,7 +1989,7 @@ class Visual_Form_Builder{
 				break;
 				
 				case 'number' :
-					return intval( $data );
+					return floatval( $data );
 				break;
 				
 				case 'address' :
