@@ -686,7 +686,7 @@ class Visual_Form_Builder{
 		if ( !isset( $_REQUEST['action'] ) )
 			return;
 		
-		if ( in_array( $_REQUEST['page'], array( 'visual-form-builder', 'vfb-add-new' ) ) ) :
+		if ( in_array( $_REQUEST['page'], array( 'visual-form-builder', 'vfb-add-new', 'vfb-entries' ) ) ) :
 			switch ( $_REQUEST['action'] ) :
 				case 'create_form' :
 					
@@ -976,6 +976,11 @@ class Visual_Form_Builder{
 						$wpdb->update( $this->field_table_name, array( 'field_parent' => $v ), array( 'form_id' => $new_form_selected, 'field_parent' => $k ) );	
 					}
 					
+				break;
+				
+				case 'trash_entry' :
+					$entry_id = absint( $_GET['entry'] );
+					$wpdb->update( $this->entries_table_name, array( 'entry_approved' => 'trash' ), array( 'entries_id' => $entry_id ) );
 				break;
 			endswitch;
 		endif;
