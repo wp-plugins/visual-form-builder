@@ -1,8 +1,4 @@
 <?php
-// Turn off caching plugin for this page to fix occasional nonce error
-if ( !defined( 'DONOTCACHEPAGE' ) )
-	define( 'DONOTCACHEPAGE', true );
-
 global $wpdb;
 
 // Extract shortcode attributes, set defaults
