@@ -2028,10 +2028,12 @@ class Visual_Form_Builder{
 		
 		// Basic check for type when not set
 		if ( empty( $type ) ) :
-			if ( array_key_exists( 'address', $value ) )
+			if ( is_array( $value ) && array_key_exists( 'address', $value ) )
 				$type = 'address';
-			elseif ( array_key_exists( 'hour', $value ) && array_key_exists( 'min', $value ) )
+			elseif ( is_array( $value ) && array_key_exists( 'hour', $value ) && array_key_exists( 'min', $value ) )
 				$type = 'time';
+			elseif ( is_array( $value ) )
+				$type = 'checkbox';
 			else
 				$type = 'default';
 		endif;
@@ -2081,9 +2083,15 @@ class Visual_Form_Builder{
 				
 			break;
 						
+			case 'checkbox' :
+			
+				$output = esc_html( implode( ', ', $value ) );
+				
+			break;
+			
 			default :
 				
-				$output = ( isset( $value['other'] ) ) ? wp_specialchars_decode( stripslashes( esc_html( $value['other'] ) ), ENT_QUOTES, 'UTF-8' ) : esc_html( implode( ', ', $value ) );
+				$output = wp_specialchars_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES );
 				
 			break;
 			
