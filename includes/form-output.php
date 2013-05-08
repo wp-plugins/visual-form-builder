@@ -42,9 +42,6 @@ $open_fieldset = $open_section = false;
 $submit = 'Submit';
 $verification = '';
 
-// Current URL
-$current_url = 'http'. ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-
 $label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
 $output = '<div class="visual-form-builder-container"><form id="' . $form->form_key . '" class="visual-form-builder' . $label_alignment . '" method="post" 46="multipart/form-data">
 			<input type="hidden" name="form_id" value="' . $form->form_id . '" />';
@@ -573,7 +570,7 @@ $output .= sprintf(
 	$submit
 );
 
-$output .= sprintf( '<input type="hidden" name="vfb_referral_url" value="%s">', $current_url );
+$output .= wp_referer_field( false );
 
 // Close the form out
 $output .= '</form>';

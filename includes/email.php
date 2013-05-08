@@ -4,7 +4,7 @@ global $wpdb, $post;
 $required 		= ( isset( $_REQUEST['_vfb-required-secret'] ) && $_REQUEST['_vfb-required-secret'] == '0' ) ? false : true;
 $secret_field 	= ( isset( $_REQUEST['_vfb-secret'] ) ) ? $_REQUEST['_vfb-secret'] : '';
 $honeypot 		= ( isset( $_REQUEST['vfb-spam'] ) ) ? $_REQUEST['vfb-spam'] : '';
-$referrer = ( isset( $_REQUEST['vfb_referral_url'] ) ) ? $_REQUEST['vfb_referral_url'] : false;
+$referrer = ( isset( $_REQUEST['_wp_http_referer'] ) ) ? $_REQUEST['_wp_http_referer'] : false;
 $wp_get_referer = wp_get_referer();
 
 // If the verification is set to required, run validation check
@@ -23,7 +23,7 @@ if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
 		wp_die( __( 'Security check: referal URL does not appear to be set.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
 	
 	// Test if the referral URL matches what sent from WordPress
-	if ( $referrer !== $wp_get_referer )
+	if ( $wp_get_referer )
 		wp_die( __( 'Security check: referal does not match this site.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
 	
 	// Test if it's a known SPAM bot
