@@ -225,6 +225,14 @@ function my_scripts_method() {
 
 == Changelog ==
 
+**Version 2.7.4  — May 08, 2013**
+
+* Update Entries Detail "Delete" link to a "Trash" link
+* Fix bug where referer URL did not match domains that prepended www
+* Fix bug in form output where file uploads were not being sent
+* Fix bug on Entries List to only display approved (i.e. untrashed) entries in All view
+* Minor updates
+
 **Version 2.7.3  — May 07, 2013**
 
 * Fix bug where referer URL was not compatible with certain permalink structures
