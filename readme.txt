@@ -227,10 +227,12 @@ function my_scripts_method() {
 
 **Version 2.7.4  — May 08, 2013**
 
+* Update Numbers field to allow either Digits or Number validation and sanitize as float instead of int
 * Update Entries Detail "Delete" link to a "Trash" link
 * Fix bug where referer URL did not match domains that prepended www
 * Fix bug in form output where file uploads were not being sent
 * Fix bug on Entries List to only display approved (i.e. untrashed) entries in All view
+* Fix bug on Entries List to properly display Today's Entries
 * Minor updates
 
 **Version 2.7.3  — May 07, 2013**
