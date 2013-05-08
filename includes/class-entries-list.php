@@ -140,6 +140,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
 		}
 
+		// Get the month/year from the dropdown
+		$today = isset( $_REQUEST['today'] ) ? (int) $_REQUEST['today'] : 0;
+		
+		// Parse month/year and build the clause
+		if ( $today > 0 )
+			$where .= " AND entries.date_submitted >= curdate()";
+
 		// Entries type filter
 		$where .= ( $this->get_entry_status() && 'all' !== $this->get_entry_status() ) ? $wpdb->prepare( ' AND entries.entry_approved = %s', $this->get_entry_status() ) : '';
 		
@@ -516,6 +523,13 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			
 			$where .= " AND YEAR(date_submitted) = $year AND MONTH(date_submitted) = $month";
 		}
+
+		// Get the month/year from the dropdown
+		$today = isset( $_REQUEST['today'] ) ? (int) $_REQUEST['today'] : 0;
+		
+		// Parse month/year and build the clause
+		if ( $today > 0 )
+			$where .= " AND entries.date_submitted >= curdate()";
 
 		// Entry type filter
 		$where .= ( $this->get_entry_status() && 'all' !== $this->get_entry_status() ) ? $wpdb->prepare( ' AND entries.entry_approved = %s', $this->get_entry_status() ) : '';
