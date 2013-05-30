@@ -380,7 +380,7 @@ class VisualFormBuilder_Export {
 		$limit = 1000;
 
 		if ( isset( $_REQUEST['count'] ) )
-			$limit = absint( $_REQUEST['count'] );
+			$limit = ( $_REQUEST['count'] < 1000 ) ? absint( $_REQUEST['count'] ) : 1000;
 		elseif ( isset( $_REQUEST['offset'] ) ) {
 			$offset = absint( $_REQUEST['offset'] );
 			$offset_num = $offset * 1000;
