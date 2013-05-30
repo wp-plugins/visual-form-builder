@@ -7,6 +7,9 @@ Author URI: http://matthewmuro.com
 Version: 2.7.4
 */
 
+// Version number to output as meta tag
+define( 'VFB_VERSION', '2.7.4' );
+
 /*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -123,6 +126,9 @@ class Visual_Form_Builder{
 		// Load i18n
 		add_action( 'plugins_loaded', array( &$this, 'languages' ) );
 
+		// Print meta keyword
+		add_action( 'wp_head', array( &$this, 'add_meta_keyword' ) );
+
 		add_shortcode( 'vfb', array( &$this, 'form_code' ) );
 		add_action( 'init', array( &$this, 'email' ), 10 );
 		add_action( 'init', array( &$this, 'confirmation' ), 12 );
@@ -148,6 +154,15 @@ class Visual_Form_Builder{
 			update_option( 'vfb_dashboard_widget_options', $widget_options );
 		}
 
+	}
+
+	/**
+	 * Output plugin version number to help with troubleshooting
+	 *
+	 * @since 2.7.5
+	 */
+	public function add_meta_keyword() {
+		echo sprintf( "\n<meta name='vfb-version' content='%s' />\n", VFB_VERSION );
 	}
 
 	/**
