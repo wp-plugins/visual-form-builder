@@ -53,6 +53,9 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 		$form_title = sprintf( '<strong><a href="?page=%s&form=%s" id="%3$s" class="view-form">%s</a></strong>', $_REQUEST['page'], $item['form_id'], $item['form_title'] );
 		$actions['edit'] = sprintf( '<a href="?page=%s&action=%s&form=%s" id="%3$s" class="view-form">%s</a>', $_REQUEST['page'], 'edit', $item['form_id'], __( 'Edit', 'visual-form-builder' ) );
 
+		// Duplicate Form
+		$actions['copy'] = sprintf( '<a href="%s&action=%s&form=%s" id="%3$s" class="view-form">%s</a>', wp_nonce_url( admin_url( 'admin.php?page=visual-form-builder' ), 'copy-form-' . $item['form_id'] ), 'copy_form', $item['form_id'], __( 'Duplicate', 'visual-form-builder' ) );
+
 		// Delete Form
 		$actions['delete'] = sprintf( '<a href="%s&action=%s&form=%s" id="%3$s" class="view-form">%s</a>', wp_nonce_url( admin_url( 'admin.php?page=visual-form-builder' ), 'delete-form-' . $item['form_id'] ), 'delete_form', $item['form_id'], __( 'Delete', 'visual-form-builder' ) );
 
