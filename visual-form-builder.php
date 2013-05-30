@@ -1828,6 +1828,7 @@ class Visual_Form_Builder{
 					<div class="vfb-pro-upgrade">
 				    	<h2><a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a></h2>
 				        <p class="vfb-pro-call-to-action">
+				        	<a class="vfb-btn vfb-btn-inverse" href="http://vfb.matthewmuro.com/#pricing"><?php _e( 'View Pricing' , 'visual-form-builder'); ?></a>
 				        	<a class="vfb-btn vfb-btn-primary" href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></a>
 				        </p>
 				        <h3><?php _e( 'New Features' , 'visual-form-builder'); ?></h3>
