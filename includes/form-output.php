@@ -60,7 +60,7 @@ foreach ( $fields as $field ) :
 	$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? esc_attr( ' required' ) : '';
 	$validation 	= ( !empty( $field->field_validation ) ) ? esc_attr( " $field->field_validation" ) : '';
 	$css 			= ( !empty( $field->field_css ) ) ? esc_attr( " $field->field_css" ) : '';
-	$id_attr 		= 'vfb-' . esc_html( $field->field_key ) . '-' . $field_id;
+	$id_attr 		= "vfb-{$field_id}";
 	$size			= ( !empty( $field->field_size ) ) ? esc_attr( " vfb-$field->field_size" ) : '';
 	$layout 		= ( !empty( $field->field_layout ) ) ? esc_attr( " vfb-$field->field_layout" ) : '';
 	$default 		= ( !empty( $field->field_default ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_default ) ), ENT_QUOTES ) : '';
@@ -88,7 +88,7 @@ foreach ( $fields as $field ) :
 			$output .= '</ul><br /></fieldset>';
 
 		$output .= sprintf(
-			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
+			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
 			$count,
 			esc_attr( $field->field_key ),
 			$css,
@@ -102,7 +102,7 @@ foreach ( $fields as $field ) :
 	elseif ( $field_type == 'section' ) :
 
 		$output .= sprintf(
-			'<div class="vfb-section-div %1$s %2$s"><h4>%3$s</h4>',
+			'<div id="%1$s" class="vfb-section-div %2$s"><h4>%3$s</h4>',
 			$id_attr,
 			$css,
 			$field_name
@@ -133,7 +133,7 @@ foreach ( $fields as $field ) :
 
 		if ( $field_type == 'verification' ) :
 			$verification .= sprintf(
-				'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
+				'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
 				$count,
 				esc_attr( $field->field_key ),
 				$css,
