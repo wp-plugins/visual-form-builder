@@ -16,7 +16,7 @@ $form_id = ( isset( $id ) && !empty( $id ) ) ? (int) $id : key( $atts );
 
 
 // If form is submitted, show success message, otherwise the form
-if ( isset( $_REQUEST['visual-form-builder-submit'] ) && isset( $_REQUEST['form_id'] ) && $_REQUEST['form_id'] == $form_id ) {
+if ( isset( $_POST['visual-form-builder-submit'] ) && isset( $_POST['form_id'] ) && $_POST['form_id'] == $form_id ) {
 	$output = $this->confirmation();
 	return;
 }
@@ -38,7 +38,7 @@ $open_fieldset = $open_section = false;
 $submit = 'Submit';
 $verification = '';
 
-$label_alignment = ( $form->form_label_alignment !== '' ) ? " $form->form_label_alignment" : '';
+$label_alignment = ( $form->form_label_alignment !== '' ) ? esc_attr( " $form->form_label_alignment" ) : '';
 
 // Start form container
 $output .= '<div class="visual-form-builder-container">';
@@ -46,7 +46,7 @@ $output .= '<div class="visual-form-builder-container">';
 $output .= sprintf(
 	'<form id="%1$s-%2$d" class="visual-form-builder %3$s %4$s" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="form_id" value="%5$d" />',
-	esc_html( $form->form_key ),
+	esc_attr( $form->form_key ),
 	$form_id,
 	"vfb-form-$form_id",
 	$label_alignment,
@@ -55,14 +55,14 @@ $output .= sprintf(
 foreach ( $fields as $field ) :
 	$field_id		= absint( $field->field_id );
 	$field_type 	= esc_html( $field->field_type );
-	$field_name		= stripslashes( $field->field_name );
+	$field_name		= esc_html( stripslashes( $field->field_name ) );
 	$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
-	$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' required' : '';
-	$validation 	= ( !empty( $field->field_validation ) ) ? " $field->field_validation" : '';
-	$css 			= ( !empty( $field->field_css ) ) ? " $field->field_css" : '';
+	$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? esc_attr( ' required' ) : '';
+	$validation 	= ( !empty( $field->field_validation ) ) ? esc_attr( " $field->field_validation" ) : '';
+	$css 			= ( !empty( $field->field_css ) ) ? esc_attr( " $field->field_css" ) : '';
 	$id_attr 		= 'vfb-' . esc_html( $field->field_key ) . '-' . $field_id;
-	$size			= ( !empty( $field->field_size ) ) ? " vfb-$field->field_size" : '';
-	$layout 		= ( !empty( $field->field_layout ) ) ? " vfb-$field->field_layout" : '';
+	$size			= ( !empty( $field->field_size ) ) ? esc_attr( " vfb-$field->field_size" ) : '';
+	$layout 		= ( !empty( $field->field_layout ) ) ? esc_attr( " vfb-$field->field_layout" ) : '';
 	$default 		= ( !empty( $field->field_default ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_default ) ), ENT_QUOTES ) : '';
 	$description	= ( !empty( $field->field_description ) ) ? wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ), ENT_QUOTES ) : '';
 
@@ -90,7 +90,7 @@ foreach ( $fields as $field ) :
 		$output .= sprintf(
 			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
 			$count,
-			$field->field_key,
+			esc_attr( $field->field_key ),
 			$css,
 			$id_attr,
 			$field_name
@@ -114,10 +114,9 @@ foreach ( $fields as $field ) :
 
 	elseif ( !in_array( $field_type, array( 'verification', 'secret', 'submit' ) ) ) :
 
-		$columns_choice = ( !empty( $field->field_size ) && in_array( $field_type, array( 'radio', 'checkbox' ) ) ) ? " vfb-$field->field_size" : '';
+		$columns_choice = ( !empty( $field->field_size ) && in_array( $field_type, array( 'radio', 'checkbox' ) ) ) ? esc_attr( " vfb-$field->field_size" ) : '';
 
 		if ( $field_type !== 'hidden' ) :
-			$id_attr = 'vfb-' . esc_html( $field->field_key ) . '-' . $field_id;
 
 			$output .= sprintf(
 				'<li class="vfb-item vfb-item-%1$s %2$s %3$s" id="item-%4$s"><label for="%4$s" class="vfb-desc">%5$s %6$s</label>',
@@ -136,7 +135,7 @@ foreach ( $fields as $field ) :
 			$verification .= sprintf(
 				'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
 				$count,
-				$field->field_key,
+				esc_attr( $field->field_key ),
 				$css,
 				$id_attr,
 				$field_name
@@ -162,7 +161,7 @@ foreach ( $fields as $field ) :
 			endif;
 
 			$validation = ' {digits:true,maxlength:2,minlength:2}';
-			$verification .= '<li class="vfb-item vfb-item-' . $field_type . '"' . $logged_in_display . '><label for="' . $id_attr . '" class="vfb-desc">'. stripslashes( $field->field_name ) . $required_span . '</label>';
+			$verification .= '<li class="vfb-item vfb-item-' . $field_type . '"' . $logged_in_display . '><label for="' . $id_attr . '" class="vfb-desc">'. $field_name . $required_span . '</label>';
 
 			// Set variable for testing if required is Yes/No
 			if ( $required == '' )
@@ -377,9 +376,9 @@ foreach ( $fields as $field ) :
 						'<span class="vfb-%3$s"><select name="vfb-%1$d[%4$s]" class="vfb-select %7$s %8$s" id="%2$s-%4$s">%6$s</select><label for="%2$s-%4$s">%5$s</label></span>',
 						$field_id,
 						$id_attr,
-						$part['layout'],
-						$parts,
-						$part['label'],
+						esc_attr( $part['layout'] ),
+						esc_attr( $parts ),
+						esc_html( $part['label'] ),
 						$options,
 						$addr_required,
 						$css
@@ -391,9 +390,9 @@ foreach ( $fields as $field ) :
 						'<span class="vfb-%3$s"><input type="text" name="vfb-%1$d[%4$s]" id="%2$s-%4$s" maxlength="150" class="vfb-text vfb-medium %7$s %8$s" /><label for="%2$s-%4$s">%5$s</label></span>',
 						$field_id,
 						$id_attr,
-						$part['layout'],
-						$parts,
-						$part['label'],
+						esc_attr( $part['layout'] ),
+						esc_attr( $parts ),
+						esc_html( $part['label'] ),
 						$size,
 						$addr_required,
 						$css
@@ -588,4 +587,7 @@ $output .= '</form>';
 
 // Close form container
 $output .= '</div> <!-- .visual-form-builder-container -->';
+
+// Force tags to balance
+force_balance_tags( $output );
 ?>
