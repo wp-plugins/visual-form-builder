@@ -135,7 +135,7 @@ if ( isset( $_POST['visual-form-builder-submit'] ) ) :
 					$wp_filetype = wp_check_filetype( basename( $uploaded_file['file'] ), null );
 
 					// Return the current upload directory location
-						$wp_upload_dir = wp_upload_dir();
+					$wp_upload_dir = wp_upload_dir();
 
 					$media_upload = array(
 						'guid' 				=> $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $uploaded_file['file'] ),

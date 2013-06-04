@@ -1395,3 +1395,97 @@ ul.vfb-fields-col-2{
 	margin-left: 10em;
 	padding: 5px;
 }
+@media print {
+    body * {
+	    float: none;
+    }
+
+    html,
+    .wrap,
+    #wpbody-content,
+	#vfb-poststuff {
+	    background: none !important;
+	    padding: 0;
+	    margin: 0;
+	    height: auto;
+	}
+
+	#wpadminbar,
+	#adminmenuwrap,
+	#adminmenushadow,
+	#adminmenuback,
+	.screen-reader-shortcut,
+	#screen-meta,
+	#screen-meta-links,
+	#wpfooter,
+	#icon-options-general,
+	.wrap h2,
+	.view-entry,
+	#major-publishing-actions,
+	.clear {
+		display: none;
+	}
+
+	#wpcontent,
+	body #wpcontent {
+		margin-left: 0;
+		width: auto;
+		height: auto;
+	}
+
+	#entry-edit h3 span {
+		font-size: 23px;
+		font-weight: normal;
+	}
+
+	#vfb-poststuff {
+		page-break-after: auto;
+	}
+
+	#vfb-entries-body-content {
+		width: 100%;
+		height: auto;
+		margin: 0 0 50px 0;
+		padding: 0;
+	}
+
+	#side-info-column{
+		width: 100%;
+		height: auto;
+		float: none;
+	}
+
+		#side-info-column .postbox .inside {
+			margin: 0;
+			padding: 0;
+		}
+
+		#minor-publishing,
+		.misc-pub-section,
+		#submitdiv,
+		#submitdiv h3 {
+			background: none !important;
+			border: none;
+			margin: 0;
+		}
+
+			#submitdiv h3 span {
+				font-family: sans-serif;
+				font-size: 16px;
+			}
+
+		.inner-sidebar #side-sortables,
+		.columns-2 .inner-sidebar #side-sortables {
+			margin: 0;
+			padding: 0;
+			width: auto;
+		}
+
+	table {
+	    page-break-inside: auto;
+	}
+
+	tr textarea {
+	    overflow: visible;
+	}
+}
