@@ -294,7 +294,7 @@ class VisualFormBuilder_Export {
 								break;
 
 								default :
-									$output[ $row ][ stripslashes( $obj->name ) ] = $obj->value;
+									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] = $obj->value;
 								break;
 							} //end $obj switch
 						endforeach; // end $fields loop
@@ -330,15 +330,20 @@ class VisualFormBuilder_Export {
 		// Open file with PHP wrapper
 		$fh = @fopen( 'php://output', 'w' );
 
-		// Build headers
-		fputcsv( $fh, $fields, $this->delimiter );
-
-		$rows = $fields_clean = array();
+		$rows = $fields_clean = $fields_header = array();
 
 		// Decode special characters
 		foreach ( $fields as $field ) :
+			// Strip unique ID for a clean header
+			$search = preg_replace( '/{{(\d+)}}/', '', $field );
+			$fields_header[] = $search;
+
+			// Field with unique ID to use as matching data
 			$fields_clean[] = wp_specialchars_decode( $field, ENT_QUOTES );
 		endforeach;
+
+		// Build headers
+		fputcsv( $fh, $fields_header, $this->delimiter );
 
 		// Build table rows and cells
 		foreach ( $data as $row ) :
@@ -441,7 +446,10 @@ class VisualFormBuilder_Export {
 		foreach ( $array as $k => $v ) :
 			$selected = ( in_array( $v, $this->default_cols ) ) ? ' checked="checked"' : '';
 
-			$output .= sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%2$s" %3$s> %2$s</label><br>', $k, $v, $selected );
+			// Strip unique ID for a clean list
+			$search = preg_replace( '/{{(\d+)}}/', '', $v );
+
+			$output .= sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%4$s" %3$s> %2$s</label><br>', $k, $search, $selected, $v );
 		endforeach;
 
 		return $output;
