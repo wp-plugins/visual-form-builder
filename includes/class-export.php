@@ -49,7 +49,7 @@ class VisualFormBuilder_Export {
 		// Query to get all forms
 		$order = sanitize_sql_orderby( 'form_id ASC' );
 		$where = apply_filters( 'vfb_pre_get_forms_export', '' );
-		$forms = $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
+		$forms = $wpdb->get_results( "SELECT form_id, form_key, form_title FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
 
 		if ( !$forms ) :
 			echo sprintf(
@@ -66,10 +66,11 @@ class VisualFormBuilder_Export {
 		if ( !$entries_count ) :
 			$no_entries = __( 'No entries to pull field names from.', 'visual-form-builder' );
 		else :
+
 			$limit = $entries_count > 1000 ? 1000 : $entries_count;
 
 			// Safe to get entries now
-			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT form_id, data FROM $this->entries_table_name WHERE 1=1 AND form_id = %d LIMIT %d", $forms[0]->form_id, $limit ), ARRAY_A );
+			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT data FROM $this->entries_table_name WHERE form_id = %d AND entry_approved = 1 LIMIT %d", $forms[0]->form_id, $limit ), ARRAY_A );
 
 			// Get columns
 			$columns = $this->get_cols( $entries );
@@ -106,12 +107,17 @@ class VisualFormBuilder_Export {
         		<!-- Forms -->
         		<li>
 		        	<label class="vfb-export-label" for="form_id"><?php _e( 'Form', 'visual-form-builder' ); ?>:</label>
-		            <select id="vfb-export-entries-forms" name="form_id">
-					<?php
-						foreach ( $forms as $form ) {
-							echo '<option value="' . $form->form_id . '" id="' . $form->form_key . '">' . stripslashes( $form->form_title ) . '</option>';
-						}
-					?>
+		            <select id="vfb-export-entries-forms" name="entries_form_id">
+<?php
+						foreach ( $forms as $form ) :
+							echo sprintf(
+								'<option value="%1$d" id="%2$s">%3$s</option>',
+								$form->form_id,
+								$form->form_key,
+								stripslashes( $form->form_title )
+							);
+						endforeach;
+?>
 					</select>
         		</li>
         		<!-- Date Range -->
@@ -182,7 +188,7 @@ class VisualFormBuilder_Export {
 			'start_date' 	=> false,
 			'end_date' 		=> false,
 			'page'			=> 0,
-			'fields'		=> $initial_fields
+			'fields'		=> $initial_fields,
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -199,13 +205,15 @@ class VisualFormBuilder_Export {
 				$where .= $wpdb->prepare( " AND date_submitted >= %s", date( 'Y-m-d', strtotime( $args['start_date'] ) ) );
 
 			if ( $args['end_date'] )
-				$where .= $wpdb->prepare( " AND date_submitted < %s", date( 'Y-m-d', strtotime('+1 month', strtotime( $args['end_date'] ) ) ) );
+				$where .= $wpdb->prepare( " AND date_submitted < %s", date( 'Y-m-d', strtotime( '+1 month', strtotime( $args['end_date'] ) ) ) );
 
 			if ( $args['page'] > 1 )
 				$limit = ( $args['page'] - 1 ) * 1000 . ',1000';
 		}
 
-		$entries = $wpdb->get_results( "SELECT * FROM $this->entries_table_name WHERE 1=1 $where LIMIT $limit" );
+		$form_id = ( 0 !== $args['form_id'] ) ? $args['form_id'] : null;
+
+		$entries = $wpdb->get_results( "SELECT * FROM $this->entries_table_name WHERE entry_approved = 1 $where ORDER BY entries_id ASC LIMIT $limit" );
 		$form_key = $wpdb->get_var( $wpdb->prepare( "SELECT form_key, form_title FROM $this->form_table_name WHERE form_id = %d", $args['form_id'] ) );
 		$form_title = $wpdb->get_var( null, 1 );
 
@@ -318,6 +326,92 @@ class VisualFormBuilder_Export {
 		return $count;
 	}
 
+	public function get_form_IDs( $form_id = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		if ( $form_id )
+			$where .= $wpdb->prepare( " AND form_id = %d", $form_id );
+
+		$form_ids = $wpdb->get_col( "SELECT DISTINCT form_id FROM $this->form_table_name WHERE 1=1 $where" );
+
+		if ( !$form_ids )
+			return;
+
+		return $form_ids;
+	}
+
+	public function get_field_IDs( $form_id = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		if ( $form_id )
+			$where .= $wpdb->prepare( " AND form_id = %d", $form_id );
+
+		$field_ids = $wpdb->get_col( "SELECT DISTINCT field_id FROM $this->field_table_name WHERE 1=1 $where" );
+
+		if ( !$field_ids )
+			return;
+
+		return $field_ids;
+	}
+
+	public function get_entry_IDs( $form_id = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		if ( $form_id ) :
+			$where .= $wpdb->prepare( " AND form_id = %d", $form_id );
+
+			$count = $this->count_entries( $form_id );
+			$where .= " LIMIT $count";
+		endif;
+
+
+
+		$entry_ids = $wpdb->get_col( "SELECT DISTINCT entries_id FROM $this->entries_table_name WHERE entry_approved = 1 $where" );
+
+		if ( !$entry_ids )
+			return;
+
+		return $entry_ids;
+	}
+
+	public function get_form_design_IDs( $form_id = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		if ( $form_id )
+			$where .= $wpdb->prepare( " AND form_id = %d", $form_id );
+
+		$design_ids = $wpdb->get_col( "SELECT DISTINCT design_id FROM {$this->design_table_name} WHERE 1=1 $where" );
+
+		if ( !$design_ids )
+			return;
+
+		return $design_ids;
+	}
+
+	public function get_payments_IDs( $form_id = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		if ( $form_id )
+			$where .= $wpdb->prepare( " AND form_id = %d", $form_id );
+
+		$payments_ids = $wpdb->get_col( "SELECT DISTINCT payment_id FROM {$this->payment_table_name} WHERE 1=1 $where" );
+
+		if ( !$payments_ids )
+			return;
+
+		return $payments_ids;
+	}
+
 	/**
 	 * Return the entries data formatted for CSV
 	 *
@@ -381,6 +475,15 @@ class VisualFormBuilder_Export {
 
 		$form_id = absint( $_REQUEST['id'] );
 
+		// Safe to get entries now
+		$entry_ids = $this->get_entry_IDs( $form_id );
+
+		// Return nothing if no entries found
+		if ( !$entry_ids ) {
+			echo __( 'No entries to pull field names from.', 'visual-form-builder-pro' );
+			wp_die();
+		}
+
 		$offset = '';
 		$limit = 1000;
 
@@ -395,7 +498,7 @@ class VisualFormBuilder_Export {
 		}
 
 		// Safe to get entries now
-		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id LIMIT $limit $offset", ARRAY_A );
+		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id AND entry_approved = 1 LIMIT $limit $offset", ARRAY_A );
 
 		// Return nothing if no entries found
 		if ( !$entries ) {
@@ -484,8 +587,8 @@ class VisualFormBuilder_Export {
 
 			$args['format'] = 'csv';
 
-			if ( isset( $_REQUEST['form_id'] ) )
-				$args['form_id'] = (int) $_REQUEST['form_id'];
+			if ( isset( $_REQUEST['entries_form_id'] ) )
+				$args['form_id'] = (int) $_REQUEST['entries_form_id'];
 
 			if ( isset( $_REQUEST['entries_start_date'] ) || isset( $_REQUEST['entries_end_date'] ) ) {
 				$args['start_date'] = $_REQUEST['entries_start_date'];
