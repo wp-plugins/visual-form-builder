@@ -22,7 +22,7 @@ $form_notification_email 	= stripslashes( $form->form_notification_email );
 $form_notification_subject 	= stripslashes( $form->form_notification_subject );
 $form_notification_message 	= stripslashes( $form->form_notification_message );
 $form_notification_entry 	= stripslashes( $form->form_notification_entry );
-		
+
 $form_label_alignment 		= stripslashes( $form->form_label_alignment );
 
 // Only show required text fields for the sender name override
@@ -42,12 +42,12 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 			<input name="action" type="hidden" value="create_field" />
 			<input name="form_id" type="hidden" value="<?php echo $form_nav_selected_id; ?>" />
 			<?php
-			wp_nonce_field( 'create-field-' . $form_nav_selected_id );			
+			wp_nonce_field( 'create-field-' . $form_nav_selected_id );
 			do_meta_boxes( $page_main, 'side', null );
 			?>
 		</form>
 	</div> <!-- .vfb-postbox-container -->
-    
+
     <div id="vfb-postbox-container-2" class='vfb-postbox-container'>
 	    <div id="vfb-form-builder-main">
 	        <div id="vfb-form-builder-management">
@@ -63,20 +63,20 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 	                                    <span class="sender-labels"><?php _e( 'Form Name' , 'visual-form-builder'); ?></span>
 	                                    <input type="text" value="<?php echo ( isset( $form_title ) ) ? $form_title : ''; ?>" placeholder="<?php _e( 'Enter form name here' , 'visual-form-builder'); ?>" class="menu-name regular-text menu-item-textbox required" id="form-name" name="form_title" />
 	                                </label>
-	                                <?php 
+	                                <?php
 										// Display sender details and confirmation message if we're on a form, otherwise just the form name
-										if ( $form_nav_selected_id !== '0' ) : 
+										if ( $form_nav_selected_id !== '0' ) :
 									?>
 	                                <br class="clear" />
-	                                
+
 	                                <?php
 										// Get the Form Setting drop down and accordion settings, if any
 										$user_form_settings = get_user_meta( $user_id, 'vfb-form-settings' );
-										
+
 										// Setup defaults for the Form Setting tab and accordion
 										$settings_tab = 'closed';
 										$settings_accordion = 'general-settings';
-										
+
 										// Loop through the user_meta array
 										foreach( $user_form_settings as $set ) {
 											// If form settings exist for this form, use them instead of the defaults
@@ -85,19 +85,19 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 												$settings_accordion = $set[ $form_id ]['setting_accordion'];
 											}
 										}
-										
+
 										// If tab is opened, set current class
 										$opened_tab = ( $settings_tab == 'opened' ) ? 'current' : '';
 									?>
-			                                
+
 	                                <div class="vfb-button-group">
 										<a href="#form-settings" id="form-settings-button" class="vfb-button vfb-first <?php echo $opened_tab; ?>"><?php _e( 'Settings' , 'visual-form-builder'); ?><span class="button-icon vfb-small-arrow"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=copy_form&amp;form=' . $form_nav_selected_id ), 'copy-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-duplicate"><?php _e( 'Duplicate' , 'visual-form-builder'); ?><span class="button-icon plus"></span></a>
 	                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_form&amp;form=' . $form_nav_selected_id ), 'delete-form-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete vfb-last menu-delete"><?php _e( 'Delete' , 'visual-form-builder'); ?><span class="button-icon delete"></span></a>
-	                                    
+
 	                                    <?php submit_button( __( 'Save', 'visual-form-builder' ), 'primary', 'save_form', false ); ?>
 	                                </div>
-			                                                                            
+
 		                                <div id="form-settings" class="<?php echo $opened_tab; ?>">
 		                                    <!-- General settings section -->
 			                                    <a href="#general-settings" class="settings-links<?php echo ( $settings_accordion == 'general-settings' ) ? ' on' : ''; ?>"><?php _e( 'General', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
@@ -112,19 +112,19 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <select name="form_label_alignment" id="form-label-alignment" class="widefat">
 		                                                <option value="" <?php selected( $form_label_alignment, '' ); ?>><?php _e( 'Top Aligned' , 'visual-form-builder'); ?></option>
 		                                                <option value="left-label" <?php selected( $form_label_alignment, 'left-label' ); ?>><?php _e( 'Left Aligned' , 'visual-form-builder'); ?></option>
-		                                                <option value="right-label" <?php selected( $form_label_alignment, 'right-label' ); ?>><?php _e( 'Right Aligned' , 'visual-form-builder'); ?></option>                                                        
+		                                                <option value="right-label" <?php selected( $form_label_alignment, 'right-label' ); ?>><?php _e( 'Right Aligned' , 'visual-form-builder'); ?></option>
 		                                            </select>
 		                                        </p>
 		                                        <br class="clear" />
 		                                    </div> <!-- #general-settings -->
-		                                    
-		                                    
+
+
 		                                    <!-- Email section -->
 		                                    <a href="#email-details" class="settings-links<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>"><?php _e( 'Email', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="email-details" class="form-details<?php echo ( $settings_accordion == 'email-details' ) ? ' on' : ''; ?>">
-		                                        
+
 		                                        <p><em><?php _e( 'The forms you build here will send information to one or more email addresses when submitted by a user on your site.  Use the fields below to customize the details of that email.' , 'visual-form-builder'); ?></em></p>
-		
+
 		                                        <!-- E-mail Subject -->
 		                                        <p class="description description-wide">
 		                                        <label for="form-email-subject">
@@ -135,7 +135,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        </label>
 		                                        </p>
 		                                        <br class="clear" />
-		
+
 		                                        <!-- Sender Name -->
 		                                        <p class="description description-thin">
 		                                        <label for="form-email-sender-name">
@@ -155,7 +155,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <?php else : ?>
 		                                            <select name="form_email_from_name_override" id="form_email_from_name_override" class="widefat">
 		                                                <option value="" <?php selected( $form_email_from_name_override, '' ); ?>></option>
-		                                                <?php 
+		                                                <?php
 		                                                foreach( $senders as $sender ) {
 		                                                    echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . stripslashes( $sender->field_name ) . '</option>';
 		                                                }
@@ -165,7 +165,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            </label>
 		                                        </p>
 		                                        <br class="clear" />
-		                                        
+
 		                                        <!-- Sender E-mail -->
 		                                        <p class="description description-thin">
 		                                        <label for="form-email-sender">
@@ -185,7 +185,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            <?php else : ?>
 		                                            <select name="form_email_from_override" id="form_email_from_override" class="widefat">
 		                                                <option value="" <?php selected( $form_email_from_override, '' ); ?>></option>
-		                                                <?php 
+		                                                <?php
 		                                                foreach( $emails as $email ) {
 		                                                    echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . stripslashes( $email->field_name ) . '</option>';
 		                                                }
@@ -195,12 +195,12 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            </label>
 		                                        </p>
 		                                        <br class="clear" />
-												
+
 		                                        <!-- E-mail(s) To -->
 		                                        <?php
 		                                            /* Basic count to keep track of multiple options */
 		                                            $count = 1;
-		                                            
+
 		                                            /* Loop through the options */
 		                                            foreach ( $form_email_to as $email_to ) {
 		                                        ?>
@@ -212,18 +212,18 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                        					<br />
 		                                                    <input type="text" value="<?php echo stripslashes( $email_to ); ?>" name="form_email_to[]" class="widefat" id="form-email-to-<?php echo "$count"; ?>" />
 		                                                </label>
-		                                                
+
 		                                                <a href="#" class="addEmail" title="<?php esc_attr_e( 'Add an Email', 'visua-form-builder' ); ?>"><?php _e( 'Add', 'visual-form-builder' ); ?></a> <a href="#" class="deleteEmail" title="<?php esc_attr_e( 'Delete Email', 'visual-form-builder' ); ?>"><?php _e( 'Delete', 'visual-form-builder' ); ?></a>
-		                                                
+
 		                                            </p>
 		                                            <br class="clear" />
 		                                        </div>
-		                                        <?php 
+		                                        <?php
 		                                                $count++;
 		                                            }
 		                                        ?>
 		                                    </div>
-		                                    
+
 		                                    <!-- Confirmation section -->
 		                                    <a href="#confirmation" class="settings-links<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>"><?php _e( 'Confirmation', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="confirmation-message" class="form-details<?php echo ( $settings_accordion == 'confirmation' ) ? ' on' : ''; ?>">
@@ -244,17 +244,17 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <p class="description description-wide">
 		                                        <?php
 		                                        $default_text = '';
-		                                        
+
 		                                        /* If there's no text message, make sure there is something displayed by setting a default */
 		                                        if ( $form_success_message === '' )
 		                                            $default_text = sprintf( '<p id="form_success">%s</p>', __( 'Your form was successfully submitted. Thank you for contacting us.' , 'visual-form-builder') );
 		                                        ?>
 		                                        <textarea id="form-success-message-text" class="form-success-message<?php echo ( 'text' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_text"><?php echo $default_text; ?><?php echo ( 'text' == $form_success_type ) ? $form_success_message : ''; ?></textarea>
-		                                        
+
 		                                        <?php
 		                                        /* Display all Pages */
 		                                        wp_dropdown_pages( array(
-		                                            'name' => 'form_success_message_page', 
+		                                            'name' => 'form_success_message_page',
 		                                            'id' => 'form-success-message-page',
 		                                            'class' => 'widefat',
 		                                            'show_option_none' => __( 'Select a Page' , 'visual-form-builder'),
@@ -264,9 +264,9 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                        <input type="text" value="<?php echo ( 'redirect' == $form_success_type ) ? $form_success_message : ''; ?>" id="form-success-message-redirect" class="form-success-message regular-text<?php echo ( 'redirect' == $form_success_type ) ? ' active' : ''; ?>" name="form_success_message_redirect" placeholder="http://" />
 		                                        </p>
 		                                    <br class="clear" />
-		
+
 		                                    </div>
-		                                
+
 		                                    <!-- Notification section -->
 		                                    <a href="#notification" class="settings-links<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>"><?php _e( 'Notification', 'visual-form-builder' ); ?><span class="vfb-large-arrow"></span></a>
 		                                    <div id="notification" class="form-details<?php echo ( $settings_accordion == 'notification' ) ? ' on' : ''; ?>">
@@ -305,7 +305,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 				                                            <?php else : ?>
 		                                                    <select name="form_notification_email" id="form-notification-email" class="widefat">
 		                                                        <option value="" <?php selected( $form_notification_email, '' ); ?>></option>
-		                                                        <?php 
+		                                                        <?php
 		                                                        foreach( $emails as $email ) {
 		                                                            echo '<option value="' . $email->field_id . '"' . selected( $form_notification_email, $email->field_id ) . '>' . $email->field_name . '</option>';
 		                                                        }
@@ -370,4 +370,3 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 <?php
 wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
-?>

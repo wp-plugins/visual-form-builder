@@ -633,8 +633,7 @@ class VisualFormBuilder_Export {
 			return;
 
 		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
-?>
-<?php
+
 		foreach ( $months as $arc_row ) {
 			if ( 0 == $arc_row->year )
 				continue;
@@ -647,8 +646,6 @@ class VisualFormBuilder_Export {
 				sprintf( __( '%1$s %2$d' ), $wp_locale->get_month( $month ), $year )
 			);
 		}
-?>
-<?php
+
 	}
 }
-?>

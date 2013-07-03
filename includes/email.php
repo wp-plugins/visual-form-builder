@@ -371,4 +371,3 @@ if ( isset( $_POST['visual-form-builder-submit'] ) ) :
 	endif;
 
 endif;
-?>

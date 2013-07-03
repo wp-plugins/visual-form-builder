@@ -590,4 +590,3 @@ $output .= '</div> <!-- .visual-form-builder-container -->';
 
 // Force tags to balance
 force_balance_tags( $output );
-?>

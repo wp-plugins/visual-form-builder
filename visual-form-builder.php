@@ -1783,4 +1783,3 @@ require( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-widget
 require_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/class-export.php' );
 if ( !isset( $export ) )
 	$export = new VisualFormBuilder_Export();
-?>

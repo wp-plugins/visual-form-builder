@@ -641,4 +641,3 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 		echo $this->_pagination;
 	}
 }
-?>

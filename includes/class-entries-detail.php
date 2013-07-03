@@ -159,4 +159,3 @@ class VisualFormBuilder_Entries_Detail{
 		echo '</form>';
 	}
 }
-?>

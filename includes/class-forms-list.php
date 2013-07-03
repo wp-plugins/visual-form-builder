@@ -461,4 +461,3 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 	}
 
 }
-?>
