@@ -56,7 +56,7 @@ foreach ( $fields as $field ) :
 	$field_id		= absint( $field->field_id );
 	$field_type 	= esc_html( $field->field_type );
 	$field_name		= esc_html( stripslashes( $field->field_name ) );
-	$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span>*</span>' : '';
+	$required_span 	= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? ' <span class="vfb-required-asterisk">*</span>' : '';
 	$required 		= ( !empty( $field->field_required ) && $field->field_required === 'yes' ) ? esc_attr( ' required' ) : '';
 	$validation 	= ( !empty( $field->field_validation ) ) ? esc_attr( " $field->field_validation" ) : '';
 	$css 			= ( !empty( $field->field_css ) ) ? esc_attr( " $field->field_css" ) : '';
@@ -180,7 +180,7 @@ foreach ( $fields as $field ) :
 				$css
 			);
 
-			$verification .= ( !empty( $field->field_description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $verification_item, $description ) : $verification_item;
+			$verification .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $verification_item, $description ) : $verification_item;
 
 		endif;
 	endif;
@@ -523,7 +523,7 @@ foreach ( $fields as $field ) :
 
 		case 'instructions' :
 
-			$output .= wp_specialchars_decode( esc_html( stripslashes( $field->field_description ) ), ENT_QUOTES );
+			$output .= wp_specialchars_decode( esc_html( stripslashes( $description ) ), ENT_QUOTES );
 
 		break;
 

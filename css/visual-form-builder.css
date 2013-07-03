@@ -6,6 +6,7 @@ form.visual-form-builder{
 	list-style-image: none;
 	list-style-type: none;
 	position: relative;
+	text-shadow: none;
 }
 
 form.visual-form-builder li{
@@ -29,6 +30,7 @@ form.visual-form-builder li{
 	margin:0 14px;
 	padding:0;
 	font-size:12px;
+	line-height: inherit;
 }
 
 	.visual-form-builder ul li {
@@ -93,8 +95,9 @@ span.vfb-full select{
 	}
 
 .visual-form-builder li div label,
-.visual-form-builder li span label{
-	font-size:90%;
+.visual-form-builder li span label {
+	font-size: 90%;
+	margin: 0;
 }
 
 /* !Fieldset */
@@ -103,6 +106,7 @@ span.vfb-full select{
 	border-radius:3px;
 	border:1px solid #D3D3D3;
 	margin:15px 0;
+	padding: 0;
 	clear:both;
 }
 
@@ -115,7 +119,7 @@ span.vfb-full select{
 	font-size:inherit;
 }
 
-	.visual-form-builder .vfb-legend h3{
+	.visual-form-builder .vfb-legend h3 {
 		font-size:20px;
 		line-height: 2.0em;
 		margin:0;
@@ -127,7 +131,7 @@ span.vfb-full select{
 label.vfb-desc{
 	display:block;
 	margin:0;
-	padding-bottom:3px;
+	padding: 0 0 3px 0;
 	color:#000;
 }
 	label.vfb-desc{
@@ -144,6 +148,11 @@ label.vfb-desc{
 	.visual-form-builder.right-label .vfb-desc{
 		padding-top:2px;
 		text-align:right;
+	}
+
+	.visual-form-builder li div {
+		margin: 0;
+		padding: 0;
 	}
 
 	.visual-form-builder.left-label li div,
@@ -164,8 +173,12 @@ label.vfb-desc{
 			margin: -16px 23px 0 0;
 		}
 
-	.visual-form-builder label span{
-		color:#BC1212;
+	.visual-form-builder label .vfb-required-asterisk {
+		color: #BC1212;
+		font-weight: bold;
+		margin: 0;
+		padding: 0;
+		vertical-align: baseline;
 	}
 
 /* !Input, Textarea, and Select */
@@ -179,7 +192,8 @@ textarea.vfb-textarea {
     border: 1px solid #DDDDDD;
     border-radius: 3px;
     padding: 3px 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 	-webkit-transition: border linear .2s, box-shadow linear .2s;
@@ -194,7 +208,6 @@ textarea.vfb-textarea {
 	input[type="email"].vfb-text:focus,
 	input[type="url"].vfb-text:focus,
 	textarea.vfb-textarea:focus {
-		border-color: rgb(82, 168, 236);
 		border-color: rgba(82, 168, 236, 0.8);
 		outline: 0;
 		outline: thin dotted \9;
@@ -211,7 +224,6 @@ textarea.vfb-textarea {
 	input[type="email"].vfb-text.error:focus,
 	input[type="url"].vfb-text.error:focus,
 	textarea.vfb-textarea.error:focus {
-		border-color: rgb(238,83,83);
 		border-color: rgba(238,83,83,0.8);
 
 		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(238,83,83,.6);
@@ -384,24 +396,17 @@ label.error{
 	font-size:90%;
 }
 
-input.vfb-text.error,
-input[type="text"].vfb-text.error,
-input[type="tel"].vfb-text.error,
-input[type="email"].vfb-text.error,
-input[type="url"].vfb-text.error,
-textarea.vfb-textarea.error {
-	border-color: rgb(238,83,83);
-	border-color: rgba(238,83,83,0.8);
-
-	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(238,83,83,.6);
-	-moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(238,83,83,.6);
-	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(238,83,83,.6);
+input.error,
+select.error,
+textarea.error{
+	border:1px solid red;
 }
 
 /* !Success Mesage - Default */
-p#form_success{
-	color:green;
-	font-weight:bold;
+p#form_success,
+.vfb-form-success {
+	color: green;
+	font-weight: bold;
 }
 
 #ui-datepicker-div {
@@ -422,13 +427,13 @@ p#form_success{
 	}
 
 	.vfb-item-instructions ol,
-	.vfb-item-instructions ol li{
+	.vfb-item-instructions ol li {
 		list-style: decimal;
 		padding-bottom: 0;
 	}
 
 /* !Sections */
-.vfb-section-div{
+.vfb-section-div {
 	 background-color:#D4D4D4;
 	 border-radius:3px;
 	 padding:10px;
@@ -436,10 +441,11 @@ p#form_success{
 	 float:left;
 	 width:97%;
 }
-	.visual-form-builder .vfb-section-div h4{
+
+	.visual-form-builder .vfb-section-div h4 {
 		font-size:16px;
 		border-bottom:1px solid #BABABA;
-		margin:0;
+		margin: 0;
 	}
 
 /* !Clearing */
