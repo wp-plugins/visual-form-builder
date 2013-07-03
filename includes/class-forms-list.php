@@ -6,6 +6,8 @@
  */
 class VisualFormBuilder_Forms_List extends WP_List_Table {
 
+	public $errors;
+
 	function __construct(){
 		global $status, $page, $wpdb;
 
@@ -128,7 +130,7 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 		// Set OFFSET for pagination
 		$offset = ( $offset > 0 ) ? "OFFSET $offset" : '';
 
-		$where = apply_filters( 'vfb_pre_get_entries', '' );
+		$where = apply_filters( 'vfb_pre_get_forms', '' );
 
 		// If the form filter dropdown is used
 		if ( $this->current_filter_action() )
@@ -177,9 +179,15 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 	function get_forms_count() {
 		global $wpdb;
 
+		$stats = array();
+
 		$count = $wpdb->get_var( "SELECT COUNT(*) FROM $this->form_table_name" );
 
-		return $count;
+		$stats['all'] = $count;
+
+		$stats = (object) $stats;
+
+		return $stats;
 	}
 
 	/**
@@ -225,25 +233,27 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 		$form_id = '';
 
 		// Set the Entry ID array
-		if ( isset( $_REQUEST['entry'] ) ) {
-			if ( is_array( $_REQUEST['entry'] ) )
-				$form_id = $_REQUEST['entry'];
+		if ( isset( $_REQUEST['form'] ) ) {
+			if ( is_array( $_REQUEST['form'] ) )
+				$form_id = $_REQUEST['form'];
 			else
-				$form_id = (array) $_REQUEST['entry'];
+				$form_id = (array) $_REQUEST['form'];
 		}
 
 		switch( $this->current_action() ) {
 			case 'trash' :
 				foreach ( $form_id as $id ) {
 					$id = absint( $id );
-					$wpdb->update( $this->entries_table_name, array( 'entry_approved' => 'trash' ), array( 'entries_id' => $id ) );
+					$wpdb->update( $this->form_table_name, array( 'form_approved' => 'trash' ), array( 'form_id' => $id ) );
 				}
 			break;
 
 			case 'delete' :
 				foreach ( $form_id as $id ) {
 					$id = absint( $id );
-					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->entries_table_name WHERE entries_id = %d", $id ) );
+					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->form_table_name WHERE form_id = %d", $id ) );
+					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->field_table_name WHERE form_id = %d", $id ) );
+					$wpdb->query( $wpdb->prepare( "DELETE FROM $this->entries_table_name WHERE form_id = %d", $id ) );
 				}
 			break;
 
