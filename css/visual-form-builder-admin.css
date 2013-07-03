@@ -236,6 +236,11 @@
 		border-radius: 3px;
 	}
 
+		/* Blue Admin style */
+		.admin-color-classic #vfb-form-builder-management .form-edit {
+			border-color: #D0DFE9;
+		}
+
 /* !Form Editor Header/Footer */
 #form-editor-header,
 #form-editor-footer{
@@ -246,6 +251,16 @@
 	#form-editor-footer{
 		border-top:1px solid #dfdfdf;
 	}
+
+	/* Blue Admin style */
+	.admin-color-classic #form-editor-header,
+	.admin-color-classic #form-editor-footer {
+		background-color: #F5FAFD;
+	}
+
+		.admin-color-class #form-editor-footer {
+			border-top-color: #D0DFE9;
+		}
 
 	.vfb-major-publishing-actions{
 		clear:both;
@@ -348,7 +363,8 @@
 		margin-right: 300px;
 	}
 
-.vfb-box {
+/* !Form Boxes */
+.vfb-box{
     position:relative;
     float:left;
     padding:0 10px;
@@ -396,23 +412,12 @@
 		line-height: 17px;
 	}
 
-		.rtl .vfb-form-alpha-group .letter,
-		.rtl .wrap h2.letter {
-			float: right;
-		}
-
 	.vfb-form-alpha-form{
 		display: block;
 		margin:10px 0;
 		padding-left:150px;
 		width:auto;
 	}
-
-		.rtl .vfb-form-alpha-form {
-			padding-left: 0;
-			padding-right: 150px;
-		}
-
 		.vfb-form-alpha-form h3{
 			float:left;
 			margin: 0;
@@ -421,21 +426,12 @@
 			font-size:17px;
 		}
 
-			.rtl .vfb-form-alpha-form h3 {
-				float: right;
-			}
-
 		.vfb-form-alpha-form .vfb-publishing-actions,
 		.vfb-form-alpha-form .vfb-form-meta{
 			float:left;
 			width:20%;
 			text-align: center;
 		}
-
-			.rtl .vfb-form-alpha-form .vfb-publishing-actions,
-			.rtl .vfb-form-alpha-form .vfb-form-meta {
-				float: right;
-			}
 
 			.vfb-form-alpha-form .vfb-form-meta{
 				width: 30%;
@@ -832,6 +828,13 @@ label.error{
 	cursor: move;
 }
 
+	/* Blue Admin style */
+	.admin-color-classic .vfb-menu-item-handle {
+		background: #F5FAFD;
+		box-shadow: 0 1px 0 #FFFFFF inset;
+		border-color: #D0DFE9;
+	}
+
 	.rtl .vfb-menu-item-handle {
 		padding-left: 0;
 		padding-right: 10px;
@@ -843,6 +846,14 @@ label.error{
 		background: #e3e3e3;
 		box-shadow:0 1px 0 #e3e3e3 inset;
 	}
+
+		/* Blue Admin style */
+		.admin-color-classic .vfb-menu-item-type-fieldset,
+		.admin-color-classic .vfb-menu-item-type-verification,
+		.admin-color-classic #form-element-fieldset {
+			background: #e2f3ff;
+			box-shadow: 0 1px 0 #FFFFFF inset;
+		}
 
 	.vfb-menu-item-handle .item-title {
 		min-height: 20px;
@@ -1236,7 +1247,7 @@ ul.vfb-fields-col-2{
 
 	.vfb-button-group{
 		display:inline-block;
-		margin-top:10px;
+		margin: 10px 0;
 		list-style:none;
 	}
 
