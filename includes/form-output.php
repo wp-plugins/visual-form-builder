@@ -14,7 +14,6 @@ if ( !$this->add_scripts )
 // Get form id.  Allows use of [vfb id=1] or [vfb 1]
 $form_id = ( isset( $id ) && !empty( $id ) ) ? (int) $id : key( $atts );
 
-
 // If form is submitted, show success message, otherwise the form
 if ( isset( $_POST['visual-form-builder-submit'] ) && isset( $_POST['form_id'] ) && $_POST['form_id'] == $form_id ) {
 	$output = $this->confirmation();
@@ -29,8 +28,8 @@ if ( !$form )
 	return;
 
 // Get fields
-$order_fields = sanitize_sql_orderby( 'field_sequence ASC' );
-$fields = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d ORDER BY $order_fields", $form_id ) );
+$order_fields   = sanitize_sql_orderby( 'field_sequence ASC' );
+$fields         = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d ORDER BY $order_fields", $form_id ) );
 
 // Setup default variables
 $count = 1;
@@ -87,13 +86,16 @@ foreach ( $fields as $field ) :
 		if ( $open_fieldset == true )
 			$output .= '</ul><br /></fieldset>';
 
+		// Only display Legend if field name is not blank
+		$legend = !empty( $field_name ) ? sprintf( '<div class="vfb-legend"><h3>%s</h3></div>', $field_name ) : '<br>';
+
 		$output .= sprintf(
-			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
+			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s">%5$s<ul class="vfb-section vfb-section-%1$d">',
 			$count,
 			esc_attr( $field->field_key ),
 			$css,
 			$id_attr,
-			$field_name
+			$legend
 		);
 
 		$open_fieldset = true;
