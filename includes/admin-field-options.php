@@ -201,8 +201,8 @@ foreach ( $fields as $field ) :
 						$dateFormat = ( isset( $opts_vals['dateFormat'] ) ) ? $opts_vals['dateFormat'] : 'mm/dd/yy';
 					?>
 					<label for="edit-form-item-date-dateFormat-<?php echo $field->field_id; ?>">
-						<?php _e( 'Date Format', 'visual-form-builder-pro' ); ?>
-						<span class="vfb-tooltip" title="<?php esc_attr_e( 'About Date Format', 'visual-form-builder-pro' ); ?>" rel="<?php esc_attr_e( 'Set the date format for each date picker.', 'visual-form-builder-pro' ); ?>">(?)</span>
+						<?php _e( 'Date Format', 'visual-form-builder' ); ?>
+						<span class="vfb-tooltip" title="<?php esc_attr_e( 'About Date Format', 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Set the date format for each date picker.', 'visual-form-builder' ); ?>">(?)</span>
 						<br />
 						<input type="text" value="<?php echo esc_attr( $dateFormat ); ?>" name="field_options-<?php echo $field->field_id; ?>[dateFormat]" class="widefat" id="edit-form-item-date-dateFormat-<?php echo $field->field_id; ?>" />
 					</label>
