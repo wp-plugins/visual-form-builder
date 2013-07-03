@@ -858,16 +858,16 @@ class Visual_Form_Builder{
 					foreach ( $_REQUEST['field_id'] as $id ) :
 						$id = absint( $id );
 
-						$field_name 		= ( isset( $_REQUEST['field_name-' . $id] ) ) ? $_REQUEST['field_name-' . $id] : '';
+						$field_name 		= ( isset( $_REQUEST['field_name-' . $id] ) ) ? trim( $_REQUEST['field_name-' . $id] ) : '';
 						$field_key 			= sanitize_key( sanitize_title( $field_name, $id ) );
-						$field_desc 		= ( isset( $_REQUEST['field_description-' . $id] ) ) ? $_REQUEST['field_description-' . $id] : '';
-						$field_options 		= ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( $_REQUEST['field_options-' . $id] ) : '';
+						$field_desc 		= ( isset( $_REQUEST['field_description-' . $id] ) ) ? trim( $_REQUEST['field_description-' . $id] ) : '';
+						$field_options 		= ( isset( $_REQUEST['field_options-' . $id] ) ) ? serialize( array_map( 'trim', $_REQUEST['field_options-' . $id] ) ) : '';
 						$field_validation 	= ( isset( $_REQUEST['field_validation-' . $id] ) ) ? $_REQUEST['field_validation-' . $id] : '';
 						$field_required 	= ( isset( $_REQUEST['field_required-' . $id] ) ) ? $_REQUEST['field_required-' . $id] : '';
 						$field_size 		= ( isset( $_REQUEST['field_size-' . $id] ) ) ? $_REQUEST['field_size-' . $id] : '';
 						$field_css 			= ( isset( $_REQUEST['field_css-' . $id] ) ) ? $_REQUEST['field_css-' . $id] : '';
 						$field_layout 		= ( isset( $_REQUEST['field_layout-' . $id] ) ) ? $_REQUEST['field_layout-' . $id] : '';
-						$field_default 		= ( isset( $_REQUEST['field_default-' . $id] ) ) ? $_REQUEST['field_default-' . $id] : '';
+						$field_default 		= ( isset( $_REQUEST['field_default-' . $id] ) ) ? trim( $_REQUEST['field_default-' . $id] ) : '';
 
 						$field_data = array(
 							'field_key' 		=> $field_key,
