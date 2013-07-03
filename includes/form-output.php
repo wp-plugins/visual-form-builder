@@ -163,7 +163,14 @@ foreach ( $fields as $field ) :
 			endif;
 
 			$validation = ' {digits:true,maxlength:2,minlength:2}';
-			$verification .= '<li class="vfb-item vfb-item-' . $field_type . '"' . $logged_in_display . '><label for="' . $id_attr . '" class="vfb-desc">'. $field_name . $required_span . '</label>';
+			$verification .= sprintf(
+				'<li class="vfb-item vfb-item-%1$s"%2$s><label for="%3$s" class="vfb-desc">%4$s %5$s</label>',
+				$field_type,
+				$logged_in_display,
+				$id_attr,
+				$field_name,
+				$required_span
+			);
 
 			// Set variable for testing if required is Yes/No
 			if ( $required == '' )
