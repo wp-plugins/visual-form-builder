@@ -497,14 +497,7 @@ class VisualFormBuilder_Export {
 				$offset = "OFFSET $offset";
 		}
 
-		// Safe to get entries now
 		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id AND entry_approved = 1 LIMIT $limit $offset", ARRAY_A );
-
-		// Return nothing if no entries found
-		if ( !$entries ) {
-			echo __( 'No entries to pull field names from.', 'visual-form-builder' );
-			wp_die();
-		}
 
 		// Get columns
 		$columns = $export->get_cols( $entries );
