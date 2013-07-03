@@ -71,6 +71,15 @@ class Visual_Form_Builder{
 	private $_admin_pages = array();
 
 	/**
+	 * Flag used to display post_max_vars error when saving
+	 *
+	 * @since 2.7.6
+	 * @var string
+	 * @access protected
+	 */
+	protected $post_max_vars = false;
+
+	/**
 	 * Constructor. Register core filters and actions.
 	 *
 	 * @access public
@@ -851,11 +860,24 @@ class Visual_Form_Builder{
 					// Update form details
 					$wpdb->update( $this->form_table_name, $newdata, $where );
 
+					$field_ids = array();
+
+					// Get max post vars, if available. Otherwise set to 1000
+					$max_post_vars = ( ini_get( 'max_input_vars' ) ) ? intval( ini_get( 'max_input_vars' ) ) : 1000;
+
+					// Set a message to be displayed if we've reached a limit
+					if ( count( $_POST, COUNT_RECURSIVE ) > $max_post_vars )
+						$this->post_max_vars = true;
+
+					foreach ( $_REQUEST['field_id'] as $fields ) :
+							$field_ids[] = $fields;
+					endforeach;
+
 					// Initialize field sequence
 					$field_sequence = 0;
 
 					// Loop through each field and update
-					foreach ( $_REQUEST['field_id'] as $id ) :
+					foreach ( $field_ids as $id ) :
 						$id = absint( $id );
 
 						$field_name 		= ( isset( $_REQUEST['field_name-' . $id] ) ) ? trim( $_REQUEST['field_name-' . $id] ) : '';
@@ -1286,6 +1308,13 @@ class Visual_Form_Builder{
 				break;
 				case 'update_form' :
 					echo '<div id="message" class="updated"><p>' . sprintf( __( 'The %s form has been updated.' , 'visual-form-builder'), '<strong>' . $_REQUEST['form_title'] . '</strong>' ) . '</p></div>';
+
+					if ( $this->post_max_vars ) :
+						// Get max post vars, if available. Otherwise set to 1000
+						$max_post_vars = ( ini_get( 'max_input_vars' ) ) ? intval( ini_get( 'max_input_vars' ) ) : 1000;
+
+						echo '<div id="message" class="error"><p>' . sprintf( __( 'Error saving form. The maximum amount of data allowed by your server has been reached. Please update <a href="%s" target="_blank">max_input_vars</a> in your php.ini file to allow more data to be saved. Current limit is <strong>%d</strong>', 'visual-form-builder' ), 'http://www.php.net/manual/en/info.configuration.php#ini.max-input-vars', $max_post_vars ) . '</p></div>';
+					endif;
 				break;
 				case 'deleted' :
 					echo '<div id="message" class="updated"><p>' . __( 'The form has been successfully deleted.' , 'visual-form-builder') . '</p></div>';
