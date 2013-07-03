@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-	/* !Validate each form on the page */
+	// !Validate each form on the page
 	$( '.visual-form-builder' ).each( function() {
 		$( this ).validate({
 			rules: {
@@ -16,14 +16,20 @@ jQuery(document).ready(function($) {
 					error.hide();
 				else
 					error.insertAfter( element );
-			} 
+			}
 		});
 	});
-	
-	
-	/* !Display jQuery UI date picker */
-	$( '.vfb-date-picker' ).datepicker();	
-		
+
+
+	// !Display jQuery UI date picker
+	$( '.vfb-date-picker' ).each( function(){
+		var vfb_dateFormat = $( this ).attr( 'data-dp-dateFormat' ) ? $( this ).attr( 'data-dp-dateFormat' ) : 'mm/dd/yy';
+
+		$( this ).datepicker({
+			dateFormat: vfb_dateFormat
+		});
+	});
+
 	// !Custom validation method to check multiple emails
 	$.validator.addMethod( 'phone', function( value, element ) {
 		// Strip out all spaces, periods, dashes, parentheses, and plus signs
@@ -33,5 +39,5 @@ jQuery(document).ready(function($) {
 			value.match( /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/ );
 
 		}, $.validator.format( 'Please enter a valid phone number. Most US/Canada and International formats accepted.' )
-	);	
+	);
 });

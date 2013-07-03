@@ -421,15 +421,18 @@ foreach ( $fields as $field ) :
 		break;
 
 		case 'date' :
+			$options = maybe_unserialize( $field->field_options );
+			$dateFormat = ( $options ) ? $options['dateFormat'] : '';
 
 			$form_item = sprintf(
-				'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text vfb-date-picker %4$s %5$s %6$s" />',
+				'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text vfb-date-picker %4$s %5$s %6$s" data-dp-dateFormat="%7$s" />',
 				$field_id,
 				$id_attr,
 				$default,
 				$size,
 				$required,
-				$css
+				$css,
+				$dateFormat
 			);
 
 			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;

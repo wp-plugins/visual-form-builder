@@ -164,10 +164,7 @@ foreach ( $fields as $field ) :
 				endif;
 			?>
 
-			<?php
-				// Display the Options input only for radio, checkbox, select, and autocomplete fields
-				if ( in_array( $field->field_type, array( 'file-upload' ) ) ) :
-			?>
+			<?php if ( in_array( $field->field_type, array( 'file-upload' ) ) ) : ?>
             	<!-- File Upload Accepts -->
 				<p class="description description-wide">
                     <?php
@@ -191,6 +188,26 @@ foreach ( $fields as $field ) :
                 </p>
             <?php
 					}
+				// Unset the options for any following radio, checkboxes, or selects
+				unset( $opts_vals );
+				endif;
+			?>
+
+			<?php if ( in_array( $field->field_type, array( 'date' ) ) ) : ?>
+		    	<!-- Date Format -->
+				<p class="description description-wide">
+					<?php
+						$opts_vals = maybe_unserialize( $field->field_options );
+						$dateFormat = ( isset( $opts_vals['dateFormat'] ) ) ? $opts_vals['dateFormat'] : 'mm/dd/yy';
+					?>
+					<label for="edit-form-item-date-dateFormat-<?php echo $field->field_id; ?>">
+						<?php _e( 'Date Format', 'visual-form-builder-pro' ); ?>
+						<span class="vfb-tooltip" title="<?php esc_attr_e( 'About Date Format', 'visual-form-builder-pro' ); ?>" rel="<?php esc_attr_e( 'Set the date format for each date picker.', 'visual-form-builder-pro' ); ?>">(?)</span>
+						<br />
+						<input type="text" value="<?php echo esc_attr( $dateFormat ); ?>" name="field_options-<?php echo $field->field_id; ?>[dateFormat]" class="widefat" id="edit-form-item-date-dateFormat-<?php echo $field->field_id; ?>" />
+					</label>
+		        </p>
+			<?php
 				// Unset the options for any following radio, checkboxes, or selects
 				unset( $opts_vals );
 				endif;
