@@ -368,6 +368,11 @@ foreach ( $fields as $field ) :
 
 			$address_parts = apply_filters( 'vfb_address_labels', $address_parts, $form_id );
 
+			$label_placement = apply_filters( 'vfb_address_labels_placement', true, $form_id );
+
+			$placement_bottom = ( $label_placement ) ? '<label for="%2$s-%4$s">%5$s</label>' : '';
+			$placement_top    = ( !$label_placement ) ? '<label for="%2$s-%4$s">%5$s</label>' : '';
+
 			foreach ( $address_parts as $parts => $part ) :
 
 				// Make sure the second address line is not required
@@ -382,7 +387,7 @@ foreach ( $fields as $field ) :
 					}
 
 					$address .= sprintf(
-						'<span class="vfb-%3$s"><select name="vfb-%1$d[%4$s]" class="vfb-select %7$s %8$s" id="%2$s-%4$s">%6$s</select><label for="%2$s-%4$s">%5$s</label></span>',
+						'<span class="vfb-%3$s">' . $placement_top . '<select name="vfb-%1$d[%4$s]" class="vfb-select %7$s %8$s" id="%2$s-%4$s">%6$s</select>' . $placement_bottom . '</span>',
 						$field_id,
 						$id_attr,
 						esc_attr( $part['layout'] ),
@@ -396,7 +401,7 @@ foreach ( $fields as $field ) :
 				else :
 
 					$address .= sprintf(
-						'<span class="vfb-%3$s"><input type="text" name="vfb-%1$d[%4$s]" id="%2$s-%4$s" maxlength="150" class="vfb-text vfb-medium %7$s %8$s" /><label for="%2$s-%4$s">%5$s</label></span>',
+						'<span class="vfb-%3$s">' . $placement_top . '<input type="text" name="vfb-%1$d[%4$s]" id="%2$s-%4$s" maxlength="150" class="vfb-text vfb-medium %7$s %8$s" />' . $placement_bottom . '</span>',
 						$field_id,
 						$id_attr,
 						esc_attr( $part['layout'] ),
