@@ -143,6 +143,42 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 	}
 
 	/**
+	 * Build the different views for the entries screen
+	 *
+	 * @since 2.7.6
+	 * @returns array $status_links Status links with counts
+	 */
+	function get_views() {
+		$status_links = array();
+		$num_forms = $this->get_forms_count();
+		$class = '';
+		$link = '?page=visual-form-builder';
+
+		$stati = array(
+			'all'    => _n_noop( 'All <span class="count">(<span class="pending-count">%s</span>)</span>', 'All <span class="count">(<span class="pending-count">%s</span>)</span>' ),
+		);
+
+		$total_entries = (int) $num_forms->all;
+		$entry_status = isset( $_REQUEST['form_status'] ) ? $_REQUEST['form_status'] : 'all';
+
+		foreach ( $stati as $status => $label ) {
+			$class = ( $status == $entry_status ) ? ' class="current"' : '';
+
+			if ( !isset( $num_forms->$status ) )
+				$num_forms->$status = 10;
+
+			$link = add_query_arg( 'form_status', $status, $link );
+
+			$status_links[ $status ] = "<li class='$status'><a href='$link'$class>" . sprintf(
+				translate_nooped_plural( $label, $num_forms->$status ),
+				number_format_i18n( $num_forms->$status )
+			) . '</a>';
+		}
+
+		return $status_links;
+	}
+
+	/**
 	 * Get the number of entries for use with entry statuses
 	 *
 	 * @since 2.1
@@ -374,9 +410,9 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 
 		// Register our pagination
 		$this->set_pagination_args( array(
-			'total_items'	=> $total_items,
+			'total_items'	=> $total_items->all,
 			'per_page'		=> $per_page,
-			'total_pages'	=> ceil( $total_items / $per_page )
+			'total_pages'	=> ceil( $total_items->all / $per_page )
 		) );
 	}
 

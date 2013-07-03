@@ -1274,7 +1274,7 @@ class Visual_Form_Builder{
 		endif;
 
 		echo '<form id="forms-filter" method="post" action="">';
-
+		$forms_list->views();
 		$forms_list->prepare_items();
 
     	$forms_list->search_box( 'search', 'search_id' );
