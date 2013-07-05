@@ -29,7 +29,7 @@ $form_label_alignment 		= stripslashes( $form->form_label_alignment );
 $senders = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d AND field_type IN( 'text', 'name' ) AND field_validation = '' AND field_required = 'yes'", $form_nav_selected_id ) );
 
 // Only show required email fields for the email override
-$emails = $wpdb->get_results( "SELECT * FROM $this->field_table_name WHERE (form_id = $form_nav_selected_id AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = $form_nav_selected_id AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')" );
+$emails = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE (form_id = %d AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = %d AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')", $form_nav_selected_id, $form_nav_selected_id ) );
 
 $screen = get_current_screen();
 $class = 'columns-' . get_current_screen()->get_columns();
@@ -150,7 +150,7 @@ $page_main = $this->_admin_pages[ 'vfb' ];
 		                                            	<?php _e( "User's Name (optional)" , 'visual-form-builder'); ?>
 		                                                <span class="vfb-tooltip" title="<?php esc_attr_e( "About User's Name", 'visual-form-builder' ); ?>" rel="<?php esc_attr_e( 'Select a required text field from your form to use as the From display name in the email.', 'visual-form-builder' ); ?>">(?)</span>
 		                        						<br />
-		                                            <?php if ( empty( $emails ) ) : ?>
+		                                            <?php if ( empty( $senders ) ) : ?>
 		                                            <span><?php _e( 'No required text fields detected', 'visual-form-builder' ); ?></span>
 		                                            <?php else : ?>
 		                                            <select name="form_email_from_name_override" id="form_email_from_name_override" class="widefat">
