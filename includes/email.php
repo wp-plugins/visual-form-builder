@@ -4,7 +4,7 @@ global $wpdb, $post;
 $required 		= ( isset( $_POST['_vfb-required-secret'] ) && $_POST['_vfb-required-secret'] == '0' ) ? false : true;
 $secret_field 	= ( isset( $_POST['_vfb-secret'] ) ) ? esc_html( $_POST['_vfb-secret'] ) : '';
 $honeypot 		= ( isset( $_POST['vfb-spam'] ) ) ? esc_html( $_POST['vfb-spam'] ) : '';
-$referrer = ( isset( $_POST['_wp_http_referer'] ) ) ? esc_html( $_POST['_wp_http_referer'] ) : false;
+$referrer 		= ( isset( $_POST['_wp_http_referer'] ) ) ? esc_html( $_POST['_wp_http_referer'] ) : false;
 $wp_get_referer = wp_get_referer();
 
 // If the verification is set to required, run validation check
@@ -18,23 +18,28 @@ endif;
 // Basic security check before moving any further
 if ( isset( $_POST['visual-form-builder-submit'] ) ) :
 
-	// Test if referral URL has been set
-	if ( !$referrer )
-		wp_die( __( 'Security check: referal URL does not appear to be set.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
-
-	// Test if the referral URL matches what sent from WordPress
-	if ( $wp_get_referer )
-		wp_die( __( 'Security check: referal does not match this site.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
-
-	// Test if it's a known SPAM bot
-	if ( $this->isBot() )
-		wp_die( __( 'Security check: looks like you are a SPAM bot. If you think this is an error, please email the site owner.' , 'visual-form-builder' ), '', array( 'back_link' => true ) );
-
 	// Set submitted action to display success message
 	$this->submitted = true;
 
 	// Tells us which form to get from the database
 	$form_id = absint( $_POST['form_id'] );
+
+	$skip_referrer_check = apply_filters( 'vfb_skip_referrer_check', false, $form_id );
+
+	// Test if referral URL has been set
+	if ( !$referrer )
+		wp_die( __( 'Security check: referal URL does not appear to be set.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
+
+	// Allow referrer check to be skipped
+	if ( !$skip_referrer_check ) :
+		// Test if the referral URL matches what sent from WordPress
+		if ( $wp_get_referer )
+			wp_die( __( 'Security check: referal does not match this site.' , 'visual-form-builder'), '', array( 'back_link' => true ) );
+	endif;
+
+	// Test if it's a known SPAM bot
+	if ( $this->isBot() )
+		wp_die( __( 'Security check: looks like you are a SPAM bot. If you think this is an error, please email the site owner.' , 'visual-form-builder' ), '', array( 'back_link' => true ) );
 
 	// Query to get all forms
 	$order = sanitize_sql_orderby( 'form_id DESC' );
