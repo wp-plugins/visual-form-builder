@@ -1,1 +1,654 @@
-jQuery(document).ready(function(h){if(window.VfbAdminPages){var g=VfbAdminPages.vfb_pages;if(pagenow==g.vfb){h(".if-js-closed").removeClass("if-js-closed").addClass("closed");postboxes.add_postbox_toggles(g.vfb)}}var c=null;h(document).on("mouseenter mouseleave",".vfb-tooltip",function(q){if(q.type=="mouseenter"){if(c){clearTimeout(c);c=null}var n=h(this).attr("title"),p=h(this).attr("rel"),o=h(this).width();h(this).append('<div class="tooltip"><h3>'+n+'</h3><p class="text">'+p+"</p></div>");h.data(this,"title",n);this.title="";h(this).find(".tooltip").css({left:o+22});c=setTimeout(function(){h(".tooltip").fadeIn(300)},500)}else{this.title=h.data(this,"title");h(".tooltip").fadeOut(500);h(this).children().remove()}});h(document).on("click","a.addOption",function(t){t.preventDefault();var o=h(this).parent().parent().find(".clonedOption").length;var s=o+1;var u=h(this).closest("div").attr("id");var r=h(this).closest("div").children("label").attr("for");var n=r.replace(new RegExp(/(\d+)$/g),"");var q=u.replace(new RegExp(/(\d+)$/g),"");var p=h("#"+u).clone().attr("id",q+s);p.children("label").attr("for",n+s);p.find('input[type="text"]').attr("id",n+s);p.find('input[type="radio"]').attr("value",s);h("#"+q+o).after(p)});h(document).on("click","a.deleteOption",function(o){o.preventDefault();var n=h(this).parent().parent().find(".clonedOption").length;if(n-1==0){alert("You must have at least one option.")}else{h(this).closest("div").remove()}});h(document).on("click","a.addEmail",function(t){t.preventDefault();var o=h(this).closest("#email-details").find(".clonedOption").length;var s=o+1;var u=h(this).closest("div").attr("id");var r=h(this).closest("div").find("label").attr("for");var n=r.replace(new RegExp(/(\d+)$/g),"");var q=u.replace(new RegExp(/(\d+)$/g),"");var p=h("#"+u).clone().attr("id",q+s);p.find("label").attr("for",n+s);p.find("input").attr("id",n+s);h("#"+q+o).after(p)});h(document).on("click","a.deleteEmail",function(o){o.preventDefault();var n=h(this).closest("#email-details").find(".clonedOption").length;if(n-1==0){alert("You must have at least one option.")}else{h(this).closest("div").remove()}});h('.option input[type="radio"]').mousedown(function(){h(this).attr("previousValue",h(this).prop("checked"))}).click(function(){var n=h(this).attr("previousValue");if(n=="true"){h(this).prop("checked",false)}});h(".menu-delete").click(function(){var n=(h(this).hasClass("entry-delete"))?"entry":"form";var o=confirm("You are about to permanently delete this "+n+" and all of its data.\n'Cancel' to stop, 'OK' to delete.");if(o){return true}return false});h(document).on("click","a.item-edit",function(o){o.preventDefault();h(o.target).closest("li").children(".menu-item-settings").slideToggle("fast");h(this).toggleClass("opened");var n=h(o.target).closest("dl");if(n.hasClass("vfb-menu-item-inactive")){n.removeClass("vfb-menu-item-inactive").addClass("vfb-menu-item-active")}else{n.removeClass("vfb-menu-item-active").addClass("vfb-menu-item-inactive")}});function m(n){if("FIELDSET"!==n){h("#vfb-fieldset-first-warning").show()}else{h("#vfb-fieldset-first-warning").hide()}}h("#vfb-menu-to-edit").nestedSortable({listType:"ul",maxLevels:3,handle:".vfb-menu-item-handle",placeholder:"vfb-sortable-placeholder",forcePlaceholderSize:true,forceHelperSize:true,tolerance:"pointer",toleranceElement:"> dl",items:"li:not(.ui-state-disabled)",create:function(n,o){h(this).css("min-height",h(this).height())},start:function(n,o){o.placeholder.height(o.item.height())},stop:function(o,p){var n=h("#vfb-menu-to-edit .item-type:first").text();opts={url:ajaxurl,type:"POST",async:true,cache:false,data:{action:"visual_form_builder_sort_field",order:h(this).nestedSortable("toArray")},success:function(q){h("#loading-animation").hide();m(n);return}};h.ajax(opts)}});h("#form-items .vfb-draggable-form-items").click(function(n){n.preventDefault();h(this).data("submit_value",h(this).text())});h("#form-items .vfb-draggable-form-items").click(function(p){p.preventDefault();var q=h(this).closest("form").serializeArray(),o=h(this).data("submit_value"),n=h("#vfb-menu-to-edit li.ui-state-disabled:first").attr("id").match(new RegExp(/(\d+)$/g))[0];h("img.waiting").show();h.post(ajaxurl,{action:"visual_form_builder_create_field",data:q,field_type:o,previous:n,page:pagenow,nonce:h("#_wpnonce").val()}).done(function(r){h("img.waiting").hide();h(r).hide().insertBefore("#vfb-menu-to-edit li.ui-state-disabled:first").fadeIn()})});h(document).on("click","a.item-delete",function(v){v.preventDefault();var r=childs=new Array(),z=0,o=h(this).attr("href"),n=o.split("&"),u=confirm("You are about to permanently delete this field.\n'Cancel' to stop, 'OK' to delete.");if(!u){return false}for(var s=0;s<n.length;s++){var x=n[s].indexOf("=");var w=n[s].substring(0,x);var y=n[s].substring(x+1);r[w]=y}var p=h(this).closest(".form-item").find("ul").children();var q=p.parent().html();p.each(function(t){childs[t]=h(this).attr("id").match(new RegExp(/(\d+)$/g))[0]});var A=h(this).closest("li.form-item").parents("li.form-item");if(A.length){z=A.attr("id").match(new RegExp(/(\d+)$/g))[0]}h.post(ajaxurl,{action:"visual_form_builder_delete_field",form:r.form,field:r.field,child_ids:childs,parent_id:z,page:pagenow,nonce:r._wpnonce}).done(function(t){h("#form_item_"+r.field).addClass("deleting").animate({opacity:0,height:0},350,function(){h(this).before(q).remove()})})});h("#form-settings-button").click(function(p){p.preventDefault();h(this).toggleClass("current");h("#form-settings").slideToggle("fast");var n=h('input[name="form_id"]').val(),o=(h(this).hasClass("current"))?"opened":"closed";h.post(ajaxurl,{action:"visual_form_builder_form_settings",form:n,status:o,page:pagenow}).done(function(q){if(o=="closed"){h(".settings-links").removeClass("on");h(".settings-links:first").addClass("on");h(".form-details").slideUp("normal");h(".form-details:first").show("normal")}})});h(".settings-links").click(function(p){p.preventDefault();h(".settings-links").removeClass("on");h(".form-details").slideUp("fast");if(h(this).next("div").is(":hidden")==true){h(this).addClass("on");h(this).next().slideDown("normal")}var o=h('input[name="form_id"]').val(),n=this.hash.replace(/#/g,"");h.post(ajaxurl,{action:"visual_form_builder_form_settings",form:o,accordion:n,page:pagenow})});var b=false;h("#vfb-form-builder-management input, #vfb-form-builder-management select, #vfb-form-builder-management textarea").change(function(){j()});function j(){b=true}window.onbeforeunload=function(){if(b){return"The changes you made will be lost if you navigate away from this page."}};h(document).on("submit","#visual-form-builder-update",function(){window.onbeforeunload=null});if(h(".columns-2 #side-sortables").length>0){var a=h("#vfb_form_items_meta_box"),d=a.width(),e=a.offset(),f=a.nextAll(),i=false;h(window).on("scroll",function(){if(h(window).scrollTop()>e.top){a.stop().css({top:55,position:"fixed","z-index":"1",width:d});if(f.is(":visible")){i=true;f.stop().css({opacity:0.1})}}else{a.stop().css({top:0,position:"relative"});if(i){f.stop().css({opacity:1})}}})}var l=h(".form-success-type:checked").val();h("#form-success-message-"+l).show();h(".form-success-type").change(function(){var n=h(this).val();switch(n){case"text":h("#form-success-message-text").show();h("#form-success-message-page, #form-success-message-redirect").hide();break;case"page":h("#form-success-message-page").show();h("#form-success-message-text, #form-success-message-redirect").hide();break;case"redirect":h("#form-success-message-redirect").show();h("#form-success-message-text, #form-success-message-page").hide();break}});h(".vfb-field-types").click(function(o){o.preventDefault();h("#vfb-field-tabs li").removeClass("tabs");h(this).parent().addClass("tabs");h(".tabs-panel-active").removeClass("tabs-panel-active").addClass("tabs-panel-inactive");var n=this.hash;h(n).removeClass("tabs-panel-inactive").addClass("tabs-panel-active")});h("#visual-form-builder-update").validate({rules:{"form_email_to[]":{email:true},form_email_from:{email:true},form_success_message_redirect:{url:true},form_notification_email_name:{required:function(n){return h("#form-notification-setting").is(":checked")}},form_notification_email_from:{required:function(n){return h("#form-notification-setting").is(":checked")},email:true},form_notification_email:{required:function(n){return h("#form-notification-setting").is(":checked")}}},errorPlacement:function(n,o){n.insertAfter(o.parent())}});h("#visual-form-builder-new-form").validate();h("#form_email_from_name_override").change(function(){if(h("#form_email_from_name_override").val()==""){h("#form-email-sender-name").prop("readonly",false)}else{h("#form-email-sender-name").prop("readonly","readonly")}});h("#form_email_from_override").change(function(){if(h("#form_email_from_override").val()==""){h("#form-email-sender").prop("readonly",false)}else{h("#form-email-sender").prop("readonly","readonly")}});h("#notification-email").toggle(h("#form-notification-setting").prop("checked"));h("#form-notification-setting").change(function(){var n=h(this).is(":checked");if(n){h("#notification-email").show();h("#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry").prop("disabled",false)}else{h("#notification-email").hide();h("#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry").prop("disabled","disabled")}});h("#vfb-export-select-all").click(function(n){n.preventDefault();h('#vfb-export-entries-fields input[type="checkbox"]').prop("checked",true)});h("#vfb-export-entries-forms").change(function(){var o=h(this).val(),n=k(o);h("#vfb-export-entries-fields").html("Loading...");h.get(ajaxurl,{action:"visual_form_builder_export_load_options",id:o,count:n,page:pagenow}).done(function(p){h("#vfb-export-entries-fields").html(p)}).fail(function(p){h("#vfb-export-entries-fields").html("Error loading entry fields.")})});h("#vfb-export-entries-rows").change(function(){var o=h("#vfb-export-entries-forms").val();var n=h(this).val();h("#vfb-export-entries-fields").html("Loading...");h.get(ajaxurl,{action:"visual_form_builder_export_load_options",id:o,offset:n,page:pagenow}).done(function(p){h("#vfb-export-entries-fields").html(p)}).fail(function(p){h("#vfb-export-entries-fields").html("Error loading entry fields.")})});function k(o){var n="";h.ajax(ajaxurl,{async:false,data:{action:"visual_form_builder_export_entries_count",id:o,page:pagenow}}).done(function(p){if(p>1000){h("#vfb-export-entries-rows").empty();var r=Math.ceil(parseInt(p)/1000);for(var q=1;q<=r;q++){h("#vfb-export-entries-rows").append(h("<option></option>").attr("value",q).text(q))}h("#vfb-export-entries-pages").show()}else{h("#vfb-export-entries-pages").hide()}n=p}).fail(function(p){});return n}});
+jQuery(document).ready(function($) {
+
+	if( window.VfbAdminPages ) {
+		var obj = VfbAdminPages.vfb_pages;
+
+		// Only add meta box toggles to main form builder
+		if ( pagenow == obj['vfb'] ) {
+			$( '.if-js-closed' ).removeClass( 'if-js-closed' ).addClass( 'closed' );
+			postboxes.add_postbox_toggles( obj['vfb'] );
+		}
+	}
+
+	// Initialize our tooltip timeout var
+	var tooltip_timeout = null;
+
+	// !Tooltips
+	$( document ).on( 'mouseenter mouseleave', '.vfb-tooltip', function( e ) {
+		// If mouse over tooltips
+		if( e.type == 'mouseenter' ) {
+			// Clear the timeout of our tooltip, if it exists
+			if ( tooltip_timeout ) {
+				clearTimeout( tooltip_timeout );
+				tooltip_timeout = null;
+			}
+
+			var tip_title = $( this ).attr( 'title' ),
+				tip = $( this ).attr( 'rel' ),
+				width = $( this ).width();
+
+			// Create our tooltip popup
+			$( this ).append( '<div class="tooltip"><h3>' + tip_title + '</h3><p class="text">' + tip + '</p></div>' );
+
+			// Save the title before we remove it
+			$.data( this, 'title', tip_title );
+
+			// Remove the title so the browser tooltip doesn't display
+			this.title = '';
+
+			// Move over the div so it's not on top of the link
+			$( this ).find( '.tooltip' ).css({left:width + 22});
+
+			// Set a timer for hover intent
+			tooltip_timeout = setTimeout( function(){
+				$( '.tooltip' ).fadeIn( 300 );
+			}, 500 );
+		}
+		else {
+			// Add the title back
+			this.title = $.data( this, 'title' );
+
+			// Close the tooltip
+			$( '.tooltip' ).fadeOut( 500 );
+
+			// Remove the appended tooltip div
+			$( this ).children().remove();
+		}
+	});
+
+	// !Add options for Select, Radio, and Checkbox
+	$( document ).on( 'click', 'a.addOption', function( e ) {
+		e.preventDefault();
+
+		// Get how many options we already have
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+
+		// Add one to how many options
+		var newNum = num + 1;
+
+		// Get this div's ID
+		var id = $( this ).closest( 'div' ).attr( 'id' );
+
+		// Get this div's for attribute, which matches the input's ID
+		var label_for = $( this ).closest( 'div' ).children( 'label' ).attr( 'for' );
+
+		// Strip out the last number (i.e. count) from the for to make a new ID
+		var new_id = label_for.replace( new RegExp( /(\d+)$/g ), '' );
+		var div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
+
+		// Clone this div and change the ID
+		var newElem = $( '#' + id ).clone().attr( 'id', div_id + newNum);
+
+		// Change the IDs of the for and input to match
+		newElem.children( 'label' ).attr( 'for', new_id + newNum );
+		newElem.find( 'input[type="text"]' ).attr( 'id', new_id + newNum );
+		newElem.find( 'input[type="radio"]' ).attr( 'value', newNum );
+
+		// Insert our cloned option after the last one
+		$( '#' + div_id + num ).after( newElem );
+	});
+
+	// !Delete options for Select, Radio, and Checkbox
+	$( document ).on( 'click', 'a.deleteOption', function( e ) {
+		e.preventDefault();
+
+		// Get how many options we already have
+		var num = $( this ).parent().parent().find( '.clonedOption').length;
+
+		// If there's only one option left, don't let someone delete it
+		if ( num - 1 == 0 ) {
+			alert( 'You must have at least one option.' );
+		}
+		else {
+			$( this ).closest( 'div' ).remove();
+		}
+	});
+
+	// !Add values for the E-mail(s) To field
+	$( document ).on( 'click', 'a.addEmail', function( e ) {
+		e.preventDefault();
+
+		// Get how many options we already have
+		var num = $( this ).closest( '#email-details' ).find( '.clonedOption').length;
+		// Add one to how many options
+		var newNum = num + 1;
+
+		// Get this div's ID
+		var id = $( this ).closest( 'div' ).attr( 'id' );
+
+		// Get this div's for attribute, which matches the input's ID
+		var label_for = $( this ).closest( 'div' ).find( 'label' ).attr( 'for' );
+
+		// Strip out the last number (i.e. count) from the for to make a new ID
+		var new_id = label_for.replace( new RegExp( /(\d+)$/g ), '' );
+		var div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
+
+		// Clone this div and change the ID
+		var newElem = $( '#' + id ).clone().attr( 'id', div_id + newNum);
+
+		// Change the IDs of the for and input to match
+		newElem.find( 'label' ).attr( 'for', new_id + newNum );
+		newElem.find( 'input' ).attr( 'id', new_id + newNum );
+
+		// Insert our cloned option after the last one
+		$( '#' + div_id + num ).after( newElem );
+	});
+
+	// !Delete values for the E-mail(s) To field
+	$( document ).on( 'click', 'a.deleteEmail', function( e ) {
+		e.preventDefault();
+
+		// Get how many options we already have
+		var num = $( this ).closest( '#email-details' ).find( '.clonedOption').length
+
+		// If there's only one option left, don't let someone delete it
+		if ( num - 1 == 0 ) {
+			alert( 'You must have at least one option.' );
+		}
+		else {
+			$( this ).closest( 'div' ).remove();
+		}
+	});
+
+	// !Uncheck Radio button for Options
+	$( '.option input[type="radio"]' ).mousedown( function() {
+		// Save previous value before .click
+		$( this ).attr( 'previousValue', $( this ).prop( 'checked' ) );
+	}).click( function() {
+		var previousValue = $( this ).attr( 'previousValue' );
+
+		// Change checked value if previous value is true
+		if ( previousValue == 'true' )
+			$( this ).prop( 'checked', false );
+	});
+
+	// !Delete menu or entry
+	$( '.menu-delete' ).click( function( ) {
+
+		var message = ( $( this ).hasClass( 'entry-delete' ) ) ? 'entry' : 'form';
+
+		var confirm_delete = confirm( "You are about to permanently delete this " + message + " and all of its data.\n'Cancel' to stop, 'OK' to delete." );
+
+		if ( confirm_delete )
+			return true;
+
+		return false;
+	});
+
+	// !Field item details box toggle
+	$( document ).on( 'click', 'a.item-edit', function( e ){
+		e.preventDefault();
+
+		$( e.target ).closest( 'li' ).children( '.menu-item-settings' ).slideToggle( 'fast' );
+
+		$( this ).toggleClass( 'opened' );
+		var item = $( e.target ).closest( 'dl' );
+
+		if ( item.hasClass( 'vfb-menu-item-inactive' ) ) {
+			item.removeClass( 'vfb-menu-item-inactive' )
+				.addClass( 'vfb-menu-item-active' );
+		}
+		else {
+			item.removeClass( 'vfb-menu-item-active' )
+				.addClass( 'vfb-menu-item-inactive' );
+		}
+	});
+
+    // !Fieldset first check
+    function is_fieldset_first( item ) {
+	    if ( 'FIELDSET' !== item )
+	    	$( '#vfb-fieldset-first-warning' ).show();
+	    else
+	    	$( '#vfb-fieldset-first-warning' ).hide();
+    }
+
+	// !Nest and Sort fields
+	$( '#vfb-menu-to-edit' ).nestedSortable({
+		listType: 'ul',
+		maxLevels: 3,
+		handle: '.vfb-menu-item-handle',
+		placeholder: 'vfb-sortable-placeholder',
+		forcePlaceholderSize: true,
+		forceHelperSize: true,
+		tolerance: 'pointer',
+		toleranceElement: '> dl',
+		items: 'li:not(.ui-state-disabled)',
+		create: function( event, ui ){
+			// Make sure the page doesn't jump when at the bottom
+			$( this ).css( 'min-height', $( this ).height() );
+		},
+		start: function( event, ui ){
+			// Adjust placeholder size for how many items we're dragging
+			ui.placeholder.height( ui.item.height() );
+		},
+		stop: function( event, ui ){
+			// Get the first item after sorting
+			var sorted_first_item = $( '#vfb-menu-to-edit .item-type:first' ).text();
+
+			opts = {
+				url: ajaxurl,
+				type: 'POST',
+				async: true,
+				cache: false,
+				data: {
+					action: 'visual_form_builder_sort_field',
+					order: $( this ).nestedSortable( 'toArray' )
+				},
+                success: function( response ) {
+                    $( '#loading-animation' ).hide(); // Hide the loading animation
+
+                    is_fieldset_first( sorted_first_item );
+
+                    return;
+                }
+			};
+
+			$.ajax(opts);
+		}
+	});
+
+	// !Get the clicked value for creating a new field item
+	$( '#form-items .vfb-draggable-form-items' ).click( function( e ) {
+		e.preventDefault();
+		$( this ).data( 'submit_value', $( this ).text() );
+	});
+
+	// !Create fields
+	$( '#form-items .vfb-draggable-form-items' ).click( function( e ) {
+		e.preventDefault();
+
+		var d = $( this ).closest( 'form' ).serializeArray(),
+			field_type = $( this ).data( 'submit_value' ),
+			previous = $( '#vfb-menu-to-edit li.ui-state-disabled:first' ).attr( 'id' ).match( new RegExp( /(\d+)$/g ) )[0];
+
+		$( 'img.waiting' ).show();
+
+		$.post( ajaxurl,
+			{
+				action: 'visual_form_builder_create_field',
+				data: d,
+				field_type: field_type,
+				previous: previous,
+				page: pagenow,
+				nonce: $( '#_wpnonce' ).val()
+			}
+		).done( function( response ) {
+			$( 'img.waiting' ).hide();
+
+			// Insert the new field last and before the Submit button
+			$( response ).hide().insertBefore( '#vfb-menu-to-edit li.ui-state-disabled:first' ).fadeIn();
+		});
+	});
+
+	// !Delete fields
+	$( document ).on( 'click', 'a.item-delete', function( e ) {
+
+		e.preventDefault();
+
+		var data = childs = new Array(),
+			parent = 0,
+			href = $( this ).attr( 'href' ), url = href.split( '&' ),
+			confirm_delete = confirm( "You are about to permanently delete this field.\n'Cancel' to stop, 'OK' to delete." );
+
+		if ( !confirm_delete )
+			return false;
+
+		for ( var i = 0; i < url.length; i++ ) {
+			// break each pair at the first "=" to obtain the argname and value
+			var pos = url[i].indexOf( '=' );
+			var argname = url[i].substring( 0, pos );
+			var value = url[i].substring( pos + 1 );
+
+			data[ argname ] = value;
+		}
+
+		// Find the deleted item's children
+		var children = $(this).closest( '.form-item' ).find( 'ul' ).children();
+
+		// Save the children's HTML
+		var child_html = children.parent().html();
+
+		// Loop through each child and get the ID
+		children.each( function( i ) {
+			childs[ i ] = $( this ).attr( 'id' ).match( new RegExp( /(\d+)$/g ) )[0];
+		});
+
+		// The closest parent (<li>) to the child items
+		var t = $( this ).closest( 'li.form-item' ).parents( 'li.form-item' );
+
+		if ( t.length )
+			parent = t.attr( 'id' ).match( new RegExp( /(\d+)$/g ) )[0];
+
+		$.post( ajaxurl,
+			{
+				action: 'visual_form_builder_delete_field',
+				form: data['form'],
+				field: data['field'],
+				child_ids: childs,
+				parent_id: parent,
+				page: pagenow,
+				nonce: data['_wpnonce']
+			}
+		).done( function( response ) {
+			$( '#form_item_' + data['field'] ).addClass( 'deleting' ).animate({
+				opacity : 0,
+				height: 0
+			}, 350, function() {
+				$( this ).before( child_html ).remove();
+			});
+		});
+	});
+
+	// !Form Settings
+	$( '#form-settings-button' ).click( function(e){
+		e.preventDefault();
+
+		$( this ).toggleClass( 'current' );
+
+		$( '#form-settings' ).slideToggle( 'fast' );
+
+		var form_id = $( 'input[name="form_id"]' ).val(),
+			state = ( $( this ).hasClass( 'current' ) ) ? 'opened' : 'closed';
+
+		$.post( ajaxurl,
+			{
+				action: 'visual_form_builder_form_settings',
+				form: form_id,
+				status: state,
+				page: pagenow
+			}
+		).done( function( response ) {
+			if ( state == 'closed' ) {
+				$( '.settings-links' ).removeClass( 'on' );
+				$( '.settings-links:first' ).addClass( 'on' );
+				$( '.form-details' ).slideUp( 'normal' );
+				$( '.form-details:first' ).show( 'normal' );
+			}
+		});
+	});
+
+	// !Form Settings - internal links
+	$( '.settings-links' ).click( function(e){
+		e.preventDefault();
+
+		//Remove the 'on' class from all buttons
+		$( '.settings-links' ).removeClass( 'on' );
+
+		//Always close open slides
+		$( '.form-details' ).slideUp( 'fast' );
+
+		//If the next slide wasn't open, open it
+		if( $( this ).next( 'div' ).is( ':hidden' ) == true ) {
+
+			$( this ).addClass( 'on' );
+
+			$( this ).next().slideDown( 'normal' );
+		}
+
+		var form_id = $( 'input[name="form_id"]' ).val(),
+			accordion = this.hash.replace( /#/g, '' );
+
+		$.post( ajaxurl,
+			{
+				action: 'visual_form_builder_form_settings',
+				form: form_id,
+				accordion: accordion,
+				page: pagenow
+			}
+		);
+	});
+
+	// !Ask to Save before navigating away from page
+	var vfb_forms_changed = false;
+	$( '#vfb-form-builder-management input, #vfb-form-builder-management select, #vfb-form-builder-management textarea' ).change( function(){
+		vfb_register_change();
+	});
+
+	function vfb_register_change() {
+		vfb_forms_changed = true;
+	}
+
+	window.onbeforeunload = function(){
+		if ( vfb_forms_changed )
+			return 'The changes you made will be lost if you navigate away from this page.';
+	};
+
+	$( document ).on( 'submit', '#visual-form-builder-update', function() {
+		window.onbeforeunload = null;
+	});
+
+	// !Sticky sidebar
+	if ( $( '.columns-2 #side-sortables' ).length > 0 ) {
+	    var sidebar = $( '#vfb_form_items_meta_box' ),
+	    	sidebar_width = sidebar.width(),
+	    	offset = sidebar.offset(),
+	    	next_box = sidebar.nextAll(),
+	    	hidden = false;
+
+	    $( window ).on( 'scroll', function() {
+	        if ( $( window ).scrollTop() > offset.top ) {
+
+	            sidebar.stop().css({
+		           'top' : 55,
+		           'position' : 'fixed',
+		           'z-index' : '1',
+		           'width' : sidebar_width
+	            });
+
+	            // change opacity of other meta boxes if visible
+	            if ( next_box.is( ':visible' ) ) {
+	            	hidden = true;
+		            next_box.stop().css({
+		            	'opacity' : 0.1
+		            });
+	            }
+
+	        } else {
+	            sidebar.stop().css({
+	            	'top' : 0,
+	                'position': 'relative'
+	            });
+
+	            // only change opacity if meta box was changed
+	            if ( hidden ) {
+		            next_box.stop().css({
+		            	'opacity' : 1
+		            });
+	            }
+	        };
+	    });
+	}
+
+	// !Display the selected confirmation type on load
+	var confirmation = $( '.form-success-type:checked' ).val();
+	$( '#form-success-message-' + confirmation ).show();
+
+	// !Confirmation Message tabs
+	$( '.form-success-type' ).change(function(){
+		var type = $( this ).val();
+
+		switch ( type ) {
+			case 'text' :
+				$( '#form-success-message-text' ).show();
+				$( '#form-success-message-page, #form-success-message-redirect' ).hide();
+			break;
+
+			case 'page' :
+				$( '#form-success-message-page' ).show();
+				$( '#form-success-message-text, #form-success-message-redirect' ).hide();
+			break;
+
+			case 'redirect' :
+				$( '#form-success-message-redirect' ).show();
+				$( '#form-success-message-text, #form-success-message-page' ).hide();
+			break;
+		}
+	});
+
+	// !Field Types tabs
+	$( '.vfb-field-types' ).click(function( e ){
+		e.preventDefault();
+
+		$( '#vfb-field-tabs li' ).removeClass( 'tabs' ); //Remove any "active" class
+		$( this ).parent().addClass( 'tabs' ); //Add "active" class to selected tab
+
+		$( '.tabs-panel-active' ).removeClass( 'tabs-panel-active' ).addClass( 'tabs-panel-inactive' );
+
+		var activeTab = this.hash; //Find the href attribute value to identify the active tab + content
+		$( activeTab ).removeClass( 'tabs-panel-inactive' ).addClass( 'tabs-panel-active' );
+	});
+
+	// !Validate the sender details section
+	$( '#visual-form-builder-update' ).validate({
+		rules: {
+			'form_email_to[]': {
+				email: true
+			},
+			form_email_from: {
+				email: true
+			},
+			form_success_message_redirect: {
+				url: true
+			},
+			form_notification_email_name: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' );
+				}
+			},
+			form_notification_email_from: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' );
+				},
+				email: true
+			},
+			form_notification_email: {
+				required: function( element ){
+					return $( '#form-notification-setting' ).is( ':checked' );
+				}
+			}
+		},
+		errorPlacement: function( error, element ) {
+			error.insertAfter( element.parent() );
+		}
+	});
+
+	$( '#visual-form-builder-new-form' ).validate();
+
+	// !Sender Name field readonly if the override is active
+	$( '#form_email_from_name_override' ).change( function(){
+		if ( $( '#form_email_from_name_override' ).val() == '' )
+			$( '#form-email-sender-name' ).prop( 'readonly', false );
+		else
+			$( '#form-email-sender-name' ).prop( 'readonly', 'readonly' );
+	});
+
+	// !Sender Email field readonly if the override is active
+	$( '#form_email_from_override' ).change( function(){
+		if ( $( '#form_email_from_override' ).val() == '' )
+			$( '#form-email-sender' ).prop( 'readonly', false );
+		else
+			$( '#form-email-sender' ).prop( 'readonly', 'readonly' );
+	});
+
+
+	// !Show/Hide display of Notification fields
+	$( '#notification-email' ).toggle( $( '#form-notification-setting' ).prop( 'checked' ) );
+
+	// !Enable/Disable Notification fields
+	$( '#form-notification-setting' ).change( function(){
+		var checked = $(this).is(':checked');
+
+		if ( checked ) {
+			$( '#notification-email' ).show();
+			$( '#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry' ).prop( 'disabled', false );
+		}
+		else{
+			$( '#notification-email' ).hide();
+			$( '#form-notification-email-name, #form-notification-email-from, #form-notification-email, #form-notification-subject, #form-notification-message, #form-notification-entry' ).prop( 'disabled', 'disabled' );
+		}
+	});
+
+	// !Entries Select All
+	$( '#vfb-export-select-all' ).click( function( e ) {
+		e.preventDefault();
+
+		$( '#vfb-export-entries-fields input[type="checkbox"]' ).prop( 'checked', true );
+	});
+
+	// !Entries fields
+	$( '#vfb-export-entries-forms' ).change( function(){
+		var id = $( this ).val(),
+			count = vfb_entries_count( id );
+
+		$( '#vfb-export-entries-fields' ).html( 'Loading...' );
+
+		$.get( ajaxurl,
+			{
+				action: 'visual_form_builder_export_load_options',
+				id: id,
+				count: count,
+				page: pagenow
+			}
+		).done( function( response ) {
+			$( '#vfb-export-entries-fields' ).html( response );
+		}).fail( function( response ) {
+			$( '#vfb-export-entries-fields' ).html( 'Error loading entry fields.' );
+		});
+	});
+
+	$( '#vfb-export-entries-rows' ).change( function(){
+		var id = $( '#vfb-export-entries-forms' ).val();
+
+		var page = $( this ).val();
+
+		$( '#vfb-export-entries-fields' ).html( 'Loading...' );
+
+		$.get( ajaxurl,
+			{
+				action: 'visual_form_builder_export_load_options',
+				id: id,
+				offset: page,
+				page: pagenow
+			}
+		).done( function( response ) {
+			$( '#vfb-export-entries-fields' ).html( response );
+		}).fail( function( response ) {
+			$( '#vfb-export-entries-fields' ).html( 'Error loading entry fields.' );
+		});
+	});
+
+	function vfb_entries_count( id ) {
+		 var count = '';
+
+		 $.ajax( ajaxurl, {
+			 async: false,
+			 data:
+			 {
+				action: 'visual_form_builder_export_entries_count',
+				id: id,
+				page: pagenow
+			 }
+		}).done( function( response ) {
+			if ( response > 1000 ) {
+
+				$( '#vfb-export-entries-rows' ).empty();
+
+				var num_pages = Math.ceil( parseInt( response ) / 1000 );
+
+				for ( var i = 1; i <= num_pages; i++ ) {
+					$( '#vfb-export-entries-rows' ).append( $( '<option></option>' ).attr( 'value', i ).text( i ) );
+				}
+
+				$( '#vfb-export-entries-pages' ).show();
+			}
+			else {
+				$( '#vfb-export-entries-pages' ).hide();
+			}
+
+			count = response;
+		}).fail( function( response ) {
+		});
+
+		return count;
+	}
+});
