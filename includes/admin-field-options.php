@@ -141,22 +141,33 @@ foreach ( $fields as $field ) :
 
 					// Basic count to keep track of multiple options
 					$count = 1;
-
-					// Loop through the options
-					foreach ( $opts_vals as $options ) {
-				?>
+?>
+				<div class="vfb-cloned-options">
+				<?php foreach ( $opts_vals as $options ) : ?>
 				<div id="clone-<?php echo $field->field_id . '-' . $count; ?>" class="option">
 					<label for="edit-form-item-options-<?php echo $field->field_id . "-$count"; ?>" class="clonedOption">
 						<input type="radio" value="<?php echo esc_attr( $count ); ?>" name="field_default-<?php echo $field->field_id; ?>" <?php checked( $field->field_default, $count ); ?> />
 						<input type="text" value="<?php echo stripslashes( esc_attr( $options ) ); ?>" name="field_options-<?php echo $field->field_id; ?>[]" class="widefat" id="edit-form-item-options-<?php echo $field->field_id . "-$count"; ?>" />
 					</label>
 
-					<a href="#" class="addOption" title="Add an Option"><?php _e( 'Add', 'visual-form-builder' ); ?></a> <a href="#" class="deleteOption" title="Delete Option"><?php _e( 'Delete', 'visual-form-builder' ); ?></a>
+					<a href="#" class="deleteOption vfb-interface-icon vfb-interface-minus" title="Delete Option">
+						<?php _e( 'Delete', 'visual-form-builder' ); ?>
+					</a>
+					<span class="vfb-interface-icon vfb-interface-sort" title="<?php esc_attr_e( 'Drag and Drop to Sort Options', 'visual-form-builder-pro' ); ?>"></span>
 				</div>
-				   <?php
+				<?php
 						$count++;
-					}
-					?>
+					endforeach;
+				?>
+
+				</div> <!-- .vfb-cloned-options -->
+				<div class="clear"></div>
+				<div class="vfb-add-options-group">
+					<a href="#" class="vfb-button vfb-add-option" title="Add Option">
+						<?php _e( 'Add Option', 'visual-form-builder' ); ?>
+						<span class="vfb-interface-icon vfb-interface-plus"></span>
+					</a>
+				</div>
 				</p>
 			<?php
 				// Unset the options for any following radio, checkboxes, or selects
@@ -373,11 +384,13 @@ foreach ( $fields as $field ) :
 		<?php endif; ?>
 	<?php endif; ?>
 
-	<?php if ( !in_array( $field->field_type, array( 'verification', 'secret', 'submit' ) ) ) : ?>
-		<div class="menu-item-actions description-wide submitbox">
-			<a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_field&amp;form=' . $form_nav_selected_id . '&amp;field=' . $field->field_id ), 'delete-field-' . $form_nav_selected_id ) ); ?>" class="item-delete submitdelete deletion"><?php _e( 'Remove' , 'visual-form-builder'); ?></a>
-		</div>
-	<?php endif; ?>
+<?php if ( !in_array( $field->field_type, array( 'verification', 'secret', 'submit' ) ) ) : ?>
+		<!-- Delete link -->
+		<a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=visual-form-builder&amp;action=delete_field&amp;form=' . $form_nav_selected_id . '&amp;field=' . $field->field_id ), 'delete-field-' . $form_nav_selected_id ) ); ?>" class="vfb-button vfb-delete item-delete submitdelete deletion">
+			<?php _e( 'Delete' , 'visual-form-builder'); ?>
+			<span class="vfb-interface-icon vfb-interface-trash"></span>
+		</a>
+<?php endif; ?>
 
 <input type="hidden" name="field_id[<?php echo $field->field_id; ?>]" value="<?php echo $field->field_id; ?>" />
 </div>

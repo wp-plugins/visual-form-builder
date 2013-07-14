@@ -514,7 +514,7 @@ class Visual_Form_Builder{
 					<li><a href="#" class="vfb-draggable-form-items" id="form-element-file"><b></b>File Upload</a></li>
 				</ul>
 				<ul class="vfb-fields-col-2">
-					<li><a href="#" class="vfb-draggable-form-items" id="form-element-section"><b></b>Section</a></li>
+					<li><a href="#" class="vfb-draggable-form-items" id="form-element-section">Section</a></li>
 					<li><a href="#" class="vfb-draggable-form-items" id="form-element-textarea"><b></b>Textarea</a></li>
 					<li><a href="#" class="vfb-draggable-form-items" id="form-element-radio"><b></b>Radio</a></li>
 					<li><a href="#" class="vfb-draggable-form-items" id="form-element-address"><b></b>Address</a></li>
