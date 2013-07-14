@@ -56,25 +56,20 @@ jQuery(document).ready(function($) {
 		}
 	});
 
-	// !Add options for Select, Radio, and Checkbox
-	$( document ).on( 'click', 'a.addOption', function( e ) {
+	// !Dynamically add options for Select, Radio, and Checkbox
+	$( document ).on( 'click', 'a.vfb-add-option', function( e ) {
 		e.preventDefault();
 
-		// Get how many options we already have
-		var num = $( this ).parent().parent().find( '.clonedOption').length;
-
-		// Add one to how many options
-		var newNum = num + 1;
-
-		// Get this div's ID
-		var id = $( this ).closest( 'div' ).attr( 'id' );
-
-		// Get this div's for attribute, which matches the input's ID
-		var label_for = $( this ).closest( 'div' ).children( 'label' ).attr( 'for' );
+		var clones = $( this ).parent().siblings( '.vfb-cloned-options' ),
+			children = clones.children(),
+			num = children.length, newNum = num + 1,
+			last_child = children[ num - 1 ],
+			id = $( last_child ).attr( 'id' ),
+			label = $( last_child ).children( 'label' ).attr( 'for' );
 
 		// Strip out the last number (i.e. count) from the for to make a new ID
-		var new_id = label_for.replace( new RegExp( /(\d+)$/g ), '' );
-		var div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
+		var new_id = label.replace( new RegExp( /(\d+)$/g ), '' ),
+			div_id = id.replace( new RegExp( /(\d+)$/g ), '' );
 
 		// Clone this div and change the ID
 		var newElem = $( '#' + id ).clone().attr( 'id', div_id + newNum);
@@ -88,7 +83,7 @@ jQuery(document).ready(function($) {
 		$( '#' + div_id + num ).after( newElem );
 	});
 
-	// !Delete options for Select, Radio, and Checkbox
+	// !Dynamically delete options for Select, Radio, and Checkbox
 	$( document ).on( 'click', 'a.deleteOption', function( e ) {
 		e.preventDefault();
 
@@ -102,6 +97,11 @@ jQuery(document).ready(function($) {
 		else {
 			$( this ).closest( 'div' ).remove();
 		}
+	});
+
+	// !Sort options
+	$( '.vfb-cloned-options' ).sortable({
+		items: 'div.option'
 	});
 
 	// !Add values for the E-mail(s) To field
