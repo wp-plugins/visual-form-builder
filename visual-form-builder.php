@@ -540,11 +540,9 @@ class Visual_Form_Builder{
 	 */
 	public function meta_box_display_forms() {
 	?>
-		<p><?php _e( 'Add forms to your Posts or Pages by locating the icon shown below in the area above your post/page editor.', 'visual-form-builder' ); ?><br>
-    		<img src="<?php echo plugins_url( 'visual-form-builder/images/media-button-help.png' ); ?>">
-    	</p>
+		<p><?php _e( 'Add forms to your Posts or Pages by locating the <strong>Add Form</strong> button shown below in the area above your post/page editor.', 'visual-form-builder' ); ?></p>
     	<p><?php _e( 'You may also manually insert the shortcode into a post/page.', 'visual-form-builder' ); ?></p>
-    	<p><?php _e( 'Shortcode', 'visual-form-builder' ); ?> <code>[vfb id='<?php echo (int) $_REQUEST['form']; ?>']</code></p>
+    	<p><?php _e( 'Shortcode', 'visual-form-builder-pro' ); ?> <code>[vfb id='<?php echo (int) $_REQUEST['form']; ?>']</code></p>
 	<?php
 	}
 
