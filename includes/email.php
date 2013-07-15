@@ -120,7 +120,7 @@ if ( isset( $_POST['vfb-submit'] ) ) :
 
 				// Display error if file size has been exceeded
 				if ( $value['size'] > $max_attach_size )
-					wp_die( sprintf( __( "File size exceeds %dMB. Most email providers will reject emails with attachments larger than %dMB. Please decrease the file size and try again.", 'visual-form-builder' ), $size ), '', array( 'back_link' => true ) );
+					wp_die( sprintf( __( "File size exceeds %dMB. Please decrease the file size and try again.", 'visual-form-builder' ), $size ), '', array( 'back_link' => true ) );
 
 				// Options array for the wp_handle_upload function. 'test_form' => false
 				$upload_overrides = array( 'test_form' => false );
