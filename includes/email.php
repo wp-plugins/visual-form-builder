@@ -43,47 +43,44 @@ if ( isset( $_POST['vfb-submit'] ) ) :
 
 	// Query to get all forms
 	$order = sanitize_sql_orderby( 'form_id DESC' );
-	$forms = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
+	$form = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
 
-	// Get sender and email details
-	foreach ( $forms as $form ) :
-		$form_settings = (object) array(
-			'form_title' 					=> stripslashes( html_entity_decode( $form->form_title, ENT_QUOTES, 'UTF-8' ) ),
-			'form_subject' 					=> stripslashes( html_entity_decode( $form->form_email_subject, ENT_QUOTES, 'UTF-8' ) ),
-			'form_to' 						=> ( is_array( unserialize( $form->form_email_to ) ) ) ? unserialize( $form->form_email_to ) : explode( ',', unserialize( $form->form_email_to ) ),
-			'form_from' 					=> stripslashes( $form->form_email_from ),
-			'form_from_name' 				=> stripslashes( $form->form_email_from_name ),
-			'form_notification_setting' 	=> stripslashes( $form->form_notification_setting ),
-			'form_notification_email_name' 	=> stripslashes( $form->form_notification_email_name ),
-			'form_notification_email_from' 	=> stripslashes( $form->form_notification_email_from ),
-			'form_notification_subject' 	=> stripslashes( html_entity_decode( $form->form_notification_subject, ENT_QUOTES, 'UTF-8' ) ),
-			'form_notification_message' 	=> stripslashes( $form->form_notification_message ),
-			'form_notification_entry' 		=> stripslashes( $form->form_notification_entry )
-		);
-		// Allow the form settings to be filtered (ex: return $form_settings->'form_title' = 'Hello World';)
-		$form_settings = (object) apply_filters_ref_array( 'vfb_email_form_settings', array( $form_settings, $form_id ) );
-	endforeach;
+	$form_settings = (object) array(
+		'form_title' 					=> stripslashes( html_entity_decode( $form->form_title, ENT_QUOTES, 'UTF-8' ) ),
+		'form_subject' 					=> stripslashes( html_entity_decode( $form->form_email_subject, ENT_QUOTES, 'UTF-8' ) ),
+		'form_to' 						=> ( is_array( unserialize( $form->form_email_to ) ) ) ? unserialize( $form->form_email_to ) : explode( ',', unserialize( $form->form_email_to ) ),
+		'form_from' 					=> stripslashes( $form->form_email_from ),
+		'form_from_name' 				=> stripslashes( $form->form_email_from_name ),
+		'form_notification_setting' 	=> stripslashes( $form->form_notification_setting ),
+		'form_notification_email_name' 	=> stripslashes( $form->form_notification_email_name ),
+		'form_notification_email_from' 	=> stripslashes( $form->form_notification_email_from ),
+		'form_notification_subject' 	=> stripslashes( html_entity_decode( $form->form_notification_subject, ENT_QUOTES, 'UTF-8' ) ),
+		'form_notification_message' 	=> stripslashes( $form->form_notification_message ),
+		'form_notification_entry' 		=> stripslashes( $form->form_notification_entry )
+	);
+	// Allow the form settings to be filtered (ex: return $form_settings->'form_title' = 'Hello World';)
+	$form_settings = (object) apply_filters_ref_array( 'vfb_email_form_settings', array( $form_settings, $form_id ) );
 
 	// Sender name field ID
-	$sender = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_name_override FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
+	$sender = $form->form_email_from_name_override;
 
 	// Sender email field ID
-	$email = $wpdb->get_var( $wpdb->prepare( "SELECT form_email_from_override FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
+	$email = $form->form_email_from_override;
 
 	// Notifcation email field ID
-	$notify = $wpdb->get_var( $wpdb->prepare( "SELECT form_notification_email FROM $this->form_table_name WHERE form_id = %d", $form_id ) );
+	$notify = $form->form_notification_email;
 
 	$reply_to_name	= $form_settings->form_from_name;
 	$reply_to_email	= $form_settings->form_from;
 
 	// Use field for sender name
-	if ( !empty( $sender ) ) {
+	if ( !empty( $sender ) && isset( $_POST[ 'vfb-' . $sender ] ) ) {
 		$form_settings->form_from_name = wp_kses_data( $_POST[ 'vfb-' . $sender ] );
 		$reply_to_name = $form_settings->form_from_name;
 	}
 
 	// Use field for sender email
-	if ( !empty( $email ) ) {
+	if ( !empty( $email ) && isset( $_POST[ 'vfb-' . $email ] ) ) {
 		$form_settings->form_from = sanitize_email( $_POST[ 'vfb-' . $email ] );
 		$reply_to_email = $form_settings->form_from;
 	}
