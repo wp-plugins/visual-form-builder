@@ -15,7 +15,7 @@ if ( !$this->add_scripts )
 $form_id = ( isset( $id ) && !empty( $id ) ) ? (int) $id : key( $atts );
 
 // If form is submitted, show success message, otherwise the form
-if ( isset( $_POST['visual-form-builder-submit'] ) && isset( $_POST['form_id'] ) && $_POST['form_id'] == $form_id ) {
+if ( isset( $_POST['vfb-submit'] ) && isset( $_POST['form_id'] ) && $_POST['form_id'] == $form_id ) {
 	$output = $this->confirmation();
 	return;
 }
@@ -75,19 +75,23 @@ foreach ( $fields as $field ) :
 	endif;
 
 	// Force an initial fieldset and display an error message to strongly encourage user to add one
-	if ( $count === 1 && $field_type !== 'fieldset' ) :
-		$output .= '<fieldset class="fieldset"><div class="legend" style="background-color:#FFEBE8;border:1px solid #CC0000;"><h3>Oops! Missing Fieldset</h3><p style="color:black;">If you are seeing this message, it means you need to <strong>add a Fieldset to the beginning of your form</strong>. Your form may not function or display properly without one.</p></div><ul class="section section-' . $count . '">';
+		if ( $count === 1 && $field_type !== 'fieldset' ) :
+			$output .= sprintf( '<fieldset class="vfb-fieldset"><div class="vfb-legend" style="background-color:#FFEBE8;border:1px solid #CC0000;"><h3>%1$s</h3><p style="color:black;">%2$s</p></div><ul class="section section-%3$d">',
+			__( 'Oops! Missing Fieldset', 'visual-form-builder' ),
+			__( 'If you are seeing this message, it means you need to <strong>add a Fieldset to the beginning of your form</strong>. Your form may not function or display properly without one.', 'visual-form-builder' ),
+			$count
+			);
 
-		$count++;
-	endif;
+			$count++;
+		endif;
 
 	if ( $field_type == 'fieldset' ) :
 		// Close each fieldset
 		if ( $open_fieldset == true )
-			$output .= '</ul><br /></fieldset>';
+			$output .= '</ul>&nbsp;</fieldset>';
 
 		// Only display Legend if field name is not blank
-		$legend = !empty( $field_name ) ? sprintf( '<div class="vfb-legend"><h3>%s</h3></div>', $field_name ) : '<br>';
+		$legend = !empty( $field_name ) ? sprintf( '<div class="vfb-legend"><h3>%s</h3></div>', $field_name ) : '&nbsp;';
 
 		$output .= sprintf(
 			'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s">%5$s<ul class="vfb-section vfb-section-%1$d">',
@@ -159,12 +163,17 @@ foreach ( $fields as $field ) :
 				$user_identity = ! empty( $user->ID ) ? $user->display_name : '';
 
 				// Display a message for logged in users
-				$verification .= '<li class="vfb-item" id="' . $id_attr . '">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. Verification not required.', 'visual-form-builder' ), admin_url( 'profile.php' ), $user_identity ) . '</li>';
+				$logged_in_as = sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. Verification not required.', 'visual-form-builder-pro' ), admin_url( 'profile.php' ), $user_identity );
+
+				$verification .= sprintf(
+					'<li class="vfb-item" id="%1$s">%2$s</li>',
+					$id_attr,
+					$logged_in_as
+				);
 			endif;
 
-			$validation = ' {digits:true,maxlength:2,minlength:2}';
 			$verification .= sprintf(
-				'<li class="vfb-item vfb-item-%1$s"%2$s><label for="%3$s" class="vfb-desc">%4$s %5$s</label>',
+				'<li class="vfb-item vfb-item-%1$s" %2$s><label for="%3$s" class="vfb-desc">%4$s%5$s</label>',
 				$field_type,
 				$logged_in_display,
 				$id_attr,
@@ -173,10 +182,12 @@ foreach ( $fields as $field ) :
 			);
 
 			// Set variable for testing if required is Yes/No
-			if ( $required == '' )
-				$verification .= '<input type="hidden" name="_vfb-required-secret" value="0" />';
+			$verification .= ( empty( $required ) ) ? '<input type="hidden" name="_vfb-required-secret" value="0" />' : '';
 
-			$verification .= '<input type="hidden" name="_vfb-secret" value="vfb-' . $field_id . '" />';
+			// Set hidden secret to matching input
+			$verification .= sprintf( '<input type="hidden" name="_vfb-secret" value="vfb-%d" />', $field_id );
+
+			$validation = '{digits:true,maxlength:2,minlength:2}';
 
 			$verification_item = sprintf(
 				'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" />',
@@ -547,7 +558,7 @@ foreach ( $fields as $field ) :
 		case 'submit' :
 			$submit = sprintf(
 				'<li class="vfb-item vfb-item-submit" id="%2$s">
-				<input type="submit" name="visual-form-builder-submit" id="sendmail" value="%3$s" class="vfb-submit %4$s" />
+				<input type="submit" name="vfb-submit" id="%2$s" value="%3$s" class="vfb-submit %4$s" />
 				</li>',
 				$field_id,
 				$id_attr,
@@ -567,7 +578,7 @@ endforeach;
 
 
 // Close user-added fields
-$output .= '</ul><br /></fieldset>';
+$output .= '</ul>&nbsp;</fieldset>';
 
 // Make sure the verification displays even if they have not updated their form
 if ( empty( $verification ) ) :

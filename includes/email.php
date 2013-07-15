@@ -16,7 +16,7 @@ if ( true == $required && !empty( $secret_field ) ) :
 endif;
 
 // Basic security check before moving any further
-if ( isset( $_POST['visual-form-builder-submit'] ) ) :
+if ( isset( $_POST['vfb-submit'] ) ) :
 
 	// Set submitted action to display success message
 	$this->submitted = true;

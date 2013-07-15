@@ -18,6 +18,15 @@ form.visual-form-builder li{
 	margin: 0;
 }
 
+/* Hide br tags for themes that auto add them */
+.visual-form-builder br {
+	display: none;
+}
+
+	form.visual-form-builder .vfb-item-instructions br {
+		display: inline;
+	}
+
 /* !Remove list item styles */
 .visual-form-builder ul,
 .entry-content .visual-form-builder ul,
