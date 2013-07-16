@@ -4,11 +4,11 @@ Plugin Name: Visual Form Builder
 Description: Dynamically build forms using a simple interface. Forms include jQuery validation, a basic logic-based verification system, and entry tracking.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.7.6
+Version: 2.7.7
 */
 
 // Version number to output as meta tag
-define( 'VFB_VERSION', '2.7.6' );
+define( 'VFB_VERSION', '2.7.7' );
 
 /*
 This program is free software; you can redistribute it and/or modify
@@ -1546,28 +1546,29 @@ class Visual_Form_Builder{
 
 		$form_id = ( isset( $_REQUEST['form_id'] ) ) ? (int) esc_html( $_REQUEST['form_id'] ) : '';
 
-		if ( isset( $_REQUEST['visual-form-builder-submit'] ) ) :
-			// Get forms
-			$order = sanitize_sql_orderby( 'form_id DESC' );
-			$forms 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
+		if ( !isset( $_REQUEST['vfb-submit'] ) )
+			return;
 
-			foreach ( $forms as $form ) :
-				// If text, return output and format the HTML for display
-				if ( 'text' == $form->form_success_type )
-					return stripslashes( html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) ) );
-				// If page, redirect to the permalink
-				elseif ( 'page' == $form->form_success_type ) {
-					$page = get_permalink( $form->form_success_message );
-					wp_redirect( $page );
-					exit();
-				}
-				// If redirect, redirect to the URL
-				elseif ( 'redirect' == $form->form_success_type ) {
-					wp_redirect( esc_url( $form->form_success_message ) );
-					exit();
-				}
-			endforeach;
-		endif;
+		// Get forms
+		$order = sanitize_sql_orderby( 'form_id DESC' );
+		$forms 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->form_table_name WHERE form_id = %d ORDER BY $order", $form_id ) );
+
+		foreach ( $forms as $form ) :
+			// If text, return output and format the HTML for display
+			if ( 'text' == $form->form_success_type )
+				return stripslashes( html_entity_decode( wp_kses_stripslashes( $form->form_success_message ) ) );
+			// If page, redirect to the permalink
+			elseif ( 'page' == $form->form_success_type ) {
+				$page = get_permalink( $form->form_success_message );
+				wp_redirect( $page );
+				exit();
+			}
+			// If redirect, redirect to the URL
+			elseif ( 'redirect' == $form->form_success_type ) {
+				wp_redirect( esc_url( $form->form_success_message ) );
+				exit();
+			}
+		endforeach;
 	}
 
 	/**

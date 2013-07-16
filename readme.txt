@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
 Requires at least: 3.5
 Tested up to: 3.6
-Stable tag: 2.7.6
+Stable tag: 2.7.7
 License: GPLv2 or later
 
 Build beautiful, fully functional contact forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -230,6 +230,10 @@ function my_scripts_method() {
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.7.7 — Jul 16, 2013**
+
+* Fix bug where confirmation function fails
 
 **Version 2.7.6 — Jul 16, 2013**
 
@@ -570,6 +574,9 @@ function my_scripts_method() {
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.7.7 =
+Fix bug where confirmation function fails
 
 = 2.7.6 =
 Add sorting to checkbox/radio/select options. Update interface icons. Bug fixes.
