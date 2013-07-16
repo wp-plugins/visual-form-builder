@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
 Requires at least: 3.5
 Tested up to: 3.6
-Stable tag: 2.7.5
+Stable tag: 2.7.6
 License: GPLv2 or later
 
 Build beautiful, fully functional contact forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -96,12 +96,12 @@ If you are a fan of Visual Form Builder and want extra features and functionalit
 
 == Frequently Asked Questions ==
 
-= How do I build my form? =
+= How do I create a form? =
 
-1. Click on the New Form button and enter a few form details
+1. Click on the Visual Form Builder > Add New link and enter a few form details
 1. Click the form fields from the box on the left to add it to your form.
 1. Edit the information for each form field by clicking on the down arrow.
-1. Drag and drop the elements to put them in order.
+1. Drag and drop the elements to sort them.
 1. Click Save Form to save your changes.
 
 = Can I use my own verification system such as a CAPTCHA? =
