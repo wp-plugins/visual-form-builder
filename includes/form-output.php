@@ -139,7 +139,7 @@ foreach ( $fields as $field ) :
 
 		if ( $field_type == 'verification' ) :
 			$verification .= sprintf(
-				'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
+				'<fieldset class="vfb-fieldset vfb-fieldset-%1$d %2$s %3$s" id="item-%4$s" style="display:block"><div class="vfb-legend"><h3>%5$s</h3></div><ul class="vfb-section vfb-section-%1$d">',
 				$count,
 				esc_attr( $field->field_key ),
 				$css,
@@ -173,7 +173,7 @@ foreach ( $fields as $field ) :
 			endif;
 
 			$verification .= sprintf(
-				'<li class="vfb-item vfb-item-%1$s" %2$s><label for="%3$s" class="vfb-desc">%4$s%5$s</label>',
+				'<li class="vfb-item vfb-item-%1$s" %2$s style="display:block"><label for="%3$s" class="vfb-desc">%4$s%5$s</label>',
 				$field_type,
 				$logged_in_display,
 				$id_attr,
@@ -190,7 +190,7 @@ foreach ( $fields as $field ) :
 			$validation = '{digits:true,maxlength:2,minlength:2}';
 
 			$verification_item = sprintf(
-				'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" />',
+				'<input type="text" name="vfb-%1$d" id="%2$s" value="%3$s" class="vfb-text %4$s %5$s %6$s %7$s" style="display:block" />',
 				$field_id,
 				$id_attr,
 				$logged_in_value,
@@ -584,12 +584,12 @@ $output .= '</ul>&nbsp;</fieldset>';
 if ( empty( $verification ) ) :
 
 	$verification = sprintf(
-		'<fieldset class="vfb-fieldset vfb-verification">
+		'<fieldset class="vfb-fieldset vfb-verification" style="display:block">
 		<div class="vfb-legend"><h3>%1$s</h3></div>
 		<ul class="vfb-section vfb-section-%2$d">
-		<li class="vfb-item vfb-item-text">
+		<li class="vfb-item vfb-item-text" style="display:block">
 		<label for="vfb-secret" class="vfb-desc">%3$s<span>*</span></label>
-		<div><input type="text" name="vfb-secret" id="vfb-secret" class="vfb-text vfb-medium" /></div>
+		<div><input type="text" name="vfb-secret" id="vfb-secret" class="vfb-text vfb-medium" style="display:block" /></div>
 		</li>',
 		__( 'Verification' , 'visual-form-builder'),
 		$count,
