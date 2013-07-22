@@ -1036,21 +1036,26 @@ class Visual_Form_Builder{
 
 		$data = array();
 
-		foreach ( $_REQUEST['order'] as $k ) {
-			if ( 'root' !== $k['item_id'] ) {
+		foreach ( $_REQUEST['order'] as $k ) :
+			if ( 'root' !== $k['item_id'] && !empty( $k['item_id'] ) ) :
 				$data[] = array(
 					'field_id' 	=> $k['item_id'],
 					'parent' 	=> $k['parent_id']
 				);
-			}
-		}
+			endif;
+		endforeach;
 
-		foreach ( $data as $k => $v ) {
+		foreach ( $data as $k => $v ) :
 			// Update each field with it's new sequence and parent ID
-			$update = $wpdb->update( $this->field_table_name, array( 'field_sequence' => $k, 'field_parent' => $v['parent'] ), array( 'field_id' => $v['field_id'] ) );
-		}
+			$wpdb->update( $this->field_table_name, array(
+				'field_sequence'	=> $k,
+				'field_parent'  	=> $v['parent'] ),
+				array( 'field_id' => $v['field_id'] ),
+				'%d'
+			);
+		endforeach;
 
-		wp_die();
+		die(1);
 	}
 
 	/**
