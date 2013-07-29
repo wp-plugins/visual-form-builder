@@ -692,6 +692,16 @@ class Visual_Form_Builder{
 		wp_register_style( 'vfb-jqueryui-css', apply_filters( 'vfb-date-picker-css', plugins_url( '/css/smoothness/jquery-ui-1.9.2.min.css', __FILE__ ) ) );
 		wp_register_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( "/css/visual-form-builder$this->load_dev_files.css", __FILE__ ) ) );
 
+		// If WordPress 3.6, use internal function. Otherwise, my own
+		if ( function_exists( 'has_shortcode' ) ) {
+			global $post;
+
+			if ( !has_shortcode( $post->post_content, 'vfb' ) )
+				return;
+		} elseif ( !$this->has_shortcode( 'vfb' ) ) {
+			return;
+		}
+
 		wp_enqueue_style( 'visual-form-builder-css' );
 		wp_enqueue_style( 'vfb-jqueryui-css' );
 	}
@@ -1781,6 +1791,34 @@ class Visual_Form_Builder{
 		endswitch;
 
 		return $output;
+	}
+
+	/**
+	 * Check whether the content contains the specified shortcode
+	 *
+	 * @access public
+	 * @param string $shortcode (default: '')
+	 * @return void
+	 */
+	function has_shortcode($shortcode = '') {
+
+		$post_to_check = get_post(get_the_ID());
+
+		// false because we have to search through the post content first
+		$found = false;
+
+		// if no short code was provided, return false
+		if (!$shortcode) {
+			return $found;
+		}
+		// check the post content for the short code
+		if ( stripos($post_to_check->post_content, '[' . $shortcode) !== false ) {
+			// we have found the short code
+			$found = true;
+		}
+
+		// return our final results
+		return $found;
 	}
 }
 
