@@ -40,7 +40,7 @@ $verification = '';
 $label_alignment = ( $form->form_label_alignment !== '' ) ? esc_attr( " $form->form_label_alignment" ) : '';
 
 // Start form container
-$output .= '<div class="visual-form-builder-container">';
+$output .= sprintf( '<div id="vfb-form-%d" class="visual-form-builder-container">', $form_id );
 
 $output .= sprintf(
 	'<form id="%1$s-%2$d" class="visual-form-builder %3$s %4$s" method="post" enctype="multipart/form-data">
