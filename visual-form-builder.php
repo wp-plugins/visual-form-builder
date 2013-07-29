@@ -689,17 +689,24 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 */
 	public function css() {
+
 		wp_register_style( 'vfb-jqueryui-css', apply_filters( 'vfb-date-picker-css', plugins_url( '/css/smoothness/jquery-ui-1.9.2.min.css', __FILE__ ) ) );
 		wp_register_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( "/css/visual-form-builder$this->load_dev_files.css", __FILE__ ) ) );
 
-		// If WordPress 3.6, use internal function. Otherwise, my own
-		if ( function_exists( 'has_shortcode' ) ) {
-			global $post;
+		// Get active widgets
+		$widget = is_active_widget( false, false, 'vfb_widget' );
 
-			if ( !has_shortcode( $post->post_content, 'vfb' ) )
+		// If no widget is found, test for shortcode
+		if ( empty( $widget ) ) {
+			// If WordPress 3.6, use internal function. Otherwise, my own
+			if ( function_exists( 'has_shortcode' ) ) {
+				global $post;
+
+				if ( !has_shortcode( $post->post_content, 'vfb' ) )
+					return;
+			} elseif ( !$this->has_shortcode( 'vfb' ) ) {
 				return;
-		} elseif ( !$this->has_shortcode( 'vfb' ) ) {
-			return;
+			}
 		}
 
 		wp_enqueue_style( 'visual-form-builder-css' );
