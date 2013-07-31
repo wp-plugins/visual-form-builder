@@ -174,7 +174,7 @@ class Visual_Form_Builder{
 	 * @since 2.7.5
 	 */
 	public function add_meta_keyword() {
-		echo sprintf( "\n<meta name='vfb-version' content='%s' />\n", VFB_VERSION );
+		echo apply_filters( 'vfb_show_version', '<!-- <meta name="vfb" version="'. VFB_VERSION . '" /> -->' . "\n" );
 	}
 
 	/**
