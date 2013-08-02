@@ -108,7 +108,7 @@ foreach ( $fields as $field ) :
 	elseif ( $field_type == 'section' ) :
 
 		$output .= sprintf(
-			'<div id="%1$s" class="vfb-section-div %2$s"><h4>%3$s</h4>',
+			'<div id="item-%1$s" class="vfb-section-div %2$s"><h4>%3$s</h4>',
 			$id_attr,
 			$css,
 			$field_name
@@ -560,7 +560,7 @@ foreach ( $fields as $field ) :
 
 		case 'submit' :
 			$submit = sprintf(
-				'<li class="vfb-item vfb-item-submit" id="%2$s">
+				'<li class="vfb-item vfb-item-submit" id="item-%2$s">
 				<input type="submit" name="vfb-submit" id="%2$s" value="%3$s" class="vfb-submit %4$s" />
 				</li>',
 				$field_id,
@@ -604,7 +604,7 @@ endif;
 // Output our security test
 $output .= sprintf(
 	$verification .
-	'<li style="display:none;"><label for="vfb-spam">%1$s:</label><div><input name="vfb-spam" id="vfb-spam" /></div></li>
+	'<li style="display:none;"><label>%1$s:</label><div><input name="vfb-spam" /></div></li>
 	%2$s</ul>
 	</fieldset>',
 	__( 'This box is for spam protection - <strong>please leave it blank</strong>' , 'visual-form-builder'),
