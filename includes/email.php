@@ -343,6 +343,9 @@ list( $user, $domain ) = explode( '@', $from_email );
 // If site domain and admin_email domain match, use admin_email, otherwise a same domain email must be created
 $from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
 
+// Allow Sender email to be filtered
+$from_email = apply_filters( 'vfb_sender_mail_header', $from_email, $form_id );
+
 $reply_to	= "\"$from_name\" <$header_from>";
 $headers 	= "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
 
