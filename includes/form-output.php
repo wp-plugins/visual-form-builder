@@ -238,7 +238,7 @@ foreach ( $fields as $field ) :
 
 			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
 
-		break;
+			break;
 
 		case 'textarea' :
 
@@ -258,7 +258,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '</div>';
 
-		break;
+			break;
 
 		case 'select' :
 
@@ -283,7 +283,7 @@ foreach ( $fields as $field ) :
 
 			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span"><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 
-		break;
+			break;
 
 		case 'radio' :
 
@@ -316,7 +316,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '<div style="clear:both"></div></div>';
 
-		break;
+			break;
 
 		case 'checkbox' :
 
@@ -347,7 +347,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '<div style="clear:both"></div></div>';
 
-		break;
+			break;
 
 		case 'address' :
 
@@ -432,7 +432,7 @@ foreach ( $fields as $field ) :
 
 			$output .= "<div>$address</div>";
 
-		break;
+			break;
 
 		case 'date' :
 			$options = maybe_unserialize( $field->field_options );
@@ -451,7 +451,7 @@ foreach ( $fields as $field ) :
 
 			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
 
-		break;
+			break;
 
 		case 'time' :
 
@@ -508,7 +508,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '<div class="clear"></div>';
 
-		break;
+			break;
 
 		case 'html' :
 
@@ -528,7 +528,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '</div>';
 
-		break;
+			break;
 
 		case 'file-upload' :
 
@@ -550,13 +550,13 @@ foreach ( $fields as $field ) :
 
 			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span">%1$s<label>%2$s</label></span>', $form_item, $description ) : $form_item;
 
-		break;
+			break;
 
 		case 'instructions' :
 
 			$output .= wp_specialchars_decode( esc_html( stripslashes( $description ) ), ENT_QUOTES );
 
-		break;
+			break;
 
 		case 'submit' :
 			$submit = sprintf(
@@ -569,7 +569,7 @@ foreach ( $fields as $field ) :
 				$css
 			);
 
-		break;
+			break;
 
 		default:
 			echo '';
