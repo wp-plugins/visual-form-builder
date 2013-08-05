@@ -440,7 +440,7 @@ class Visual_Form_Builder{
 					'option'	=> 'vfb_entries_per_page'
 				) );
 
-			break;
+				break;
 
 			case $page_main :
 
@@ -457,7 +457,7 @@ class Visual_Form_Builder{
 					) );
 				endif;
 
-			break;
+				break;
 		}
 	}
 
@@ -469,9 +469,9 @@ class Visual_Form_Builder{
 	public function save_screen_options( $status, $option, $value ){
 
 		if ( $option == 'vfb_entries_per_page' )
-				return $value;
+			return $value;
 		elseif ( $option == 'vfb_forms_per_page' )
-				return $value;
+			return $value;
 	}
 
 	/**
@@ -1104,29 +1104,29 @@ class Visual_Form_Builder{
 			case 'radio' :
 			case 'checkbox' :
 				$field_options = serialize( array( 'Option 1', 'Option 2', 'Option 3' ) );
-			break;
+				break;
 
 			case 'email' :
 			case 'url' :
 			case 'phone' :
 				$field_validation = $field_type;
-			break;
+				break;
 
 			case 'currency' :
 				$field_validation = 'number';
-			break;
+				break;
 
 			case 'number' :
 				$field_validation = 'digits';
-			break;
+				break;
 
 			case 'time' :
 				$field_validation = 'time-12';
-			break;
+				break;
 
 			case 'file-upload' :
 				$field_options = serialize( array( 'png|jpe?g|gif' ) );
-			break;
+				break;
 		}
 
 
@@ -1632,29 +1632,29 @@ class Visual_Form_Builder{
 				case 'email' :
 					if ( !is_email( $data ) )
 						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid email address', 'visual-form-builder' ), '', array( 'back_link' => true ) );
-				break;
+					break;
 
 				case 'number' :
 				case 'currency' :
 					if ( !is_numeric( $data ) )
 						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid number', 'visual-form-builder' ), '', array( 'back_link' => true ) );
-				break;
+					break;
 
 				case 'phone' :
 					if ( strlen( $data ) > 9 && preg_match( '/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/', $data ) )
 						return true;
 					else
 						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid phone number. Most US/Canada and International formats accepted.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
-				break;
+					break;
 
 				case 'url' :
 					if ( !preg_match( '|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $data ) )
 						wp_die( "<h1>$name</h1><br>" . __( 'Not a valid URL.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
-				break;
+						break;
 
 				default :
 					return true;
-				break;
+					break;
 
 			endswitch;
 		endif;
@@ -1670,32 +1670,32 @@ class Visual_Form_Builder{
 			switch( $type ) :
 				case 'text' :
 					return sanitize_text_field( $data );
-				break;
+					break;
 
 				case 'textarea' :
 					return wp_strip_all_tags( $data );
-				break;
+					break;
 
 				case 'email' :
 					return sanitize_email( $data );
-				break;
+					break;
 
 				case 'html' :
 					return wp_kses_data( force_balance_tags( $data ) );
-				break;
+					break;
 
 				case 'number' :
 					return floatval( $data );
-				break;
+					break;
 
 				case 'address' :
 					$allowed_html = array( 'br' => array() );
 					return wp_kses( $data, $allowed_html );
-				break;
+					break;
 
 				default :
 					return wp_kses_data( $data );
-				break;
+					break;
 			endswitch;
 		endif;
 	}
