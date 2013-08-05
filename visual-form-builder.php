@@ -1706,19 +1706,25 @@ class Visual_Form_Builder{
 	 * @since 1.3
 	 */
 	public function isBot() {
-		$bots = apply_filters( 'vfb_blocked_spam_bots', array( 'archiver', 'binlar', 'casper', 'checkprivacy', 'clshttp', 'cmsworldmap', 'comodo', 'curl', 'diavol', 'dotbot', 'email', 'extract', 'feedfinder', 'flicky',  'grab', 'harvest', 'httrack', 'ia_archiver', 'jakarta', 'kmccrew', 'libwww', 'loader', 'miner', 'nikto', 'nutch', 'planetwork', 'purebot', 'pycurl', 'python', 'scan', 'skygrid', 'sucker', 'turnit', 'vikspider', 'wget', 'winhttp', 'youda', 'zmeu', 'zune' ) );
+		$bots = apply_filters( 'vfb_blocked_spam_bots', array(
+			'<', '>', '&lt;', '%0A', '%0D', '%27', '%3C', '%3E', '%00', 'href',
+			'binlar', 'casper', 'cmsworldmap', 'comodo', 'diavol',
+			'dotbot', 'feedfinder', 'flicky', 'ia_archiver', 'jakarta',
+			'kmccrew', 'nutch', 'planetwork', 'purebot', 'pycurl',
+			'skygrid', 'sucker', 'turnit', 'vikspider', 'zmeu',
+			)
+		);
 
 		$isBot = false;
 
-		$user_agent = wp_kses_data( $_SERVER['HTTP_USER_AGENT'] );
+		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? wp_kses_data( $_SERVER['HTTP_USER_AGENT'] ) : '';
+
+		do_action( 'vfb_isBot', $user_agent, $bots );
 
 		foreach ( $bots as $bot ) {
 			if ( stripos( $user_agent, $bot ) !== false )
 				$isBot = true;
 		}
-
-		if ( empty( $user_agent ) || $user_agent == ' ' )
-			$isBot = true;
 
 		return $isBot;
 	}
