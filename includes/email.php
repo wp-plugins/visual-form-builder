@@ -215,7 +215,7 @@ foreach ( $fields as $field ) :
 		// Setup spam catcher RegEx
 		$exploits 	= '/(content-type|bcc:|cc:|document.cookie|onclick|onload|javascript|alert)/i';
 		$profanity 	= '/(beastial|bestial|blowjob|clit|cock|cum|cunilingus|cunillingus|cunnilingus|cunt|ejaculate|fag|felatio|fellatio|fuck|fuk|fuks|gangbang|gangbanged|gangbangs|hotsex|jism|jiz|kock|kondum|kum|kunilingus|orgasim|orgasims|orgasm|orgasms|phonesex|phuk|phuq|porn|pussies|pussy|spunk|xxx)/i';
-		$spamwords 	= '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|texas|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
+		$spamwords 	= '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
 
 		// Add up points for each spam hit
 		if ( preg_match( $exploits, $value ) )
