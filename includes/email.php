@@ -315,7 +315,7 @@ $message = wordwrap( $message, 70 );
 $notify_message = ( $form_settings->form_notification_message !== '' ) ? html_entity_decode( $form_settings->form_notification_message ) : '';
 
 // Initialize header filter vars
-$header_from_name  		= mb_encode_mimeheader( stripslashes( $reply_to_name ) );
+$header_from_name  		= function_exists( 'mb_encode_mimeheader' ) ? mb_encode_mimeheader( stripslashes( $reply_to_name ) ) : stripslashes( $reply_to_name );
 $header_from       		= $reply_to_email;
 $header_content_type 	= 'text/html';
 
