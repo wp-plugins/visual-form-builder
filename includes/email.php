@@ -159,6 +159,7 @@ foreach ( $fields as $field ) :
 
 				// Include the file that runs wp_generate_attachment_metadata()
 				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
 				// Setup attachment metadata
 				$attach_data = wp_generate_attachment_metadata( $attach_id, $uploaded_file['file'] );
