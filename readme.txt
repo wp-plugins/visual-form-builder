@@ -249,6 +249,7 @@ function my_scripts_method() {
 * Update form output to force bullets to hide, but only if list-style-type isn't set
 * Update form output to only display the "for" attribute for certain fields
 * Fix bug when sorting and field sequence is not properly set
+* Fix bug when uploading an audio or video file in WordPress 3.6
 * Deprecate spam check for empty user agent
 * Remove texas from spam words
 
