@@ -1,6 +1,12 @@
 <?php
 global $wpdb;
 
+// Get global settings
+$vfb_settings 	= get_option( 'vfb-settings' );
+
+// Settings - Place Address labels above fields
+$settings_address_labels	= isset( $vfb_settings['address-labels'] ) ? false : true;
+
 // Extract shortcode attributes, set defaults
 extract( shortcode_atts( array(
 	'id' => ''
@@ -382,7 +388,7 @@ foreach ( $fields as $field ) :
 
 			$address_parts = apply_filters( 'vfb_address_labels', $address_parts, $form_id );
 
-			$label_placement = apply_filters( 'vfb_address_labels_placement', true, $form_id );
+			$label_placement = apply_filters( 'vfb_address_labels_placement', $settings_address_labels, $form_id );
 
 			$placement_bottom = ( $label_placement ) ? '<label for="%2$s-%4$s">%5$s</label>' : '';
 			$placement_top    = ( !$label_placement ) ? '<label for="%2$s-%4$s">%5$s</label>' : '';

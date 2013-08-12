@@ -130,6 +130,12 @@ Setting up SMTP will get you part of the way there. For most, it solves the prob
 
 If you find that emails are not being sent, you should first confirm that you have completed all of the details in the `Form Settings > Email section`. Next, be sure to set the Reply-To option to an email that exists on the same domain as your WordPress site.
 
+**Set the Sender email to an email that exists on the domain**
+
+In addition to the Reply-To header, some hosts require that the Sender header is also set to an email that exists on the domain.  By default, the Sender email is automatically set to either your admin email if the domain matches.  If it does not match, then a local email address is created (wordpress@yoursitename.com).
+
+To change this behavior to use an email that exists on the domain, you will need to set the Sender Mail Header option on the `Visual Form Builder > Settings` page.
+
 **Possible mod_security conflict**
 
 Some servers are overzealous in their restrictions on the $_POST object and will block anything with certain keywords. Check your server logs and look for any 403 Forbidden or 500 Internal Server errors. If you notice these errors when submitting a form, contact your host and find out if there are any restrictions.
@@ -230,6 +236,21 @@ function my_scripts_method() {
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.7.8 — Aug 12, 2013**
+
+* Add settings page
+* Add vfb_sender_mail_header, vfb_show_version filters
+* Add an ID attribute to the form container div
+* Update CSS enqueue to only load when form exists on the page
+* Update list of user agent strings to test against in vfb_blocked_spam_bots
+* Update padding on select elements
+* Update Instructions field to include CSS Classes and Field Layout options
+* Update form output to force bullets to hide, but only if list-style-type isn't set
+* Update form output to only display the "for" attribute for certain fields
+* Fix bug when sorting and field sequence is not properly set
+* Deprecate spam check for empty user agent
+* Remove texas from spam words
 
 **Version 2.7.7 — Jul 16, 2013**
 

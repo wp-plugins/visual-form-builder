@@ -174,7 +174,13 @@ class Visual_Form_Builder{
 	 * @since 2.7.5
 	 */
 	public function add_meta_keyword() {
-		echo apply_filters( 'vfb_show_version', '<!-- <meta name="vfb" version="'. VFB_VERSION . '" /> -->' . "\n" );
+		// Get global settings
+		$vfb_settings 	= get_option( 'vfb-settings' );
+
+		// Settings - Disable meta tag version
+		$settings_meta	= isset( $vfb_settings['show-version'] ) ? '' : '<!-- <meta name="vfb" version="'. VFB_VERSION . '" /> -->' . "\n";
+
+		echo apply_filters( 'vfb_show_version', $settings_meta );
 	}
 
 	/**
@@ -690,8 +696,14 @@ class Visual_Form_Builder{
 	 */
 	public function css() {
 
+		$vfb_settings = get_option( 'vfb-settings' );
+
 		wp_register_style( 'vfb-jqueryui-css', apply_filters( 'vfb-date-picker-css', plugins_url( '/css/smoothness/jquery-ui-1.9.2.min.css', __FILE__ ) ) );
 		wp_register_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( "/css/visual-form-builder$this->load_dev_files.css", __FILE__ ) ) );
+
+		// Settings - Disable CSS
+		if ( isset( $vfb_settings['disable-css'] ) )
+			return;
 
 		// Get active widgets
 		$widget = is_active_widget( false, false, 'vfb_widget' );
@@ -728,7 +740,7 @@ class Visual_Form_Builder{
 		if ( !isset( $_REQUEST['action'] ) )
 			return;
 
-		if ( !in_array( $_REQUEST['page'], array( 'visual-form-builder', 'vfb-add-new', 'vfb-entries' ) ) )
+		if ( !in_array( $_REQUEST['page'], array( 'visual-form-builder', 'vfb-add-new', 'vfb-entries', 'vfb-settings' ) ) )
 			return;
 
 		switch ( $_REQUEST['action'] ) :
@@ -1040,6 +1052,20 @@ class Visual_Form_Builder{
 			case 'trash_entry' :
 				$entry_id = absint( $_GET['entry'] );
 				$wpdb->update( $this->entries_table_name, array( 'entry_approved' => 'trash' ), array( 'entries_id' => $entry_id ) );
+				break;
+
+			case 'vfb_settings' :
+
+				check_admin_referer( 'vfb-update-settings' );
+
+				$data = array();
+
+				foreach ( $_POST['vfb-settings'] as $key => $val ) {
+					$data[ $key ] = esc_html( $val );
+				}
+
+				update_option( 'vfb-settings', $data );
+
 				break;
 		endswitch;
 	}
@@ -1368,6 +1394,7 @@ class Visual_Form_Builder{
 		$current_pages[ 'vfb-add-new' ] = add_submenu_page( 'visual-form-builder', __( 'Add New Form', 'visual-form-builder' ), __( 'Add New Form', 'visual-form-builder' ), 'manage_options', 'vfb-add-new', array( &$this, 'admin_add_new' ) );
 		$current_pages[ 'vfb-entries' ] = add_submenu_page( 'visual-form-builder', __( 'Entries', 'visual-form-builder' ), __( 'Entries', 'visual-form-builder' ), 'manage_options', 'vfb-entries', array( &$this, 'admin_entries' ) );
 		$current_pages[ 'vfb-export' ] = add_submenu_page( 'visual-form-builder', __( 'Export', 'visual-form-builder' ), __( 'Export', 'visual-form-builder' ), 'manage_options', 'vfb-export', array( &$this, 'admin_export' ) );
+		$current_pages[ 'vfb-settings' ] = add_submenu_page( 'visual-form-builder', __( 'Settings', 'visual-form-builder' ), __( 'Settings', 'visual-form-builder' ), 'manage_options', 'vfb-settings', array( &$this, 'admin_settings' ) );
 
 		// All plugin page load hooks
 		foreach ( $current_pages as $key => $page ) :
@@ -1464,6 +1491,84 @@ class Visual_Form_Builder{
 <?php
 		$export->display();
 ?>
+	</div>
+<?php
+	}
+
+	/**
+	 * admin_settings function.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function admin_settings() {
+
+		$vfb_settings = get_option( 'vfb-settings' );
+?>
+	<div class="wrap">
+		<?php screen_icon( 'themes' ); ?>
+		<h2><?php _e( 'Settings', 'visual-form-builder' ); ?></h2>
+		<form id="vfb-settings" method="post">
+			<input name="action" type="hidden" value="vfb_settings" />
+			<?php wp_nonce_field( 'vfb-update-settings' ); ?>
+			<h3><?php _e( 'Global Settings', 'visual-form-builder' ); ?></h3>
+			<p><?php _e( 'These settings will affect all forms on your site.', 'visual-form-builder' ); ?></p>
+			<table class="form-table">
+				<?php
+					$disable = array(
+						'disable-css'         => __( 'Disable CSS', 'visual-form-builder' ),	// visual-form-builder-css
+						'address-labels'      => __( 'Place Address labels above fields', 'visual-form-builder' ),	// vfb_address_labels_placement
+						'show-version'        => __( 'Disable meta tag version', 'visual-form-builder' ),	// vfb_show_version
+					);
+
+					foreach ( $disable as $key => $title ) :
+
+						$vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : '';
+				?>
+				<tr valign="top">
+					<th scope="row"><label for="vfb-settings-<?php echo $key; ?>"><?php echo $title; ?></label></th>
+					<td>
+						<?php $vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : 0; ?>
+						<input type="checkbox" name="vfb-settings[<?php echo $key; ?>]" id="vfb-settings-<?php echo $key; ?>" value="1" <?php checked( $vfb_settings[ $key ], 1 ); ?> />
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+				<tr valign="top">
+					<th scope="row"><label for="vfb-settings-max-upload-size"><?php _e( 'Max Upload Size', 'visual-form-builder' ); ?></label></th>
+					<td>
+						<?php $vfb_settings['max-upload-size'] = isset( $vfb_settings['max-upload-size'] ) ? $vfb_settings['max-upload-size'] : '25'; ?>
+						<input type="number" name="vfb-settings[max-upload-size]" id="vfb-settings-max-upload-size" value="<?php echo $vfb_settings['max-upload-size']; ?>" class="small-text" /> MB
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row"><label for="vfb-settings-sender-mail-header"><?php _e( 'Sender Mail Header', 'visual-form-builder' ); ?></label></th>
+					<td>
+						<?php
+						// Use the admin_email as the From email
+						$from_email = get_site_option( 'admin_email' );
+
+						// Get the site domain and get rid of www.
+						$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+						if ( substr( $sitename, 0, 4 ) == 'www.' )
+							$sitename = substr( $sitename, 4 );
+
+						// Get the domain from the admin_email
+						list( $user, $domain ) = explode( '@', $from_email );
+
+						// If site domain and admin_email domain match, use admin_email, otherwise a same domain email must be created
+						$from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
+
+						$vfb_settings['sender-mail-header'] = isset( $vfb_settings['sender-mail-header'] ) ? $vfb_settings['sender-mail-header'] : $from_email;
+						?>
+						<input type="text" name="vfb-settings[sender-mail-header]" id="vfb-settings-sender-mail-header" value="<?php echo $vfb_settings['sender-mail-header']; ?>" class="regular-text" />
+					</td>
+				</tr>
+			</table>
+
+			<?php submit_button( __( 'Save', 'visual-form-builder' ), 'primary', 'submit', false ); ?>
+		</form>
 	</div>
 <?php
 	}

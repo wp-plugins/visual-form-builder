@@ -19,6 +19,12 @@ endif;
 if ( !isset( $_POST['vfb-submit'] ) )
 	return;
 
+// Get global settings
+$vfb_settings 	= get_option( 'vfb-settings' );
+
+// Settings - Max Upload Size
+$settings_max_upload    = isset( $vfb_settings['max-upload-size'] ) ? $vfb_settings['max-upload-size'] : 25;
+
 // Set submitted action to display success message
 $this->submitted = true;
 
@@ -116,7 +122,7 @@ foreach ( $fields as $field ) :
 
 		if ( $value['size'] > 0 ) :
 			// 25MB is the max size allowed
-			$size = apply_filters( 'vfb_max_file_size', 25 );
+			$size = apply_filters( 'vfb_max_file_size', $settings_max_upload );
 			$max_attach_size = $size * 1048576;
 
 			// Display error if file size has been exceeded
@@ -342,6 +348,9 @@ list( $user, $domain ) = explode( '@', $from_email );
 
 // If site domain and admin_email domain match, use admin_email, otherwise a same domain email must be created
 $from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
+
+// Settings - Sender Mail Header
+$settings_sender_header = isset( $vfb_settings['sender-mail-header'] ) ? $vfb_settings['sender-mail-header'] : $from_email;
 
 // Allow Sender email to be filtered
 $from_email = apply_filters( 'vfb_sender_mail_header', $from_email, $form_id );
