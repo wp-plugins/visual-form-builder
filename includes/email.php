@@ -376,7 +376,7 @@ if ( $form_settings->form_notification_setting !== '' ) :
 	$attachments = ( $form_settings->form_notification_entry !== '' ) ? $attachments : '';
 
 	// Reset headers for notification email
-	$reply_name 	= stripslashes( $form_settings->form_notification_email_name );
+	$reply_name		= function_exists( 'mb_encode_mimeheader' ) ? mb_encode_mimeheader( stripslashes( $form_settings->form_notification_email_name ) ) : stripslashes( $form_settings->form_notification_email_name );
 	$reply_email 	= $form_settings->form_notification_email_from;
 	$reply_to 		= "\"$reply_name\" <$reply_email>";
 	$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
