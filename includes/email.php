@@ -354,7 +354,7 @@ $from_email = ( $sitename == $domain ) ? $from_email : "wordpress@$sitename";
 $settings_sender_header = isset( $vfb_settings['sender-mail-header'] ) ? $vfb_settings['sender-mail-header'] : $from_email;
 
 // Allow Sender email to be filtered
-$from_email = apply_filters( 'vfb_sender_mail_header', $from_email, $form_id );
+$from_email = apply_filters( 'vfb_sender_mail_header', $settings_sender_header, $form_id );
 
 $reply_to	= "\"$from_name\" <$header_from>";
 $headers 	= "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
