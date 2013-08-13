@@ -237,17 +237,19 @@ function my_scripts_method() {
 
 == Changelog ==
 
-**Version 2.7.8 — Aug 12, 2013**
+**Version 2.7.8 — Aug 13, 2013**
 
-* Add settings page
+* Add settings page with options for popular filters
 * Add vfb_sender_mail_header, vfb_show_version filters
 * Add an ID attribute to the form container div
 * Update CSS enqueue to only load when form exists on the page
 * Update list of user agent strings to test against in vfb_blocked_spam_bots
+* Update email from names to use mb_encode_mimeheader for proper encoding
 * Update padding on select elements
 * Update Instructions field to include CSS Classes and Field Layout options
 * Update form output to force bullets to hide, but only if list-style-type isn't set
 * Update form output to only display the "for" attribute for certain fields
+* Update Export to always download a file, even if no results are found
 * Fix bug when sorting and field sequence is not properly set
 * Fix bug when uploading an audio or video file in WordPress 3.6
 * Deprecate spam check for empty user agent
