@@ -701,6 +701,14 @@ class Visual_Form_Builder{
 		wp_register_style( 'vfb-jqueryui-css', apply_filters( 'vfb-date-picker-css', plugins_url( '/css/smoothness/jquery-ui-1.9.2.min.css', __FILE__ ) ) );
 		wp_register_style( 'visual-form-builder-css', apply_filters( 'visual-form-builder-css', plugins_url( "/css/visual-form-builder$this->load_dev_files.css", __FILE__ ) ) );
 
+		// Settings - Always load CSS
+		if ( isset( $vfb_settings['always-load-css'] ) ) {
+			wp_enqueue_style( 'visual-form-builder-css' );
+			wp_enqueue_style( 'vfb-jqueryui-css' );
+
+			return;
+		}
+
 		// Settings - Disable CSS
 		if ( isset( $vfb_settings['disable-css'] ) )
 			return;
@@ -1516,6 +1524,7 @@ class Visual_Form_Builder{
 			<table class="form-table">
 				<?php
 					$disable = array(
+						'always-load-css'     => __( 'Always load CSS', 'visual-form-builder' ),
 						'disable-css'         => __( 'Disable CSS', 'visual-form-builder' ),	// visual-form-builder-css
 						'address-labels'      => __( 'Place Address labels above fields', 'visual-form-builder' ),	// vfb_address_labels_placement
 						'show-version'        => __( 'Disable meta tag version', 'visual-form-builder' ),	// vfb_show_version
