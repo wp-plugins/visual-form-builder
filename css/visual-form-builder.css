@@ -46,7 +46,11 @@ form.visual-form-builder li{
 .visual-form-builder ul,
 .entry-content .visual-form-builder ul,
 .comment-content .visual-form-builder ul,
-.mu_register .visual-form-builder ul {
+.mu_register .visual-form-builder ul,
+.visual-form-builder ol,
+.entry-content .visual-form-builder ol,
+.comment-content .visual-form-builder ol,
+.mu_register .visual-form-builder ol {
 	margin:0 14px;
 	padding:0;
 	background: none;
@@ -110,6 +114,14 @@ span.vfb-full select{
 	.visual-form-builder span.vfb-right{
 		float:right;
 		width:48%;
+	}
+
+	.visual-form-builder span.vfb-span ul li {
+		list-style: disc;
+	}
+
+	.visual-form-builder span.vfb-span ol li {
+		list-style: decimal;
 	}
 
 .visual-form-builder span.vfb-right input,

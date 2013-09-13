@@ -21,7 +21,7 @@ jQuery(document).ready(function($) {
 	});
 
 	// Force bullets to hide, but only if list-style-type isn't set
-	$( '.visual-form-builder li:not(.vfb-item-instructions li)' ).filter( function(){
+	$( '.visual-form-builder li:not(.vfb-item-instructions li, .vfb-span li)' ).filter( function(){
 		return $( this ).css( 'list-style-type' ) !== 'none';
 	}).css( 'list-style', 'none' );
 
