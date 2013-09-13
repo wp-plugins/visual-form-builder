@@ -355,7 +355,7 @@ class VisualFormBuilder_Forms_List extends WP_List_Table {
 
 		// Get column headers
 		$columns  = $this->get_columns();
-		$hidden   = array();
+		$hidden   = get_hidden_columns( $this->screen );
 
 		// Get sortable columns
 		$sortable = $this->get_sortable_columns();

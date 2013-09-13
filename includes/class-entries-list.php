@@ -461,7 +461,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 
 		// Get column headers
 		$columns = $this->get_columns();
-		$hidden = array();
+		$hidden   = get_hidden_columns( $this->screen );
 
 		// Get sortable columns
 		$sortable = $this->get_sortable_columns();
@@ -503,7 +503,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 					'sender_email' 	=> stripslashes( $entry->sender_email ),
 					'emails_to' 	=> implode( ',', unserialize( stripslashes( $entry->emails_to ) ) ),
 					'date' 			=> date( "$date_format $time_format", strtotime( $entry->date_submitted ) ),
-					'ip_address' 	=> $entry->ip_address
+					'ip_address' 	=> $entry->ip_address,
 			);
 		}
 
