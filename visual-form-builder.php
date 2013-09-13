@@ -1616,16 +1616,19 @@ class Visual_Form_Builder{
 			<div id="vfb-sidebar">
 				<div id="vfb-upgrade-column">
 					<div class="vfb-pro-upgrade">
-				    	<h2><a href="http://vfb.matthewmuro.com">Visual Form Builder Pro</a></h2>
+				    	<h2><a href="http://vfbpro.com">Visual Form Builder Pro</a></h2>
 				        <p class="vfb-pro-call-to-action">
-				        	<a class="vfb-btn vfb-btn-inverse" href="http://vfb.matthewmuro.com/#pricing"><?php _e( 'View Pricing' , 'visual-form-builder'); ?></a>
-				        	<a class="vfb-btn vfb-btn-primary" href="http://visualformbuilder.fetchapp.com/sell/dahdaeng/ppc"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></a>
+				        	<a class="vfb-btn vfb-btn-inverse" href="http://vfbpro.com/#pricing" target="_blank"><?php _e( 'View Pricing' , 'visual-form-builder'); ?></a>
+				        	<a class="vfb-btn vfb-btn-primary" href="http://store.vfbpro.com" target="_blank"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></a>
+				        </p>
+				        <p class="vfb-pro-call-to-action">
+				        	<a class="button" href="http://demo.vfbpro.com" target="_blank"><?php _e( 'Try the Free Live Demo &rarr;' , 'visual-form-builder'); ?></a>
 				        </p>
 				        <h3><?php _e( 'New Features' , 'visual-form-builder'); ?></h3>
 				        <ul>
-				        	<li><a href="http://vfb.matthewmuro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
+				        	<li><a href="http://vfbpro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
 				            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
-				            <li><?php _e( 'Optional SPAM Verification' , 'visual-form-builder'); ?></li>
+				            <li><?php _e( 'reCAPTCHA' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Nested Drag and Drop' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Conditional Logic' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( '10+ new Form Fields' , 'visual-form-builder'); ?></li>
@@ -1646,7 +1649,7 @@ class Visual_Form_Builder{
 				            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
 				        </ul>
 
-				        <p><a href="http://vfb.matthewmuro.com/#features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a>.</p>
+				        <p><a href="http://vfbpro.com/#features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a>.</p>
 				    </div> <!-- .vfb-pro-upgrade -->
 
 			   		<h3><?php _e( 'Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
