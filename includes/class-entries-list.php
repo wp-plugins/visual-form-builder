@@ -42,6 +42,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			case 'emails_to':
 			case 'date':
 			case 'ip_address':
+			case 'entry_id' :
 				return $item[ $column_name ];
 		}
 	}
@@ -90,7 +91,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'sender_email' 	=> __( 'Sender Email' , 'visual-form-builder'),
 			'emails_to' 	=> __( 'Emailed To' , 'visual-form-builder'),
 			'ip_address' 	=> __( 'IP Address' , 'visual-form-builder'),
-			'date' 			=> __( 'Date Submitted' , 'visual-form-builder')
+			'date' 			=> __( 'Date Submitted' , 'visual-form-builder'),
+			'entry_id'		=> __( 'Entry ID' , 'visual-form-builder'),
 		);
 
 		return $columns;
@@ -111,16 +113,22 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
  		switch ( $orderby ) {
 			case 'date':
 				$order_col = 'date_submitted';
-			break;
+				break;
+
 			case 'form':
 				$order_col = 'form_title';
-			break;
+				break;
+
 			case 'subject':
 			case 'ip_address':
 			case 'sender_name':
 			case 'sender_email':
 				$order_col = $orderby;
-			break;
+				break;
+
+			case 'entry_id' :
+				$order_col = 'entries_id';
+				break;
 		}
 
 		$where = '';
@@ -256,7 +264,8 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			'subject' 		=> array( 'subject', false ),
 			'sender_name' 	=> array( 'sender_name', false ),
 			'sender_email' 	=> array( 'sender_email', false ),
-			'date' 			=> array( 'date', true )
+			'date' 			=> array( 'date', true ),
+			'entry_id'		=> array( 'entry_id', true ),
 		);
 
 		return $sortable_columns;
@@ -497,6 +506,7 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 			$data[] =
 				array(
 					'entry_id' 		=> $entry->entries_id,
+					'id' 			=> $entry->entries_id,
 					'form' 			=> stripslashes( $entry->form_title ),
 					'subject' 		=> stripslashes( $entry->subject ),
 					'sender_name' 	=> stripslashes( $entry->sender_name ),
