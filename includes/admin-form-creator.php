@@ -26,10 +26,10 @@ $form_notification_entry 	= stripslashes( $form->form_notification_entry );
 $form_label_alignment 		= stripslashes( $form->form_label_alignment );
 
 // Only show required text fields for the sender name override
-$senders = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE form_id = %d AND field_type IN( 'text', 'name' ) AND field_validation = '' AND field_required = 'yes'", $form_nav_selected_id ) );
+$senders = $wpdb->get_results( $wpdb->prepare( "SELECT field_id, field_name FROM $this->field_table_name WHERE form_id = %d AND field_type IN( 'text', 'name' ) AND field_validation = '' AND field_required = 'yes'", $form_nav_selected_id ) );
 
 // Only show required email fields for the email override
-$emails = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->field_table_name WHERE (form_id = %d AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = %d AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')", $form_nav_selected_id, $form_nav_selected_id ) );
+$emails = $wpdb->get_results( $wpdb->prepare( "SELECT field_id, field_name FROM $this->field_table_name WHERE (form_id = %d AND field_type='text' AND field_validation = 'email' AND field_required = 'yes') OR (form_id = %d AND field_type='email' AND field_validation = 'email' AND field_required = 'yes')", $form_nav_selected_id, $form_nav_selected_id ) );
 
 $screen = get_current_screen();
 $class = 'columns-' . get_current_screen()->get_columns();
@@ -163,7 +163,11 @@ $page_main = $this->_admin_pages[ 'vfb' ];
                                     <option value="" <?php selected( $form_email_from_name_override, '' ); ?>></option>
                                     <?php
                                     foreach( $senders as $sender ) {
-                                        echo '<option value="' . $sender->field_id . '"' . selected( $form_email_from_name_override, $sender->field_id ) . '>' . stripslashes( $sender->field_name ) . '</option>';
+                                        echo sprintf( '<option value="%1$d"%2$s>%3$s</option>',
+	                                        $sender->field_id,
+	                                        selected( $form_email_from_name_override, $sender->field_id, 0 ),
+	                                        stripslashes( $sender->field_name )
+                                        );
                                     }
                                     ?>
                                 </select>
@@ -193,7 +197,11 @@ $page_main = $this->_admin_pages[ 'vfb' ];
                                     <option value="" <?php selected( $form_email_from_override, '' ); ?>></option>
                                     <?php
                                     foreach( $emails as $email ) {
-                                        echo '<option value="' . $email->field_id . '"' . selected( $form_email_from_override, $email->field_id ) . '>' . stripslashes( $email->field_name ) . '</option>';
+                                        echo sprintf( '<option value="%1$d"%2$s>%3$s</option>',
+                                        	$email->field_id,
+                                        	selected( $form_email_from_override, $email->field_id, 0 ),
+                                        	stripslashes( $email->field_name )
+                                        );
                                     }
                                     ?>
                                 </select>
@@ -319,7 +327,11 @@ $page_main = $this->_admin_pages[ 'vfb' ];
                                             <option value="" <?php selected( $form_notification_email, '' ); ?>></option>
                                             <?php
                                             foreach( $emails as $email ) {
-                                                echo '<option value="' . $email->field_id . '"' . selected( $form_notification_email, $email->field_id ) . '>' . $email->field_name . '</option>';
+                                                echo sprintf( '<option value="%1$d"%2$s>%3$s</option>',
+                                                	$email->field_id,
+                                                	selected( $form_notification_email, $email->field_id, 0 ),
+                                                	$email->field_name
+                                                );
                                             }
                                             ?>
                                         </select>
