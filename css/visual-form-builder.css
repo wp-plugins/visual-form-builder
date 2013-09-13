@@ -447,8 +447,14 @@ label.error{
 }
 
 input.error,
+input.vfb-text.error,
+input[type="text"].vfb-text.error,
+input[type="tel"].vfb-text.error,
+input[type="email"].vfb-text.error,
+input[type="url"].vfb-text.error,
 select.error,
-textarea.error{
+textarea.error,
+textarea.vfb-textarea.error,{
 	border:1px solid red;
 }
 
