@@ -1417,8 +1417,8 @@ class Visual_Form_Builder{
 		$this->_admin_pages = $current_pages;
 
 		// Adds a Screen Options tab to the Entries screen
-		add_filter( 'load-' . $current_pages['vfb'], array( &$this, 'screen_options' ) );
-		add_filter( 'load-' . $current_pages['vfb-entries'], array( &$this, 'screen_options' ) );
+		add_action( 'load-' . $current_pages['vfb'], array( &$this, 'screen_options' ) );
+		add_action( 'load-' . $current_pages['vfb-entries'], array( &$this, 'screen_options' ) );
 
 		// Add meta boxes to the form builder admin page
 		add_action( 'load-' . $current_pages['vfb'], array( &$this, 'add_meta_boxes' ) );
