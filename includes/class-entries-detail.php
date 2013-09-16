@@ -89,8 +89,8 @@ class VisualFormBuilder_Entries_Detail{
 			$count = 0;
 			$open_fieldset = $open_section = false;
 
-			foreach ( $data as $k => $v ) {
-				if ( !is_array( $v ) ) {
+			foreach ( $data as $k => $v ) :
+				if ( !is_array( $v ) ) :
 					if ( $count == 0 ) {
 						echo '<div class="postbox">
 							<h3><span>' . $entry->form_title . ' : ' . __( 'Entry' , 'visual-form-builder') .' #' . $entry->entries_id . '</span></h3>
@@ -100,12 +100,11 @@ class VisualFormBuilder_Entries_Detail{
 					echo '<h4>' . ucwords( $k ) . '</h4>';
 					echo $v;
 					$count++;
-				}
-				else {
+				else :
 					// Cast each array as an object
 					$obj = (object) $v;
 
-					if ( $obj->type == 'fieldset' ) {
+					if ( $obj->type == 'fieldset' ) :
 						// Close each fieldset
 						if ( $open_fieldset == true )
 							echo '</table>';
@@ -113,18 +112,17 @@ class VisualFormBuilder_Entries_Detail{
 						echo '<h3>' . stripslashes( $obj->name ) . '</h3><table class="form-table">';
 
 						$open_fieldset = true;
-					}
+					endif;
 
 
-					switch ( $obj->type ) {
+					switch ( $obj->type ) :
 						case 'fieldset' :
 						case 'section' :
 						case 'submit' :
 						case 'page-break' :
 						case 'verification' :
 						case 'secret' :
-
-						break;
+							break;
 
 						case 'file-upload' :
 							?>
@@ -133,7 +131,17 @@ class VisualFormBuilder_Entries_Detail{
 								<td style="background:#eee;border:1px solid #ddd"><a href="<?php esc_attr_e( $obj->value ); ?>" target="_blank"><?php echo stripslashes( esc_html( $obj->value ) ); ?></a></td>
 							</tr>
 	                    	<?php
-						break;
+							break;
+
+						case 'textarea' :
+						case 'html' :
+							?>
+							<tr valign="top">
+								<th scope="row"><label for="field[<?php echo $obj->id; ?>]"><?php echo stripslashes( $obj->name ); ?></label></th>
+								<td style="background:#eee;border:1px solid #ddd"><?php echo wpautop( stripslashes( wp_specialchars_decode( esc_html( $obj->value ) ) ) ); ?></td>
+							</tr>
+	                    	<?php
+							break;
 
 						default :
 							?>
@@ -142,11 +150,11 @@ class VisualFormBuilder_Entries_Detail{
 								<td style="background:#eee;border:1px solid #ddd"><?php echo stripslashes( wp_specialchars_decode( esc_html( $obj->value ) ) ); ?></td>
 							</tr>
                         	<?php
-						break;
+							break;
 
-					}
-				}
-			}
+					endswitch;
+				endif;
+			endforeach;
 
 			if ( $count > 0 )
 				echo '</div></div>';
