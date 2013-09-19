@@ -25,6 +25,9 @@ $vfb_settings 	= get_option( 'vfb-settings' );
 // Settings - Max Upload Size
 $settings_max_upload    = isset( $vfb_settings['max-upload-size'] ) ? $vfb_settings['max-upload-size'] : 25;
 
+// Settings - Spam word sensitivity
+$settings_spam_points    = isset( $vfb_settings['spam-points'] ) ? $vfb_settings['spam-points'] : 4;
+
 // Set submitted action to display success message
 $this->submitted = true;
 
@@ -283,7 +286,7 @@ foreach ( $fields as $field ) :
 	endif;
 
 	// If the user accumulates more than 4 points, it might be spam
-	if ( $points > 4 )
+	if ( $points > $settings_spam_points )
 		wp_die( __( 'Your responses look too much like spam and could not be sent at this time.', 'visual-form-builder' ), '', array( 'back_link' => true ) );
 endforeach;
 
