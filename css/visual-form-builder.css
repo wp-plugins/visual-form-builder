@@ -328,6 +328,14 @@ textarea.vfb-textarea{
 	width:100%;
 }
 
+input[type="file"].vfb-small,
+input[type="file"].vfb-medium,
+input[type="file"].vfb-large {
+	height: auto;
+	line-height: normal;
+}
+
+
 textarea.vfb-medium{
 	height:5.5em;
 }
