@@ -834,7 +834,7 @@ class Visual_Form_Builder{
 				$wpdb->insert( $this->field_table_name, $submit );
 
 				// Redirect to keep the URL clean (use AJAX in the future?)
-				wp_redirect( 'admin.php?page=visual-form-builder&form=' . $new_form_selected );
+				wp_redirect( 'admin.php?page=visual-form-builder&action=edit&form=' . $new_form_selected );
 				exit();
 
 				break;
