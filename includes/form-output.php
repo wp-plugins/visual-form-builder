@@ -134,7 +134,7 @@ foreach ( $fields as $field ) :
 			$for = !in_array( $field_type, array( 'checkbox', 'radio', 'time', 'address', 'instructions' ) ) ? ' for="%4$s"' : '';
 
 			$output .= sprintf(
-				'<li class="vfb-item vfb-item-%1$s %2$s %3$s" id="item-%4$s"><label for="' . $for . '" class="vfb-desc">%5$s %6$s</label>',
+				'<li class="vfb-item vfb-item-%1$s %2$s %3$s" id="item-%4$s"><label' . $for . ' class="vfb-desc">%5$s %6$s</label>',
 				$field_type,
 				$columns_choice,
 				$layout,
