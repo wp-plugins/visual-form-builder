@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
 Requires at least: 3.5
-Tested up to: 3.6
-Stable tag: 2.7.8
+Tested up to: 3.6.1
+Stable tag: 2.7.9
 License: GPLv2 or later
 
 Build beautiful, fully functional contact forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -236,6 +236,24 @@ function my_scripts_method() {
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.7.9 — Sep 23, 2013**
+
+* Add "Always load CSS" setting
+* Add "Spam word sensitivity" setting
+* Add Entry ID to entries list view
+* Update number sanitizing to use regular expression instead of floatval
+* Update jQuery UI CSS
+* Update file input styles
+* Update CSS and JS to use cache busting version numbers
+* Update email and entry detail to wrap textarea, HTML, and post content in wpautop
+* Fix bug where creating a new form did not forward to edit screen immediately
+* Fix label "for" attribute output
+* Fix bug where lists were unstyled in descriptions
+* Fix various “selected” output bugs in admin
+* Fix bug where "Show on Screen" would not remember selections
+* Fix a couple screen options calls to use action and not filter
+* Reduce number of queries on forms list page
 
 **Version 2.7.8 — Aug 13, 2013**
 
@@ -598,6 +616,9 @@ function my_scripts_method() {
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.7.9 =
+Add "Always load CSS" setting, various updates and bug fixes
 
 = 2.7.8 =
 Add settings page. Update CSS enqueue to only load when form exists on the page
