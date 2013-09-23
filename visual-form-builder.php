@@ -1810,7 +1810,7 @@ class Visual_Form_Builder{
 					break;
 
 				case 'number' :
-					return floatval( $data );
+					return preg_replace( '/\D/i', '', $data );
 					break;
 
 				case 'address' :
