@@ -15,7 +15,7 @@ Build beautiful, fully functional contact forms in only a few minutes without wr
 
 = Upgrade to Visual Form Builder Pro =
 
-If you are a fan of Visual Form Builder and want extra features and functionality, [Visual Form Builder Pro](http://vfb.matthewmuro.com) is available.
+If you are a fan of Visual Form Builder and want extra features and functionality, [Visual Form Builder Pro](http://vfbpro.com) is available.
 
 = Features =
 
@@ -183,7 +183,7 @@ If, after following the above procedures, you are still having problems please r
 
 Please follow the tutorial on [how to customize the CSS](http://matthewmuro.com/2012/11/15/visual-form-builder-pro-customizing-the-form-design/).
 
-By upgrading to Visual Form Builder Pro, you be able to purchase the [Form Designer](http://vfb.matthewmuro.com/add-ons/form-designer) add-on which will let you easily customize the design.
+By upgrading to Visual Form Builder Pro, you be able to purchase the [Form Designer](http://vfbpro.com/add-ons/form-designer) add-on which will let you easily customize the design.
 
 = Customizing the Date Picker =
 
