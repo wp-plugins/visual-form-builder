@@ -50,7 +50,7 @@ class VisualFormBuilder_Widget extends WP_Widget {
 			<?php
 				foreach ( $forms as $form ) {
 					echo sprintf(
-						'<option value="%1$d" id="%2$s"%3$s>%4$s</option>',
+						'<option value="%1$d" id="%2$s"%3$s>%1$d - %4$s</option>',
 						absint( $form->form_id ),
 						esc_html( $form->form_key ),
 						selected( $form->form_id, $instance['id'], 1 ),
