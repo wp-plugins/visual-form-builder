@@ -111,7 +111,7 @@ class VisualFormBuilder_Export {
 <?php
 						foreach ( $forms as $form ) :
 							echo sprintf(
-								'<option value="%1$d" id="%2$s">%3$s</option>',
+								'<option value="%1$d" id="%2$s">%1$d - %3$s</option>',
 								$form->form_id,
 								$form->form_key,
 								stripslashes( $form->form_title )
@@ -429,7 +429,7 @@ class VisualFormBuilder_Export {
 		foreach ( $fields as $field ) :
 			// Strip unique ID for a clean header
 			$search = preg_replace( '/{{(\d+)}}/', '', $field );
-			$fields_header[] = $search;
+			$fields_header[] = wp_specialchars_decode( $search, ENT_QUOTES );
 
 			// Field with unique ID to use as matching data
 			$fields_clean[] = wp_specialchars_decode( $field, ENT_QUOTES );
@@ -544,7 +544,7 @@ class VisualFormBuilder_Export {
 			// Strip unique ID for a clean list
 			$search = preg_replace( '/{{(\d+)}}/', '', $v );
 
-			$output .= sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%4$s" %3$s> %2$s</label><br>', $k, $search, $selected, $v );
+			$output .= sprintf( '<label for="vfb-display-entries-val-%1$d"><input name="entries_columns[]" class="vfb-display-entries-vals" id="vfb-display-entries-val-%1$d" type="checkbox" value="%4$s" %3$s> %2$s</label><br>', $k, $search, $selected, esc_attr( $v ) );
 		endforeach;
 
 		return $output;
@@ -626,7 +626,7 @@ class VisualFormBuilder_Export {
 
 		$m = isset( $_REQUEST['m'] ) ? (int) $_REQUEST['m'] : 0;
 
-		foreach ( $months as $arc_row ) {
+		foreach ( $months as $arc_row ) :
 			if ( 0 == $arc_row->year )
 				continue;
 
@@ -637,7 +637,7 @@ class VisualFormBuilder_Export {
 				esc_attr( $arc_row->year . '-' . $month ),
 				sprintf( __( '%1$s %2$d' ), $wp_locale->get_month( $month ), $year )
 			);
-		}
+		endforeach;
 
 	}
 }
