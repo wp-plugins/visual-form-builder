@@ -1438,7 +1438,6 @@ class Visual_Form_Builder{
 	public function admin_add_new() {
 ?>
 	<div class="wrap">
-		<?php screen_icon( 'options-general' ); ?>
 		<h2><?php _e( 'Add New Form', 'visual-form-builder' ); ?></h2>
 <?php
 		include_once( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/admin-new-form.php' );
@@ -1457,7 +1456,6 @@ class Visual_Form_Builder{
 		global $entries_list, $entries_detail;
 ?>
 	<div class="wrap">
-		<?php screen_icon( 'options-general' ); ?>
 		<h2>
 			<?php _e( 'Entries', 'visual-form-builder' ); ?>
 <?php
@@ -1494,7 +1492,6 @@ class Visual_Form_Builder{
 		global $export;
 ?>
 	<div class="wrap">
-		<?php screen_icon( 'options-general' ); ?>
 		<h2><?php _e( 'Export', 'visual-form-builder' ); ?></h2>
 <?php
 		$export->display();
@@ -1514,7 +1511,6 @@ class Visual_Form_Builder{
 		$vfb_settings = get_option( 'vfb-settings' );
 ?>
 	<div class="wrap">
-		<?php screen_icon( 'themes' ); ?>
 		<h2><?php _e( 'Settings', 'visual-form-builder' ); ?></h2>
 		<form id="vfb-settings" method="post">
 			<input name="action" type="hidden" value="vfb_settings" />
@@ -1607,7 +1603,6 @@ class Visual_Form_Builder{
 		$form_nav_selected_id = ( isset( $_REQUEST['form'] ) ) ? $_REQUEST['form'] : '0';
 	?>
 	<div class="wrap">
-		<?php screen_icon( 'options-general' ); ?>
 		<h2>
 			<?php _e( 'Visual Form Builder', 'visual-form-builder' ); ?>
 <?php
