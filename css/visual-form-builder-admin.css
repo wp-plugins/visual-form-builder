@@ -1016,46 +1016,22 @@ label.error{
 		float: right;
 	}
 
+ul#promote-vfb {
+	margin-left: 20px;
+	list-style: disc;
+}
+
+	.rtl ul#promote-vfb {
+		margin-left: auto;
+		margin-right: 20px;
+	}
+
 #promote-vfb li {
-    padding-left: 20px;
     text-align: left;
 }
 
 	.rtl #promote-vfb li {
-		padding-left: 0;
-		padding-right: 40px;
 		text-align: right;
-	}
-
-#promote-vfb #twitter {
-    background: url('../images/sprite.png?d=20120921') -10px -746px no-repeat transparent;
-}
-
-	.rtl #promote-vfb #twitter {
-		background-position: right -746px;
-	}
-
-#promote-vfb #star {
-    background: url('../images/sprite.png?d=20120921') -10px -710px no-repeat transparent;
-}
-
-	.rtl #promote-vfb #star {
-		background-position: right -710px;
-	}
-
-#promote-vfb #paypal,
-.paypal {
-    background: url('../images/sprite.png?d=20120921') -10px -777px no-repeat transparent;
-}
-
-	.rtl #promote-vfb #paypal {
-		background-position: right -777px;
-	}
-
-	.paypal {
-	    padding-top: 3px;
-	    padding-left: 20px;
-	    height: 20px;
 	}
 
 .menu .ui-nestedSortable-error {
