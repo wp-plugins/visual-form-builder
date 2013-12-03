@@ -318,7 +318,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '<div>';
 
-			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span"><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
+			$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 
 			$output .= '<div style="clear:both"></div></div>';
 
@@ -349,7 +349,7 @@ foreach ( $fields as $field ) :
 
 			$output .= '<div>';
 
-			$output .= ( !empty( $description ) ) ? sprintf( '<span class="vfb-span"><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
+			$output .= ( !empty( $description ) ) ? sprintf( '<span><label>%2$s</label></span>%1$s', $form_item, $description ) : $form_item;
 
 			$output .= '<div style="clear:both"></div></div>';
 
