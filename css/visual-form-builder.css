@@ -268,12 +268,12 @@ textarea.vfb-textarea {
 		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
 	}
 
-	input.vfb-text.error:focus,
-	input[type="text"].vfb-text.error:focus,
-	input[type="tel"].vfb-text.error:focus,
-	input[type="email"].vfb-text.error:focus,
-	input[type="url"].vfb-text.error:focus,
-	textarea.vfb-textarea.error:focus {
+	input.vfb-text.vfb-error:focus,
+	input[type="text"].vfb-text.vfb-error:focus,
+	input[type="tel"].vfb-text.vfb-error:focus,
+	input[type="email"].vfb-text.vfb-error:focus,
+	input[type="url"].vfb-text.vfb-error:focus,
+	textarea.vfb-textarea.vfb-error:focus {
 		border-color: rgba(238,83,83,0.8);
 
 		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(238,83,83,.6);
@@ -448,21 +448,21 @@ li.vfb-right-third .vfb-large,
 }
 
 /* !Error */
-label.error{
+label.vfb-error{
 	color:red;
 	font-weight:bold;
 	font-size:90%;
 }
 
-input.error,
-input.vfb-text.error,
-input[type="text"].vfb-text.error,
-input[type="tel"].vfb-text.error,
-input[type="email"].vfb-text.error,
-input[type="url"].vfb-text.error,
-select.error,
-textarea.error,
-textarea.vfb-textarea.error,{
+input.vfb-error,
+input.vfb-text.vfb-error,
+input[type="text"].vfb-text.vfb-error,
+input[type="tel"].vfb-text.vfb-error,
+input[type="email"].vfb-text.vfb-error,
+input[type="url"].vfb-text.vfb-error,
+select.vfb-error,
+textarea.vfb-error,
+textarea.vfb-textarea.vfb-error,{
 	border:1px solid red;
 }
 

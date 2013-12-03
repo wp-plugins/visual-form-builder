@@ -9,6 +9,7 @@ jQuery(document).ready(function($) {
 					maxlength:2
 				}
 			},
+			errorClass : 'vfb-error',
 			errorPlacement: function(error, element) {
 				if ( element.is( ':radio' ) || element.is( ':checkbox' ) )
 					error.appendTo( element.parent().parent() );
