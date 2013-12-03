@@ -3,7 +3,7 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
 Requires at least: 3.5
-Tested up to: 3.6.1
+Tested up to: 3.8
 Stable tag: 2.7.9
 License: GPLv2 or later
 
@@ -106,7 +106,7 @@ If you are a fan of Visual Form Builder and want extra features and functionalit
 
 = Can I use my own verification system such as a CAPTCHA? =
 
-Because of the accessibility and usability problems inherent with a CAPTCHA system, Visual Form Builder will not be using such a system.
+reCAPTCHA is available with [Visual Form Builder Pro](http://vfbpro.com).
 
 Visual Form Builder uses a [text CAPTCHA](http://textcaptcha.com/). If you decide to upgrade to Visual Form Builder Pro, you will gain [Akismet](https://akismet.com/) support.
 
@@ -237,7 +237,18 @@ function my_scripts_method() {
 
 == Changelog ==
 
-**Version 2.7.9 — Sep 23, 2013**
+**Version 2.8 - Dec 3, 2013**
+
+* Add "Unselect All" link to entries export field selection
+* Update global form font size
+* Update errorClass to more specific vfb-error class name
+* Fix bug where error label border did not display on certain inputs
+* Fix bug affecting radio/ checkbox descriptions
+* Fix quotes and other encoded characters in export
+* Minor updates to the admin CSS
+* Remove screen_icon which has been deprecated in WordPress 3.8
+
+**Version 2.7.9 - Sep 23, 2013**
 
 * Add "Always load CSS" setting
 * Add "Spam word sensitivity" setting
@@ -255,7 +266,7 @@ function my_scripts_method() {
 * Fix a couple screen options calls to use action and not filter
 * Reduce number of queries on forms list page
 
-**Version 2.7.8 — Aug 13, 2013**
+**Version 2.7.8 - Aug 13, 2013**
 
 * Add settings page with options for popular filters
 * Add vfb_sender_mail_header, vfb_show_version filters
@@ -273,11 +284,11 @@ function my_scripts_method() {
 * Deprecate spam check for empty user agent
 * Remove texas from spam words
 
-**Version 2.7.7 — Jul 16, 2013**
+**Version 2.7.7 - Jul 16, 2013**
 
 * Fix bug where confirmation function fails
 
-**Version 2.7.6 — Jul 16, 2013**
+**Version 2.7.6 - Jul 16, 2013**
 
 * Add sorting to checkbox/radio/select options
 * Add dateFormat option for Date fields
@@ -296,7 +307,7 @@ function my_scripts_method() {
 * Remove unnecessary queries during email
 * Remove old “Display Forms” help image and just use text
 
-**Version 2.7.5 — Jun 06, 2013**
+**Version 2.7.5 - Jun 06, 2013**
 
 * Add Print button to Entry Detail view
 * Add Duplicate link to Form List view
@@ -309,7 +320,7 @@ function my_scripts_method() {
 * Fix bug on Export page where Fields were not limited to 1000 in an edge case
 * Fix bug where delete link did not work in Form List view
 
-**Version 2.7.4 — May 08, 2013**
+**Version 2.7.4 - May 08, 2013**
 
 * Update Numbers field to allow either Digits or Number validation and sanitize as float instead of int
 * Update Entries Detail "Delete" link to a "Trash" link
@@ -319,11 +330,11 @@ function my_scripts_method() {
 * Fix bug on Entries List to properly display Today's Entries
 * Minor updates
 
-**Version 2.7.3 — May 07, 2013**
+**Version 2.7.3 - May 07, 2013**
 
 * Fix bug where referer URL was not compatible with certain permalink structures
 
-**Version 2.7.2 — May 05, 2013**
+**Version 2.7.2 - May 05, 2013**
 
 * Add form search in admin
 * Add 'Pages to Export' option when more than 1000 entries detected for a single form
@@ -338,12 +349,12 @@ function my_scripts_method() {
 * Fix bug where nesting and sorting would not save
 * Fix bug during Export for certain encoded characters
 
-**Version 2.7.1 — Mar 13, 2013**
+**Version 2.7.1 - Mar 13, 2013**
 
 * Fix bug in Export where fields did not load in certain cases
 * Minor code updates
 
-**Version 2.7 — Feb 28, 2013**
+**Version 2.7 - Feb 28, 2013**
 
 * Add widget for displaying forms in sidebar
 * Add dashboard widget for displaying recent entries
@@ -358,11 +369,11 @@ function my_scripts_method() {
 * Rollback Date field type to non-HTML5 to prevent duplicate date pickers in Chrome
 * Update language .POT
 
-**Version 2.6.9 — Feb 08, 2013**
+**Version 2.6.9 - Feb 08, 2013**
 
 * Fix bug where Validation would be removed on saving predefined fields
 
-**Version 2.6.8 — Feb 06, 2013**
+**Version 2.6.8 - Feb 06, 2013**
 
 * Add Reply-To to email headers for better compatibility with some email servers
 * Add new Fields selection in Export
@@ -377,17 +388,17 @@ function my_scripts_method() {
 * Deprecate use of CDN for certain files in favor of locally hosted versions
 * Deprecate Export Selected in favor of more reliable exporting on the Export screen
 
-**Version 2.6.7 — Dec 06, 2012**
+**Version 2.6.7 - Dec 06, 2012**
 
 * Update email headers
 * Fix bug where notification email did not send
 * Fix textarea value formatting in email
 
-**Version 2.6.6 — Dec 04, 2012**
+**Version 2.6.6 - Dec 04, 2012**
 
 * Turn off script debugging
 
-**Version 2.6.5 — Dec 04, 2012**
+**Version 2.6.5 - Dec 04, 2012**
 
 * Add confirmation to Delete field
 * Add new Address label filter
@@ -399,11 +410,11 @@ function my_scripts_method() {
 * Fix media button to use correct action
 * Fix missing un-prefixed classes
 
-**Version 2.6.4 — Nov 12, 2012**
+**Version 2.6.4 - Nov 12, 2012**
 
 * Fix bug where SVN commit mangled code
 
-**Version 2.6.3 — Nov 12, 2012**
+**Version 2.6.3 - Nov 12, 2012**
 
 * Update CSS to now prefix all classes to help eliminate theme conflicts
 * Update email function to force a From email that exists on the same domain
@@ -412,7 +423,7 @@ function my_scripts_method() {
 * Fix bug preventing Export from displaying filtering options
 * Minor code cleanups
 
-**Version 2.6.2 — Oct 23, 2012**
+**Version 2.6.2 - Oct 23, 2012**
 
 * Fix bug where File Upload field would prevent validation
 * Fix bug when selecting entries export
@@ -420,12 +431,12 @@ function my_scripts_method() {
 * Fix bug for another missing Save Form button
 * Update JS and CSS from CDN to use HTTPS
 
-**Version 2.6.1 — Oct 17, 2012**
+**Version 2.6.1 - Oct 17, 2012**
 
 * Fix bug for missing Save Form button
 * Fix bug for entries screen options and pagination
 
-**Version 2.6 — Oct 17, 2012**
+**Version 2.6 - Oct 17, 2012**
 
 * Move plugin into its own menu
 * Add new 'All Forms' view with an alphabetical group list
@@ -437,7 +448,7 @@ function my_scripts_method() {
 * Fix bug where form rendering would behave erratically in Internet Explorer 9
 * Fix bug where sender emails would be cut off after 25 characters in the entries database
 
-**Version 2.5 — Sep 13, 2012**
+**Version 2.5 - Sep 13, 2012**
 
 * Add new Export page for exporting all entries
 * Add IDs to each form item on output
@@ -450,31 +461,31 @@ function my_scripts_method() {
 * Update server side validation to denote which field is failing
 * Minor admin CSS update
 
-**Version 2.4.1 — May 22, 2012**
+**Version 2.4.1 - May 22, 2012**
 
 * Fix bug where misspelled variable caused email to not send
 
-**Version 2.4 — May 22, 2012**
+**Version 2.4 - May 22, 2012**
 
 * Fix bug where label alignment option was not being saved
 * Update spam bot check to only execute when form is submitted
 * Update list of spam bots
 
-**Version 2.3.3 — Apr 30, 2012**
+**Version 2.3.3 - Apr 30, 2012**
 
 * Fix bug for missing media button image
 
-**Version 2.3.2 — Apr 27, 2012**
+**Version 2.3.2 - Apr 27, 2012**
 
 * Fix bug that displayed a warning
 
-**Version 2.3.1 — Apr 27, 2012**
+**Version 2.3.1 - Apr 27, 2012**
 
 * Fix bug where Export feature was broken
 * Fix bug where server validation failed on certain data types
 * Add months drop down filter to Entries list
 
-**Version 2.3 — Apr 24, 2012**
+**Version 2.3 - Apr 24, 2012**
 
 * Add media button to Posts/Pages to easily embed forms (thanks to Paul Armstrong Designs!)
 * Add search feature to Entries
@@ -488,7 +499,7 @@ function my_scripts_method() {
 * Update how the entries files are included to eliminate PHP notices
 * Minor updates to CSS
 
-**Version 2.2 — Mar 26, 2012**
+**Version 2.2 - Mar 26, 2012**
 
 * Add Label Alignment option
 * Add server side form validation; SPAM hardening
@@ -501,7 +512,7 @@ function my_scripts_method() {
 * Update jQueryUI version
 * Fix bug preventing form deletion
 
-**Version 2.1 — Mar 06, 2012**
+**Version 2.1 - Mar 06, 2012**
 
 * Add Accepts option to File Upload field
 * Add Small size to field options
@@ -512,7 +523,7 @@ function my_scripts_method() {
 * Verification fields now customizable
 * Verification field now can be set to not required
 
-**Version 2.0 — Feb 10, 2012**
+**Version 2.0 - Feb 10, 2012**
 
 * Fix bug for misspelled languages folder
 * Fix bug for slashes appearing in email and admin
@@ -521,15 +532,15 @@ function my_scripts_method() {
 * Update the way Addresses were handled during email
 * Add Hungarian translation
 
-**Version 1.9.2 — Jan 09, 2012**
+**Version 1.9.2 - Jan 09, 2012**
 
 * Bug fix for copied forms with nested fields
 
-**Version 1.9.1 — Jan 04, 2012**
+**Version 1.9.1 - Jan 04, 2012**
 
 * Bug fix for Sender Name, Email, and Notification Email overrides
 
-**Version 1.9 — Jan 03, 2012**
+**Version 1.9 - Jan 03, 2012**
 
 * Add ability for fields to be nested underneath Fieldsets and Sections
 * Add Section Form Item
@@ -538,7 +549,7 @@ function my_scripts_method() {
 * Update new form building to no longer force require email details
 * Update Delete Form link to require confirmation before deleting
 
-**Version 1.8 — Nov 22, 2011**
+**Version 1.8 - Nov 22, 2011**
 
 * Add Dynamic Add/Delete for Options for Radio, Select, and Checkbox fields
 * Add Dynamic Add/Delete for Email(s) To field
@@ -546,31 +557,31 @@ function my_scripts_method() {
 * Update Instructions field to allow for images
 * Submit button text value now customizable
 
-**Version 1.7 — Nov 09, 2011**
+**Version 1.7 - Nov 09, 2011**
 
 * Add Instructions Form Item
 * Add Duplicate Form feature
 * Add Sender Name and Sender Email customization fields to Notifications
 * Update CSS
 
-**Version 1.6 — Oct 07, 2011**
+**Version 1.6 - Oct 07, 2011**
 
 * Fix bug where multiple address blocks could not be used
 * Add internationalization support
 * Add auto-respond feature to separately notify your users after form submission
 * Update jQuery Validation to 1.8.1
 
-**Version 1.5.1 — Sep 08, 2011**
+**Version 1.5.1 - Sep 08, 2011**
 
 * Fix bug where missing jQuery prevented multiple form fix from working
 
-**Version 1.5 — Sep 07, 2011**
+**Version 1.5 - Sep 07, 2011**
 
 * Fix bug where multiple forms on same page could not be submitted individually
 * Fix bug where Entries form filter did not work
 * Update admin CSS to use it's own file instead of one loaded form WordPress
 
-**Version 1.4 — Aug 16, 2011**
+**Version 1.4 - Aug 16, 2011**
 
 * Fix bug where database charset wasn't being set and causing character encoding issues
 * Fix date submitted to match local date and time settings
@@ -579,13 +590,13 @@ function my_scripts_method() {
 * Add Entries Export feature
 * Update View Entries to full page view instead of jQuery show/hide quick view
 
-**Version 1.3.1 — Jul 28, 2011**
+**Version 1.3.1 - Jul 28, 2011**
 
 * Fix bug where new Confirmation screen was not being installed
 * Fix bug where escaped names and descriptions were not being stripped of slashes properly
 * Add missing sprite image for Form Items
 
-**Version 1.3 — Jul 27, 2011**
+**Version 1.3 - Jul 27, 2011**
 
 * Fix bug where jQuery validation was missing from security field
 * Update Form Items UI to make it easier and quicker to add fields
@@ -593,11 +604,11 @@ function my_scripts_method() {
 * Add Confirmation customization
 * Update CSS output for some elements
 
-**Version 1.2.1 — Jul 19, 2011**
+**Version 1.2.1 - Jul 19, 2011**
 
 * Fix bug where entries table does not install
 
-**Version 1.2 — Jul 19, 2011**
+**Version 1.2 - Jul 19, 2011**
 
 * Fix bug where reserved words may have been used
 * Fix bug where multiple open validation dropdowns could not be used in the builder
@@ -605,13 +616,13 @@ function my_scripts_method() {
 * Improve form submission by removing wp_redirect
 * Add Sender Name and Email override
 
-**Version 1.1 — Jun 30, 2011**
+**Version 1.1 - Jun 30, 2011**
 
 * Fix bug that prevented all selected checkbox options from being submitted
 * Add more help text on contextual Help tab
 * Fix missing closing paragraph tag on success message
 
-**Version 1.0 — Jun 23, 2011**
+**Version 1.0 - Jun 23, 2011**
 
 * Plugin launch!
 
