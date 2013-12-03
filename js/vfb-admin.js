@@ -575,6 +575,12 @@ jQuery(document).ready(function($) {
 		$( '#vfb-export-entries-fields input[type="checkbox"]' ).prop( 'checked', true );
 	});
 
+	$( '#vfb-export-unselect-all' ).click( function( e ) {
+		e.preventDefault();
+
+		$( '#vfb-export-entries-fields input[type="checkbox"]' ).prop( 'checked', false );
+	});
+
 	// !Entries fields
 	$( '#vfb-export-entries-forms' ).change( function(){
 		var id = $( this ).val(),

@@ -149,7 +149,10 @@ class VisualFormBuilder_Export {
         		<li>
         			<label class="vfb-export-label"><?php _e( 'Fields', 'visual-form-builder' ); ?>:</label>
 
-        			<p><a id="vfb-export-select-all" href="#"><?php _e( 'Select All', 'visual-form-builder' ); ?></a></p>
+        			<p>
+        				<a id="vfb-export-select-all" href="#"><?php _e( 'Select All', 'visual-form-builder' ); ?></a>
+        				<a id="vfb-export-unselect-all" href="#"><?php _e( 'Unselect All', 'visual-form-builder' ); ?></a>
+        			</p>
 
         			<div id="vfb-export-entries-fields">
 	        		<?php

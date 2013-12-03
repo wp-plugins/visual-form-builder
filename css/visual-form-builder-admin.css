@@ -1497,7 +1497,21 @@ ul.vfb-fields-col-2{
 	border-radius: 3px;
 	margin-left: 10em;
 	padding: 5px;
+	background: white;
 }
+
+#vfb-export-select-all,
+#vfb-export-unselect-all {
+	width: 150px;
+	display: inline-block;
+	text-align: left;
+}
+
+	#vfb-export-unselect-all {
+		text-align: right;
+		margin-left: 5px;
+	}
+
 
 @media print {
     body * {
