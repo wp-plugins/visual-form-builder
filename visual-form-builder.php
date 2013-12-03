@@ -1626,7 +1626,7 @@ class Visual_Form_Builder{
 					<div class="vfb-pro-upgrade">
 				    	<h2><a href="http://vfbpro.com">Visual Form Builder Pro</a></h2>
 				        <p class="vfb-pro-call-to-action">
-				        	<a class="vfb-btn vfb-btn-inverse" href="http://vfbpro.com/#pricing" target="_blank"><?php _e( 'View Pricing' , 'visual-form-builder'); ?></a>
+				        	<a class="vfb-btn vfb-btn-inverse" href="http://vfbpro.com/pricing" target="_blank"><?php _e( 'View Pricing' , 'visual-form-builder'); ?></a>
 				        	<a class="vfb-btn vfb-btn-primary" href="http://store.vfbpro.com" target="_blank"><?php _e( 'Buy Now' , 'visual-form-builder'); ?></a>
 				        </p>
 				        <p class="vfb-pro-call-to-action">
@@ -1634,7 +1634,7 @@ class Visual_Form_Builder{
 				        </p>
 				        <h3><?php _e( 'New Features' , 'visual-form-builder'); ?></h3>
 				        <ul>
-				        	<li><a href="http://vfbpro.com/#addons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
+				        	<li><a href="http://vfbpro.com/add-ons"><?php _e( 'Now with Add-Ons' , 'visual-form-builder'); ?></a></li>
 				            <li><?php _e( 'Akismet Support' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'reCAPTCHA' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Nested Drag and Drop' , 'visual-form-builder'); ?></li>
@@ -1653,11 +1653,10 @@ class Visual_Form_Builder{
 				            <li><?php _e( 'Form Paging' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Live Preview' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Custom Capabilities' , 'visual-form-builder'); ?></li>
-				            <li><?php _e( 'No License Key' , 'visual-form-builder'); ?></li>
 				            <li><?php _e( 'Automatic Updates' , 'visual-form-builder'); ?></li>
 				        </ul>
 
-				        <p><a href="http://vfbpro.com/#features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a>.</p>
+				        <p><a href="http://vfbpro.com/features"><?php _e( 'View all features' , 'visual-form-builder'); ?></a></p>
 				    </div> <!-- .vfb-pro-upgrade -->
 
 			   		<h3><?php _e( 'Promote Visual Form Builder' , 'visual-form-builder'); ?></h3>
