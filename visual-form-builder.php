@@ -722,6 +722,10 @@ class Visual_Form_Builder{
 			if ( function_exists( 'has_shortcode' ) ) {
 				global $post;
 
+				// If no post exists, exit
+				if ( !$post )
+					return;
+
 				if ( !has_shortcode( $post->post_content, 'vfb' ) )
 					return;
 			} elseif ( !$this->has_shortcode( 'vfb' ) ) {
