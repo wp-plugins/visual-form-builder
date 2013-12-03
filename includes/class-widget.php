@@ -37,33 +37,42 @@ class VisualFormBuilder_Widget extends WP_Widget {
 		$forms = $wpdb->get_results( "SELECT * FROM $this->form_table_name WHERE 1=1 $where ORDER BY $order" );
 
 		$instance = wp_parse_args( (array) $instance );
+
+		$title = isset( $instance[ 'title' ] ) ? $instance[ 'title' ] : '';
 		?>
-		<select name="<?php echo $this->get_field_name( 'id' ); ?>">
-		<?php
-			foreach ( $forms as $form ) {
-				echo sprintf(
-					'<option value="%1$d" id="%2$s"%3$s>%4$s</option>',
-					absint( $form->form_id ),
-					esc_html( $form->form_key ),
-					selected( $form->form_id, $instance['id'], 1 ),
-					wp_specialchars_decode( esc_html( stripslashes( $form->form_title ) ), ENT_QUOTES )
-				);
-			}
-		?>
-		</select>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'id' ); ?>"><?php _e( 'Form to display:', 'visual-form-builder' ); ?></label>
+			<select id="<?php echo $this->get_field_id( 'id' ); ?>" name="<?php echo $this->get_field_name( 'id' ); ?>" class="widefat">
+			<?php
+				foreach ( $forms as $form ) {
+					echo sprintf(
+						'<option value="%1$d" id="%2$s"%3$s>%4$s</option>',
+						absint( $form->form_id ),
+						esc_html( $form->form_key ),
+						selected( $form->form_id, $instance['id'], 1 ),
+						wp_specialchars_decode( esc_html( stripslashes( $form->form_title ) ), ENT_QUOTES )
+					);
+				}
+			?>
+			</select>
+		</p>
 		<?php
 	}
 
 	public function widget( $args, $instance ) {
 		extract( $args );
 
+		$form_id = absint( $instance['id'] );
+
 		echo $before_widget;
 
-		// Parse the arguments into an array
-		$atts = wp_parse_args( $instance );
-
-		// Sanitize and save form id
-		$form_id = absint( $atts['id'] );
+		// Title
+		if ( !empty( $instance['title'] ) )
+			echo $args['before_title'] . $instance['title'] . $args['after_title'];
 
 		// Print the output
 		echo do_shortcode( "[vfb id=$form_id]" );
@@ -72,9 +81,10 @@ class VisualFormBuilder_Widget extends WP_Widget {
 	}
 
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
+		$instance = array();
 
-		$instance['id'] = $new_instance['id'];
+		$instance['id'] = !empty( $new_instance['id'] ) ? absint( $new_instance['id'] ) : '';
+		$instance['title'] = !empty( $new_instance['title'] ) ? strip_tags( $new_instance['title'] ) : '';
 
 		return $instance;
 	}

@@ -239,12 +239,14 @@ function my_scripts_method() {
 
 **Version 2.8 - Dec 3, 2013**
 
+* Add Title option to widget
 * Add "Unselect All" link to entries export field selection
 * Update global form font size
 * Update errorClass to more specific vfb-error class name
 * Fix bug where error label border did not display on certain inputs
 * Fix bug affecting radio/ checkbox descriptions
 * Fix quotes and other encoded characters in export
+* Fix PHP notices when global $post is not available
 * Minor updates to the admin CSS
 * Remove screen_icon which has been deprecated in WordPress 3.8
 
