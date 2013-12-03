@@ -350,21 +350,25 @@ class VisualFormBuilder_Entries_List extends WP_List_Table {
 	function extra_tablenav( $which ) {
 		global $wpdb;
 
-		$cols = $wpdb->get_results( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_title ASC" );
+		$cols = $wpdb->get_results( "SELECT DISTINCT forms.form_title, forms.form_id FROM $this->form_table_name AS forms ORDER BY forms.form_id ASC" );
 
 		// Only display the dropdown on the top of the table
 		if ( 'top' == $which ) {
 			echo '<div class="alignleft actions">';
 				$this->months_dropdown();
 			echo '<select id="form-filter" name="form-filter">
-				<option value="-1"' . selected( $this->current_filter_action(), -1 ) . '>' . __( 'View all forms' , 'visual-form-builder') . '</option>';
+				<option value="-1"' . selected( $this->current_filter_action(), -1 ) . '>' . __( 'View all forms' , 'visual-form-builder-pro') . '</option>';
 
 			foreach ( $cols as $form ) {
-				echo '<option value="' . $form->form_id . '"' . selected( $this->current_filter_action(), $form->form_id ) . '>' . $form->form_title . '</option>';
+				echo sprintf( '<option value="%1$d"%2$s>%1$d - %3$s</option>',
+					$form->form_id,
+					selected( $this->current_filter_action(), $form->form_id ),
+					$form->form_title
+				);
 			}
 
 			echo '</select>
-				<input type="submit" value="' . __( 'Filter' , 'visual-form-builder') . '" class="button-secondary" />
+				<input type="submit" value="' . __( 'Filter' , 'visual-form-builder-pro') . '" class="button-secondary" />
 				</div>';
 		}
 	}

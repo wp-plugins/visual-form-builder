@@ -243,6 +243,7 @@ function my_scripts_method() {
 * Add "Unselect All" link to entries export field selection
 * Update global form font size
 * Update errorClass to more specific vfb-error class name
+* Update various admin form filter drop downs to include form ID
 * Fix bug where error label border did not display on certain inputs
 * Fix bug affecting radio/ checkbox descriptions
 * Fix quotes and other encoded characters in export
