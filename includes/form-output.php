@@ -436,7 +436,11 @@ foreach ( $fields as $field ) :
 
 			endforeach;
 
-			$output .= "<div>$address</div>";
+			$output .= '<div>';
+
+			$output .= !empty( $description ) ? "<span class='vfb-span'><label>$description</label></span>$address" : $address;
+
+			$output .= '</div>';
 
 			break;
 
