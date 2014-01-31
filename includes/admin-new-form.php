@@ -23,7 +23,7 @@
 				<th scope="row"><label for="form-email-sender-name"><?php _e( 'Your Name or Company' , 'visual-form-builder'); ?></label></th>
 				<td>
 					<input type="text" value="" placeholder="" class="regular-text required" id="form-email-sender-name" name="form_email_from_name" />
-					<p class="description"><?php _e( 'Required. This is who your emails will come from.' , 'visual-form-builder'); ?></p>
+					<p class="description"><?php _e( 'Required. This option sets the "From" display name of the email that is sent.' , 'visual-form-builder'); ?></p>
 				</td>
 			</tr>
 			<!-- Reply-to Email -->
@@ -40,7 +40,7 @@
 				<th scope="row"><label for="form-email-subject"><?php _e( 'E-mail Subject' , 'visual-form-builder'); ?></label></th>
 				<td>
 					<input type="text" value="" placeholder="" class="regular-text" id="form-email-subject" name="form_email_subject" />
-					<p class="description"><?php _e( 'Optional (for now) - you can change this later' , 'visual-form-builder'); ?></p>
+					<p class="description"><?php _e( 'This sets the subject of the email that is sent.' , 'visual-form-builder'); ?></p>
 				</td>
 			</tr>
 			<!-- E-mail To -->
@@ -48,7 +48,7 @@
 				<th scope="row"><label for="form-email-to"><?php _e( 'E-mail To' , 'visual-form-builder'); ?></label></th>
 				<td>
 					<input type="text" value="" placeholder="" class="regular-text" id="form-email-to" name="form_email_to[]" />
-					<p class="description"><?php _e( 'Optional (for now) - you can change this later' , 'visual-form-builder'); ?></p>
+					<p class="description"><?php _e( 'Who to send the submitted data to. You can add more after creating the form.' , 'visual-form-builder'); ?></p>
 				</td>
 			</tr>
 
