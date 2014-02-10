@@ -671,6 +671,10 @@ class Visual_Form_Builder{
 	/**
 	 * Queue form validation scripts
 	 *
+	 * Scripts loaded in form-output.php, when field is present:
+	 *	jQuery UI date picker
+	 *	CKEditor
+	 *
 	 * @since 1.0
 	 */
 	public function scripts() {
@@ -683,10 +687,8 @@ class Visual_Form_Builder{
 		wp_register_script( 'vfb-ckeditor', plugins_url( '/js/ckeditor/ckeditor.js', __FILE__ ), array( 'jquery' ), '4.1', true );
 
 		wp_enqueue_script( 'jquery-form-validation' );
-		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_script( 'visual-form-builder-validation' );
 		wp_enqueue_script( 'visual-form-builder-metadata' );
-		wp_enqueue_script( 'vfb-ckeditor' );
 	}
 
 	/**

@@ -445,6 +445,9 @@ foreach ( $fields as $field ) :
 			break;
 
 		case 'date' :
+			// Load jQuery UI datepicker library
+			wp_enqueue_script( 'jquery-ui-datepicker' );
+
 			$options = maybe_unserialize( $field->field_options );
 			$dateFormat = ( $options ) ? $options['dateFormat'] : '';
 
@@ -521,6 +524,8 @@ foreach ( $fields as $field ) :
 			break;
 
 		case 'html' :
+			//Load CKEditor library
+			wp_enqueue_script( 'vfb-ckeditor' );
 
 			$form_item = sprintf(
 				'<textarea name="vfb-%1$d" id="%2$s" class="vfb-textarea ckeditor %4$s %5$s %6$s">%3$s</textarea>',
