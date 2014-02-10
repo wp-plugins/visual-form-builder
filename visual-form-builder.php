@@ -689,6 +689,38 @@ class Visual_Form_Builder{
 		wp_enqueue_script( 'jquery-form-validation' );
 		wp_enqueue_script( 'visual-form-builder-validation' );
 		wp_enqueue_script( 'visual-form-builder-metadata' );
+
+		$locale = get_locale();
+        if( !in_array( $locale, array( 'en_AU', 'en_GB', 'en_IE', 'en_US' ) ) ) {
+            $translations = array(
+            	'cs_CS',	// Czech
+            	'de_DE',	// German
+            	'el_GR',	// Greek
+            	'es_ES',	// Spanish
+            	'fr_FR',	// French
+            	'he_IL', 	// Hebrew
+            	'hu_HU',	// Hungarian
+            	'id_ID',	// Indonseian
+            	'it_IT',	// Italian
+            	'ja_JP',	// Japanese
+            	'ko_KR',	// Korean
+            	'nl_BE',	// Dutch
+            	'pl_PL',	// Polish
+            	'pt_BR',	// Portuguese (Brazilian)
+            	'pt_PT',	// Portuguese (European)
+            	'ro_RO',	// Romanian
+            	'ru_RU',	// Russian
+            	'sv_SE',	// Swedish
+            	'tr_TR', 	// Turkish
+            	'zh_CN',	// Chinese
+            	'zh_TW',	// Chinese (Taiwan)
+            );
+
+            if( in_array( $locale, $translations ) ) {
+                wp_enqueue_script( 'vfb-validation-i18n', plugins_url( "/js/i18n/validate/messages_$locale.js", __FILE__ ), array( 'jquery-form-validation' ), '1.9.0', true );
+                wp_enqueue_script( 'vfb-datepicker-i18n', plugins_url( "/js/i18n/datepicker/datepicker-$locale.js", __FILE__ ), array( 'jquery-ui-datepicker' ), '1.0', true );
+            }
+        }
 	}
 
 	/**
