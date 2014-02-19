@@ -70,7 +70,7 @@ class VisualFormBuilder_Export {
 			$limit = $entries_count > 1000 ? 1000 : $entries_count;
 
 			// Safe to get entries now
-			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT data FROM $this->entries_table_name WHERE form_id = %d AND entry_approved = 1 LIMIT %d", $forms[0]->form_id, $limit ), ARRAY_A );
+			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT data FROM $this->entries_table_name WHERE form_id = %d AND entry_approved = 1 LIMIT %d", $forms[0]->form_id, $limit ), ARRAY_A );
 
 			// Get columns
 			$columns = $this->get_cols( $entries );
@@ -499,7 +499,7 @@ class VisualFormBuilder_Export {
 			$offset = $offset >= 1 ? "OFFSET $offset_num" : '';
 		}
 
-		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id AND entry_approved = 1 LIMIT $limit $offset", ARRAY_A );
+		$entries = $wpdb->get_results( "SELECT data FROM {$this->entries_table_name} WHERE form_id = $form_id AND entry_approved = 1 LIMIT $limit $offset", ARRAY_A );
 
 		// Get columns
 		$columns = $export->get_cols( $entries );
