@@ -489,11 +489,14 @@ class VisualFormBuilder_Export {
 		if ( isset( $_REQUEST['count'] ) )
 			$limit = ( $_REQUEST['count'] < 1000 ) ? absint( $_REQUEST['count'] ) : 1000;
 		elseif ( isset( $_REQUEST['offset'] ) ) {
-			$offset = absint( $_REQUEST['offset'] );
+			// Reset offset/page to a zero index
+			$offset = absint( $_REQUEST['offset'] ) - 1;
+
+			// Calculate the offset
 			$offset_num = $offset * 1000;
 
-			if ( $offset >= 1 )
-				$offset = "OFFSET $offset";
+			// If page is 2 or greater, set the offset (page 2 is equal to offset 1 because of zero index)
+			$offset = $offset >= 1 ? "OFFSET $offset_num" : '';
 		}
 
 		$entries = $wpdb->get_results( "SELECT DISTINCT data FROM {$this->entries_table_name} WHERE form_id = $form_id AND entry_approved = 1 LIMIT $limit $offset", ARRAY_A );
