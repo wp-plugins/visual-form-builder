@@ -43,6 +43,6 @@ jQuery(document).ready(function($) {
 		return this.optional(element) || value.length > 9 &&
 			value.match( /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/ );
 
-		}, $.validator.format( 'Please enter a valid phone number. Most US/Canada and International formats accepted.' )
+		}, $.validator.messages.phone
 	);
 });
