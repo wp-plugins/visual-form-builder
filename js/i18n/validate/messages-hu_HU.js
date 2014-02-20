@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Kérjük, adja meg {0} {1} szavakat."),
 		alphanumeric: "Betűk, számok és aláhúzás csak kérjük",
 		lettersonly: "Letters csak kérlek",
-		nowhitespace: "No white space kérlek"
+		nowhitespace: "No white space kérlek",
+		phone: 'Adjon meg egy érvényes telefonszámot. A legtöbb USA / Kanada és nemzetközi formátumban elfogadott.',
+		ipv4: 'Adjon meg egy érvényes IP v4-címet.',
+		ipv6: 'Adjon meg egy érvényes IP v6-címet.',
+		ziprange: 'A zip-kódot kell a tartományban 902xx-xxxx a 905-xx-xxxx',
+		zipcodeUS: 'A megadott US irányítószám érvénytelen',
+		integer: 'A pozitív vagy negatív nem decimális számot kérjük',
+		vfbUsername: 'Ez a felhasználónév már regisztrálva van. Kérjük, válasszon egy másikat'
 	});
 }(jQuery));

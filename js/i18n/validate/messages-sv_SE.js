@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Ange mellan {0} och {1} ord."),
 		alphanumeric: "Bokstäver, siffror och understreck bara snälla",
 		lettersonly: "Brev bara snälla",
-		nowhitespace: "Inga blank vänligen"
+		nowhitespace: "Inga blank vänligen",
+		phone: 'Ange ett giltigt telefonnummer. De flesta USA / Kanada och internationella format accepteras.',
+		ipv4: 'Ange en giltig IP v4-adress.',
+		ipv6: 'Ange en giltig IP v6-adress.',
+		ziprange: 'Din ZIP-kod måste ligga i intervallet 902xx-xxxx till 905-xx-xxxx',
+		zipcodeUS: 'Den angivna amerikanska postnummer är ogiltig',
+		integer: 'En positiv eller negativ icke-decimaltal vänligen',
+		vfbUsername: 'Detta användarnamn är upptaget. Var vänlig välj en annan'
 	});
 }(jQuery));

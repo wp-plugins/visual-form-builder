@@ -27,6 +27,13 @@
 		rangeWords: $.validator.format("Por favor, insira entre {0} e {1} palavras."),
 		alphanumeric: "Letras, números e sublinhados só por favor",
 		lettersonly: "Cartas só por favor",
-		nowhitespace: "No espaço em branco, por favor"
+		nowhitespace: "No espaço em branco, por favor",
+		phone: 'Por favor insira um número de telefone válido. A maioria dos formatos EUA / Canadá e internacionais aceitos. ',
+		ipv4: 'Por favor insira um endereço de IP v4 válido.',
+		ipv6: 'Por favor insira um endereço de IP v6 válido.',
+		ziprange: 'O CEP-código deve estar no intervalo 902xx-xxxx a 905-xx-xxxx',
+		zipcodeUS: 'O CEP EUA especificado é inválido',
+		integer: 'Um número não decimal positivo ou negativo, por favor',
+		vfbUsername: 'Este nome de usuário já está registrado. Por favor escolha outro'
 	});
 }(jQuery));

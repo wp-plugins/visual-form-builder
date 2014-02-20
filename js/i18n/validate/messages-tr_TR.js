@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Lütfen {0} ve {1} kelimeler arasına girin."),
 		alphanumeric: "Harfler, sayılar ve alt çizgi sadece lütfen",
 		lettersonly: "Mektuplar sadece lütfen",
-		nowhitespace: "Hiçbir boşluk lütfen"
+		nowhitespace: "Hiçbir boşluk lütfen",
+		phone: 'Geçerli bir telefon numarası giriniz. Çoğu ABD / Kanada ve Uluslararası formatları kabul.',
+		ipv4: 'Geçerli bir IP v4 adresini girin.',
+		ipv6: 'Geçerli bir IP v6 adresini girin.',
+		ziprange: 'Posta kodu 905-xx-xxxx aralık 902xx-xxxx olmalı',
+		zipcodeUS: 'Belirtilen ABD Posta Kodu geçersiz',
+		integer: 'Bir pozitif veya negatif olmayan ondalık sayı lütfen',
+		vfbUsername: 'Bu kullanıcı adı zaten kayıtlı. Başka bir tane seçiniz'
 	});
 }(jQuery));

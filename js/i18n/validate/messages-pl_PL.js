@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Proszę o podanie między {0} i {1} słów."),
 		alphanumeric: "Liter, cyfr, podkreśleń i tylko proszę",
 		lettersonly: "Proszę tylko litery",
-		nowhitespace: "Proszę nie spacje"
+		nowhitespace: "Proszę nie spacje",
+		phone: 'Proszę podać poprawny numer telefonu. Przyjmujemy większość formatów US / Kanada i międzynarodowe.',
+		ipv4: 'Proszę podać adres IP v4.',
+		ipv6: 'Proszę podać adres IP v6.',
+		ziprange: 'Twój kod pocztowy musi być w zakresie 902xx do 905-xxxx-xxxx-xx',
+		zipcodeUS: 'Określone US kod pocztowy jest nieprawidłowy',
+		integer: 'Dodatnia lub ujemna liczba dziesiętna proszę nie',
+		vfbUsername: 'Ta nazwa użytkownika jest już zarejestrowana. Wybierz inny',
 	});
 }(jQuery));

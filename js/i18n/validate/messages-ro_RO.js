@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Te rugăm să introduci {0} și {1} cuvinte"),
 		alphanumeric: "Litere, numere, și subliniază numai vă rog",
 		lettersonly: "Scrisori doar vă rog",
-		nowhitespace: "Nu există spațiu alb, vă rugăm"
+		nowhitespace: "Nu există spațiu alb, vă rugăm",
+		phone: 'Vă rugăm să introduceți un număr de telefon valid. Cele mai multe formate de SUA / Canada și internaționale acceptate.',
+		ipv4: 'Vă rugăm să introduceți o adresă validă IP v4.',
+		ipv6: 'Vă rugăm să introduceți o adresă validă IP v6.',
+		ziprange: 'Dvs. ZIP-cod trebuie să fie în gama 902xx-xxxx a 905-xx-xxxx',
+		zipcodeUS: 'Specificat SUA cod poștal este nevalid',
+		integer: 'Un număr de non-zecimal pozitiv sau negativ, vă rugăm',
+		vfbUsername: 'Acest nume de utilizator este deja înregistrat. Vă rugăm să alegeți un alt unul'
 	});
 }(jQuery));

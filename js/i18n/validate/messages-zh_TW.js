@@ -27,6 +27,13 @@
 		rangeWords: $.validator.format("請{0}和{1}字之間進入。"),
 		alphanumeric: "字母，數字和下劃線只請",
 		lettersonly: "英皇只請",
-		nowhitespace: "沒有空格，請"
+		nowhitespace: "沒有空格，請",
+		phone: '請輸入一個有效的電話號碼。接受大多數美國/加拿大和國際格式。',
+		ipv4: '請輸入一個有效的IP地址卷。',
+		ipv6: '請輸入一個有效的IP v6地址。',
+		ziprange: '您的郵遞區號必須在範圍902xx-XXXX905-XX-XXXX',
+		zipcodeUS: '指定美國郵政編碼無效',
+		integer: '一個正或負的非十進制數，請',
+		vfbUsername: '此用戶名已被註冊。請選擇另外一個'
 	});
 }(jQuery));

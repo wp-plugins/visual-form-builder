@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Prosím zadejte mezi {0} a {1} slovy."),
 		alphanumeric: "Písmena, číslice a podtržítka jen prosím",
 		lettersonly: "Dopisy jen prosím",
-		nowhitespace: "Žádné mezery, prosím"
+		nowhitespace: "Žádné mezery, prosím",
+		phone: 'Prosím, zadejte platné telefonní číslo. Většina USA / Kanada a mezinárodní formáty přijaty.',
+		ipv4: 'Prosím, zadejte platnou IP v4 adresu.',
+		ipv6: 'Prosím, zadejte platnou IP v6 adresu.',
+		ziprange: 'Váš ZIP kód musí v rozsahu 902xx-xxxx na 905-xx-xxxx',
+		zipcodeUS: 'Zadaná US PSČ je neplatné',
+		integer: 'Pozitivní nebo negativní, non-desetinné číslo, prosím',
+		vfbUsername: 'Toto uživatelské jméno je již registrováno. Prosím, zvolte jinou'
 	});
 }(jQuery));

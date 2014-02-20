@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("{0}과 {1} 단어 사이에 입력하십시오."),
 		alphanumeric: "문자, 숫자, 그리고 밑줄 만주세요",
 		lettersonly: "문자 만주세요",
-		nowhitespace: "에 공백하시기 바랍니다"
+		nowhitespace: "에 공백하시기 바랍니다",
+		phone: '올바른 전화 번호를 입력하세요. 대부분의 미국 / 캐나다 및 국제 형식으로 받아 들였다.',
+		ipv4: '유효한 IP V4 주소를 입력하십시오.',
+		ipv6: '유효한 IP V6 주소를 입력 해주십시오.',
+		ziprange: '귀하의 ZIP 코드는 905-XX-XXXX의 범위의 902xx-XXXX에 있어야합니다',
+		zipcodeUS: '지정된 미국의 우편 번호가 잘못되었습니다',
+		integer: '양수 또는 음수가 아닌 십진수주세요',
+		vfbUsername: '이 사용자 이름은 이미 등록되어 있습니다. 또 다른 하나를 선택하십시오'
 	});
 }(jQuery));

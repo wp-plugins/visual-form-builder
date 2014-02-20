@@ -27,15 +27,12 @@
 		alphanumeric: "Letters, cijfers, en onderstreept alleen maar te behagen",
 		lettersonly: "Brieven slechts tevreden",
 		nowhitespace: "Geen witte ruimte alsjeblieft",
-
-		// for validations in additional-methods.js
-		iban: "Vul hier een geldig IBAN in.",
-		dateNL: "Vul hier een geldige datum in.",
-		phoneNL: "Vul hier een geldig Nederlands telefoonnummer in.",
-		mobileNL: "Vul hier een geldig Nederlands mobiel telefoonnummer in.",
-		postalcodeNL: "Vul hier een geldige postcode in.",
-		bankaccountNL: "Vul hier een geldig bankrekeningnummer in.",
-		giroaccountNL: "Vul hier een geldig gironummer in.",
-		bankorgiroaccountNL: "Vul hier een geldig bank- of gironummer in."
+		phone: 'Vul een geldig telefoonnummer. De meeste VS / Canada en internationale formats geaccepteerd. ',
+		ipv4: 'Vul een geldig IP v4 adres.',
+		ipv6: 'Vul een geldig IP v6 adres.',
+		ziprange: 'Uw postcode moet in het bereik 902xx-xxxx zijn om 905-xx-xxxx',
+		zipcodeUS: 'De opgegeven US postcode is ongeldig',
+		integer: 'Een positieve of negatieve niet-decimaal getal aub',
+		vfbUsername: 'Deze gebruikersnaam is al geregistreerd. Kies een andere naam'
 	});
 }(jQuery));

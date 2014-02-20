@@ -26,6 +26,13 @@
 		rangeWords: $.validator.format("Geben Sie bitte zwischen {0} und {1} Wörter eingeben."),
 		alphanumeric: "Buchstaben, Zahlen und Unterstrichen bitte",
 		lettersonly: "Nur Buchstaben bitte",
-		nowhitespace: "Kein Leerzeichen bitte"
+		nowhitespace: "Kein Leerzeichen bitte",
+		phone: 'Bitte geben Sie eine gültige Telefonnummer. Die meisten US / Canada und internationale Formate akzeptiert.',
+		ipv4: 'Bitte geben Sie eine gültige IP v4 Adresse.',
+		ipv6: 'Bitte geben Sie eine gültige IP-v6-Adresse.',
+		ziprange: 'Ihre ZIP-Code muss im Bereich 902xx-xxxx bis 905-xx-xxxx sein',
+		zipcodeUS: 'Die angegebene US-Postleitzahl ist ungültig',
+		integer: 'Eine positive oder negative Nicht-Dezimalzahl bitte',
+		vfbUsername: 'Dieser Benutzername ist bereits registriert. Bitte wählen Sie einen anderen'
 	});
 }(jQuery));

@@ -447,6 +447,7 @@ foreach ( $fields as $field ) :
 		case 'date' :
 			// Load jQuery UI datepicker library
 			wp_enqueue_script( 'jquery-ui-datepicker' );
+			wp_enqueue_script( 'vfb-datepicker-i18n' );
 
 			$options = maybe_unserialize( $field->field_options );
 			$dateFormat = ( $options ) ? $options['dateFormat'] : '';
