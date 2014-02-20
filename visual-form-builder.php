@@ -1556,26 +1556,51 @@ class Visual_Form_Builder{
 			<h3><?php _e( 'Global Settings', 'visual-form-builder' ); ?></h3>
 			<p><?php _e( 'These settings will affect all forms on your site.', 'visual-form-builder' ); ?></p>
 			<table class="form-table">
-				<?php
-					$disable = array(
-						'always-load-css'     => __( 'Always load CSS', 'visual-form-builder' ),
-						'disable-css'         => __( 'Disable CSS', 'visual-form-builder' ),	// visual-form-builder-css
-						'address-labels'      => __( 'Place Address labels above fields', 'visual-form-builder' ),	// vfb_address_labels_placement
-						'show-version'        => __( 'Disable meta tag version', 'visual-form-builder' ),	// vfb_show_version
-					);
-
-					foreach ( $disable as $key => $title ) :
-
-						$vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : '';
-				?>
 				<tr valign="top">
-					<th scope="row"><label for="vfb-settings-<?php echo $key; ?>"><?php echo $title; ?></label></th>
+					<th scope="row"><?php _e( 'CSS', 'visual-form-builder-pro' ); ?></th>
 					<td>
-						<?php $vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : 0; ?>
-						<input type="checkbox" name="vfb-settings[<?php echo $key; ?>]" id="vfb-settings-<?php echo $key; ?>" value="1" <?php checked( $vfb_settings[ $key ], 1 ); ?> />
+						<fieldset>
+						<?php
+							$disable = array(
+								'always-load-css'     => __( 'Always load CSS', 'visual-form-builder' ),
+								'disable-css'         => __( 'Disable CSS', 'visual-form-builder' ),	// visual-form-builder-css
+							);
+
+							foreach ( $disable as $key => $title ) :
+
+								$vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : '';
+						?>
+							<label for="vfb-settings-<?php echo $key; ?>">
+								<input type="checkbox" name="vfb-settings[<?php echo $key; ?>]" id="vfb-settings-<?php echo $key; ?>" value="1" <?php checked( $vfb_settings[ $key ], 1 ); ?> /> <?php echo $title; ?>
+							</label>
+							<br>
+						<?php endforeach; ?>
+						</fieldset>
 					</td>
 				</tr>
-				<?php endforeach; ?>
+
+				<tr valign="top">
+					<th scope="row"><?php _e( 'Form Output', 'visual-form-builder-pro' ); ?></th>
+					<td>
+						<fieldset>
+						<?php
+							$disable = array(
+								'address-labels'      => __( 'Place Address labels above fields', 'visual-form-builder' ),	// vfb_address_labels_placement
+								'show-version'        => __( 'Disable meta tag version', 'visual-form-builder' ),	// vfb_show_version
+							);
+
+							foreach ( $disable as $key => $title ) :
+
+								$vfb_settings[ $key ] = isset( $vfb_settings[ $key ] ) ? $vfb_settings[ $key ] : '';
+						?>
+							<label for="vfb-settings-<?php echo $key; ?>">
+								<input type="checkbox" name="vfb-settings[<?php echo $key; ?>]" id="vfb-settings-<?php echo $key; ?>" value="1" <?php checked( $vfb_settings[ $key ], 1 ); ?> /> <?php echo $title; ?>
+							</label>
+							<br>
+						<?php endforeach; ?>
+						</fieldset>
+					</td>
+				</tr>
 
 				<tr valign="top">
 					<th scope="row"><label for="vfb-settings-spam-points"><?php _e( 'Spam word sensitivity', 'visual-form-builder' ); ?></label></th>
@@ -1614,6 +1639,7 @@ class Visual_Form_Builder{
 						$vfb_settings['sender-mail-header'] = isset( $vfb_settings['sender-mail-header'] ) ? $vfb_settings['sender-mail-header'] : $from_email;
 						?>
 						<input type="text" name="vfb-settings[sender-mail-header]" id="vfb-settings-sender-mail-header" value="<?php echo $vfb_settings['sender-mail-header']; ?>" class="regular-text" />
+						<p class="description"><?php _e( 'Some server configurations require an existing email on the domain be used when sending emails.', 'visual-form-builder' ); ?></p>
 					</td>
 				</tr>
 			</table>
