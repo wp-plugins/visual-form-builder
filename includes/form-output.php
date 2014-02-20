@@ -361,11 +361,11 @@ foreach ( $fields as $field ) :
 
 			$address_parts = array(
 			    'address'    => array(
-			    	'label'    => __( 'Address', 'visual-form-builder' ),
+			    	'label'    => __( 'Street Address', 'visual-form-builder' ),
 			    	'layout'   => 'full'
 			    ),
 			    'address-2'  => array(
-			    	'label'    => __( 'Address Line 2', 'visual-form-builder' ),
+			    	'label'    => __( 'Apt, Suite, Bldg. (optional)', 'visual-form-builder' ),
 			    	'layout'   => 'full'
 			    ),
 			    'city'       => array(
