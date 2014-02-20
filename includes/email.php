@@ -150,7 +150,7 @@ foreach ( $fields as $field ) :
 				$wp_upload_dir = wp_upload_dir();
 
 				$media_upload = array(
-					'guid' 				=> $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $uploaded_file['file'] ),
+					'guid' 				=> $wp_upload_dir['url'] . '/' . basename( $filename ),
 					'post_mime_type' 	=> $wp_filetype['type'],
 					'post_title' 		=> preg_replace( '/\.[^.]+$/', '', basename( $uploaded_file['file'] ) ),
 					'post_content' 		=> '',
