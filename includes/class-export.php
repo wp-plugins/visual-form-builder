@@ -285,46 +285,49 @@ class VisualFormBuilder_Export {
 						// Unserialize value only if it was serialized
 						$fields = maybe_unserialize( $value );
 
-						// Loop through our submitted data
-						foreach ( $fields as $field_key => $field_value ) :
-							// Cast each array as an object
-							$obj = (object) $field_value;
+						// Make sure there are no errors with unserializing before proceeding
+						if ( is_array( $fields ) ) {
+							// Loop through our submitted data
+							foreach ( $fields as $field_key => $field_value ) :
+								// Cast each array as an object
+								$obj = (object) $field_value;
 
-							// Decode the values so HTML tags can be stripped
-							$val = wp_specialchars_decode( $obj->value, ENT_QUOTES );
+								// Decode the values so HTML tags can be stripped
+								$val = wp_specialchars_decode( $obj->value, ENT_QUOTES );
 
-							switch ( $obj->type ) {
-								case 'fieldset' :
-								case 'section' :
-								case 'instructions' :
-								case 'page-break' :
-								case 'verification' :
-								case 'secret' :
-								case 'submit' :
-									break;
+								switch ( $obj->type ) {
+									case 'fieldset' :
+									case 'section' :
+									case 'instructions' :
+									case 'page-break' :
+									case 'verification' :
+									case 'secret' :
+									case 'submit' :
+										break;
 
-								case 'address' :
+									case 'address' :
 
-									$val = str_replace( array( '<p>', '</p>', '<br>' ), array( '', "\n", "\n" ), $val );
+										$val = str_replace( array( '<p>', '</p>', '<br>' ), array( '', "\n", "\n" ), $val );
 
-									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+										$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
 
-									break;
+										break;
 
-								case 'html' :
+									case 'html' :
 
-									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+										$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
 
-									break;
+										break;
 
-								default :
+									default :
 
-									$val = wp_strip_all_tags( $val );
-									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+										$val = wp_strip_all_tags( $val );
+										$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
 
-									break;
-							} //end $obj switch
-						endforeach; // end $fields loop
+										break;
+								} //end $obj switch
+							endforeach; // end $fields loop
+						}
 					break;
 				} //end $key switch
 			endforeach; // end $entry loop
