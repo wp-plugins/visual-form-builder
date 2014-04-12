@@ -41,7 +41,7 @@ class Visual_Form_Builder{
 	 * @var string
 	 * @access protected
 	 */
-	protected $vfb_db_version = '2.7';
+	protected $vfb_db_version = '2.8';
 
 	/**
 	 * Flag used to add scripts to front-end only once
@@ -718,9 +718,17 @@ class Visual_Form_Builder{
         	'zh_TW',	// Chinese (Taiwan)
         );
 
+		// Load localized vaidation and datepicker text, if translation files exist
         if ( in_array( $locale, $translations ) ) {
             wp_register_script( 'vfb-validation-i18n', plugins_url( "/js/i18n/validate/messages-$locale.js", __FILE__ ), array( 'jquery-form-validation' ), '1.9.0', true );
             wp_register_script( 'vfb-datepicker-i18n', plugins_url( "/js/i18n/datepicker/datepicker-$locale.js", __FILE__ ), array( 'jquery-ui-datepicker' ), '1.0', true );
+
+            wp_enqueue_script( 'vfb-validation-i18n' );
+        }
+        // Otherwise, load English translations
+        else {
+	        wp_register_script( 'vfb-validation-i18n', plugins_url( "/js/i18n/validate/messages-en_US.js", __FILE__ ), array( 'jquery-form-validation' ), '1.9.0', true );
+            wp_register_script( 'vfb-datepicker-i18n', plugins_url( "/js/i18n/datepicker/datepicker-en_US.js", __FILE__ ), array( 'jquery-ui-datepicker' ), '1.0', true );
 
             wp_enqueue_script( 'vfb-validation-i18n' );
         }
