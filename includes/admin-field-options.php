@@ -10,7 +10,7 @@ $parent = $last = 0;
 ob_start();
 
 // Loop through each field and display
-foreach ( $fields as $field ) :
+foreach ( $fields as &$field ) :
 	// If we are at the root level
 	if ( !$field->field_parent && $depth > 1 ) {
 		// If we've been down a level, close out the list
