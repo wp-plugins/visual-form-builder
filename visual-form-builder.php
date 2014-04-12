@@ -1948,7 +1948,9 @@ class Visual_Form_Builder{
 					return wp_kses_data( force_balance_tags( $data ) );
 					break;
 
-				case 'number' :
+				case 'min' :
+				case 'max' :
+				case 'digits' :
 					return preg_replace( '/\D/i', '', $data );
 					break;
 
