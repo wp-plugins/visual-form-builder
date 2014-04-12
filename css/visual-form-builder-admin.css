@@ -602,6 +602,14 @@ strong .vfb-meta-entries-total span {
 	height: 100%;
 }
 
+#vfb_form_media_button_tip input {
+	width: 100%;
+	border: 0;
+	padding: 6px;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+}
+
 /* !Form Editor Columns - One Column */
 @media only screen and (max-width: 799px) {
 	#vfb-form-builder-frame .vfb-postbox-container {
