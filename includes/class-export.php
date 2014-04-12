@@ -290,6 +290,9 @@ class VisualFormBuilder_Export {
 							// Cast each array as an object
 							$obj = (object) $field_value;
 
+							// Decode the values so HTML tags can be stripped
+							$val = wp_specialchars_decode( $obj->value, ENT_QUOTES );
+
 							switch ( $obj->type ) {
 								case 'fieldset' :
 								case 'section' :
@@ -298,11 +301,28 @@ class VisualFormBuilder_Export {
 								case 'verification' :
 								case 'secret' :
 								case 'submit' :
-								break;
+									break;
+
+								case 'address' :
+
+									$val = str_replace( array( '<p>', '</p>', '<br>' ), array( '', "\n", "\n" ), $val );
+
+									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+
+									break;
+
+								case 'html' :
+
+									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+
+									break;
 
 								default :
-									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] = $obj->value;
-								break;
+
+									$val = wp_strip_all_tags( $val );
+									$output[ $row ][ stripslashes( $obj->name ) . "{{{$obj->id}}}" ] =  $val;
+
+									break;
 							} //end $obj switch
 						endforeach; // end $fields loop
 					break;
