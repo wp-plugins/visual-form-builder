@@ -123,7 +123,7 @@ foreach ( $fields as $field ) :
 	if ( $field->field_type == 'file-upload' ) :
 		$value = ( isset( $_FILES[ 'vfb-' . $field->field_id ] ) ) ? $_FILES[ 'vfb-' . $field->field_id ] : '';
 
-		if ( $value['size'] > 0 ) :
+		if ( is_array( $value) && $value['size'] > 0 ) :
 			// 25MB is the max size allowed
 			$size = apply_filters( 'vfb_max_file_size', $settings_max_upload );
 			$max_attach_size = $size * 1048576;
