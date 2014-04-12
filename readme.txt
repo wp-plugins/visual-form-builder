@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Visual%20Form%20Builder&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: form, forms, contact form, contact forms, form, forms, form to email, email form, email, input, validation, jquery, shortcode, form builder, contact form builder, form manager, form creator
 Requires at least: 3.5
-Tested up to: 3.8
-Stable tag: 2.8
+Tested up to: 3.9
+Stable tag: 2.8.1
 License: GPLv2 or later
 
 Build beautiful, fully functional contact forms in only a few minutes without writing PHP, CSS, or HTML.
@@ -236,6 +236,28 @@ function my_scripts_method() {
 4. Rendered form on a page
 
 == Changelog ==
+
+**Version 2.8.1 - Apr 12, 2014**
+
+* Add localized jQuery form validation messages for languages that have a VFB translation file
+* Add localized jQuery UI datepicker text for languages that have a VFB translation file
+* Add vfb_spam_words_exploits, vfb_spam_words_profanity, and vfb_spam_words_misc filters to allow spam sensitivity words to be controlled
+* Update the jQuery UI date picker and CKEditor scripts to only load when the respective field is on the form
+* Update tooltip to prefix class names to prevent potential conflicts
+* Update admin notices to only display on VFB Pro pages
+* Update "Add New Form" help text
+* Update Export to make sure there are no errors with unserializing before proceeding
+* Update Export to more accurately strip all HTML tags for all fields except HTML and Address (where <br> is replaced with new lines)
+* Update admin form editor to get fields by reference to improve looping speed
+* Update admin with more jQuery UI CSS overrides for the disabled classes
+* Update email headers to use array formatting instead of a string
+* Update file upload process to check if the $FILE global is an array before proceeding
+* Update Display Forms shortcode/template tag to not wrap in <code> tags
+* Update CSS to use !important to prevent themes from conflicting with certain rules
+* Fix bug with image upload where guid may not be set correctly on some servers
+* Fix bug for missing Address description
+* Fix bug in export where entries fields did not load the correct page with the right field names
+* Fix bug where sanitizing number should sanitize digits, which doesn’t allow decimals
 
 **Version 2.8 - Dec 3, 2013**
 
