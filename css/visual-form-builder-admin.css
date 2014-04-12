@@ -689,7 +689,7 @@ strong .vfb-meta-entries-total span {
 .options-other-show .widefat,
 .options-other-hide .widefat {
 	margin: 0 6px 7px 0;
-	width: 325px;
+	width: 320px;
 }
 
 	.rtl .option .widefat,
@@ -759,7 +759,7 @@ strong .vfb-meta-entries-total span {
 	/* Form Settings add/delete emails */
 	.addEmail,
 	.deleteEmail {
-		top: 21px;
+		top: 28px;
 	}
 		.addEmail {
 			right: 55px;
@@ -1624,7 +1624,7 @@ ul.vfb-fields-col-2{
 
 	.addEmail,
 	.deleteEmail {
-		top: 22px;
+		top: 28px;
 	}
 
 	/* Field Item arrows */
