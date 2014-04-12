@@ -366,8 +366,11 @@ $settings_sender_header = isset( $vfb_settings['sender-mail-header'] ) ? $vfb_se
 // Allow Sender email to be filtered
 $from_email = apply_filters( 'vfb_sender_mail_header', $settings_sender_header, $form_id );
 
-$reply_to	= "\"$from_name\" <$header_from>";
-$headers 	= "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
+$reply_to  = "\"$from_name\" <$header_from>";
+$headers[] = "Sender: $from_email";
+$headers[] = "From: $reply_to";
+$headers[] = "Reply-To: $reply_to";
+$headers[] = "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"";
 
 $form_subject 	= wp_specialchars_decode( $form_settings->form_subject, ENT_QUOTES );
 $notify_subject = wp_specialchars_decode( $form_settings->form_notification_subject, ENT_QUOTES );
@@ -387,9 +390,12 @@ if ( $form_settings->form_notification_setting !== '' ) :
 
 	// Reset headers for notification email
 	$reply_name		= function_exists( 'mb_encode_mimeheader' ) ? mb_encode_mimeheader( stripslashes( $form_settings->form_notification_email_name ) ) : stripslashes( $form_settings->form_notification_email_name );
-	$reply_email 	= $form_settings->form_notification_email_from;
-	$reply_to 		= "\"$reply_name\" <$reply_email>";
-	$headers = "Sender: $from_email\r\n" . "From: $reply_to\r\n" . "Reply-To: $reply_to\r\n" . "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"\r\n";
+	$reply_email  = $form_settings->form_notification_email_from;
+	$reply_to 	  = "\"$reply_name\" <$reply_email>";
+	$headers[]    = "Sender: $from_email";
+	$headers[]    = "From: $reply_to";
+	$headers[]    = "Reply-To: $reply_to";
+	$headers[]    = "Content-Type: $header_content_type; charset=\"" . get_option('blog_charset') . "\"";
 
 	// Send the mail
 	wp_mail( $copy_email, $notify_subject, $auto_response_email, $headers, $attachments );
