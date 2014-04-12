@@ -1409,29 +1409,39 @@ class Visual_Form_Builder{
 	 * @since 1.0
 	 */
 	public function admin_notices(){
-		if ( isset( $_REQUEST['action'] ) ) {
-			switch( $_REQUEST['action'] ) {
-				case 'create_form' :
-					echo '<div id="message" class="updated"><p>' . __( 'The form has been successfully created.' , 'visual-form-builder' ) . '</p></div>';
-				break;
-				case 'update_form' :
-					echo '<div id="message" class="updated"><p>' . sprintf( __( 'The %s form has been updated.' , 'visual-form-builder'), '<strong>' . $_REQUEST['form_title'] . '</strong>' ) . '</p></div>';
+		if ( !isset( $_REQUEST['action'] ) || !isset( $_GET['page'] ) )
+			return;
 
-					if ( $this->post_max_vars ) :
-						// Get max post vars, if available. Otherwise set to 1000
-						$max_post_vars = ( ini_get( 'max_input_vars' ) ) ? intval( ini_get( 'max_input_vars' ) ) : 1000;
+		if ( !in_array( $_GET['page'], array( 'visual-form-builder', 'vfb-add-new', 'vfb-entries', 'vfb-email-design', 'vfb-reports', 'vfb-import', 'vfb-export', 'vfb-settings' ) ) )
+			return;
 
-						echo '<div id="message" class="error"><p>' . sprintf( __( 'Error saving form. The maximum amount of data allowed by your server has been reached. Please update <a href="%s" target="_blank">max_input_vars</a> in your php.ini file to allow more data to be saved. Current limit is <strong>%d</strong>', 'visual-form-builder' ), 'http://www.php.net/manual/en/info.configuration.php#ini.max-input-vars', $max_post_vars ) . '</p></div>';
-					endif;
+		switch( $_REQUEST['action'] ) {
+			case 'create_form' :
+				echo '<div id="message" class="updated"><p>' . __( 'Form created.' , 'visual-form-builder' ) . '</p></div>';
 				break;
-				case 'deleted' :
-					echo '<div id="message" class="updated"><p>' . __( 'The form has been successfully deleted.' , 'visual-form-builder') . '</p></div>';
-				break;
-				case 'copy_form' :
-					echo '<div id="message" class="updated"><p>' . __( 'The form has been successfully duplicated.' , 'visual-form-builder') . '</p></div>';
-				break;
-			}
 
+			case 'update_form' :
+				echo '<div id="message" class="updated"><p>' . __( 'Form updated.' , 'visual-form-builder' ) . '</p></div>';
+
+				if ( $this->post_max_vars ) :
+					// Get max post vars, if available. Otherwise set to 1000
+					$max_post_vars = ( ini_get( 'max_input_vars' ) ) ? intval( ini_get( 'max_input_vars' ) ) : 1000;
+
+					echo '<div id="message" class="error"><p>' . sprintf( __( 'Error saving form. The maximum amount of data allowed by your server has been reached. Please update <a href="%s" target="_blank">max_input_vars</a> in your php.ini file to allow more data to be saved. Current limit is <strong>%d</strong>', 'visual-form-builder' ), 'http://www.php.net/manual/en/info.configuration.php#ini.max-input-vars', $max_post_vars ) . '</p></div>';
+				endif;
+				break;
+
+			case 'deleted' :
+				echo '<div id="message" class="updated"><p>' . __( 'Item permanently deleted.' , 'visual-form-builder') . '</p></div>';
+				break;
+
+			case 'copy_form' :
+				echo '<div id="message" class="updated"><p>' . __( 'Item successfully duplicated.' , 'visual-form-builder') . '</p></div>';
+				break;
+
+			case 'vfb_settings' :
+				echo sprintf( '<div id="message" class="updated"><p>%s</p></div>', __( 'Settings saved.' , 'visual-form-builder' ) );
+				break;
 		}
 	}
 
