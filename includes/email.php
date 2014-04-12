@@ -222,17 +222,24 @@ foreach ( $fields as $field ) :
 		else
 			$value = html_entity_decode( stripslashes( esc_html( $value ) ), ENT_QUOTES, 'UTF-8' );
 
-		// Setup spam catcher RegEx
-		$exploits 	= '/(content-type|bcc:|cc:|document.cookie|onclick|onload|javascript|alert)/i';
-		$profanity 	= '/(beastial|bestial|blowjob|clit|cock|cum|cunilingus|cunillingus|cunnilingus|cunt|ejaculate|fag|felatio|fellatio|fuck|fuk|fuks|gangbang|gangbanged|gangbangs|hotsex|jism|jiz|kock|kondum|kum|kunilingus|orgasim|orgasims|orgasm|orgasms|phonesex|phuk|phuq|porn|pussies|pussy|spunk|xxx)/i';
-		$spamwords 	= '/(viagra|phentermine|tramadol|adipex|advai|alprazolam|ambien|ambian|amoxicillin|antivert|blackjack|backgammon|holdem|poker|carisoprodol|ciara|ciprofloxacin|debt|dating|porn)/i';
+		// Spam Words - Exploits
+		$exploits = array( 'content-type', 'bcc:', 'cc:', 'document.cookie', 'onclick', 'onload', 'javascript', 'alert' );
+		$exploits = apply_filters( 'vfb_spam_words_exploits', $exploits, $form_id );
+
+		// Spam Words - Exploits
+		$profanity = array( 'beastial', 'bestial', 'blowjob', 'clit', 'cock', 'cum', 'cunilingus', 'cunillingus', 'cunnilingus', 'cunt', 'ejaculate', 'fag', 'felatio', 'fellatio', 'fuck', 'fuk', 'fuks', 'gangbang', 'gangbanged', 'gangbangs', 'hotsex', 'jism', 'jiz', 'kock', 'kondum', 'kum', 'kunilingus', 'orgasim', 'orgasims', 'orgasm', 'orgasms', 'phonesex', 'phuk', 'phuq', 'porn', 'pussies', 'pussy', 'spunk', 'xxx' );
+		$profanity = apply_filters( 'vfb_spam_words_profanity', $profanity, $form_id );
+
+		// Spam Words - Misc
+		$spamwords = array( 'viagra', 'phentermine', 'tramadol', 'adipex', 'advai', 'alprazolam', 'ambien', 'ambian', 'amoxicillin', 'antivert', 'blackjack', 'backgammon', 'holdem', 'poker', 'carisoprodol', 'ciara', 'ciprofloxacin', 'debt', 'dating', 'porn' );
+		$spamwords = apply_filters( 'vfb_spam_words_misc', $spamwords, $form_id );
 
 		// Add up points for each spam hit
-		if ( preg_match( $exploits, $value ) )
+		if ( preg_match( '/(' . implode( '|', $exploits ) . ')/i', $value ) )
 			$points += 2;
-		elseif ( preg_match( $profanity, $value ) )
+		elseif ( preg_match( '/(' . implode( '|', $profanity ) . ')/i', $value ) )
 			$points += 1;
-		elseif ( preg_match( $spamwords, $value ) )
+		elseif ( preg_match( '/(' . implode( '|', $spamwords ) . ')/i', $value ) )
 			$points += 1;
 
 		//Sanitize input
