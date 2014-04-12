@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
 	// Initialize our tooltip timeout var
 	var tooltip_timeout = null;
 
-	// !Tooltips
+	// !Display/Hide the tooltip
 	$( document ).on( 'mouseenter mouseleave', '.vfb-tooltip', function( e ) {
 		// If mouse over tooltips
 		if( e.type == 'mouseenter' ) {
@@ -28,7 +28,7 @@ jQuery(document).ready(function($) {
 				width = $( this ).width();
 
 			// Create our tooltip popup
-			$( this ).append( '<div class="tooltip"><h3>' + tip_title + '</h3><p class="text">' + tip + '</p></div>' );
+			$( this ).append( '<div class="vfb-tooltip-popup"><h3>' + tip_title + '</h3><p>' + tip + '</p></div>' );
 
 			// Save the title before we remove it
 			$.data( this, 'title', tip_title );
@@ -37,11 +37,11 @@ jQuery(document).ready(function($) {
 			this.title = '';
 
 			// Move over the div so it's not on top of the link
-			$( this ).find( '.tooltip' ).css({left:width + 22});
+			$( this ).find( '.vfb-tooltip-popup' ).css({left:width + 22});
 
 			// Set a timer for hover intent
 			tooltip_timeout = setTimeout( function(){
-				$( '.tooltip' ).fadeIn( 300 );
+				$( '.vfb-tooltip-popup' ).fadeIn( 300 );
 			}, 500 );
 		}
 		else {
@@ -49,7 +49,7 @@ jQuery(document).ready(function($) {
 			this.title = $.data( this, 'title' );
 
 			// Close the tooltip
-			$( '.tooltip' ).fadeOut( 500 );
+			$( '.vfb-tooltip-popup' ).fadeOut( 500 );
 
 			// Remove the appended tooltip div
 			$( this ).children().remove();

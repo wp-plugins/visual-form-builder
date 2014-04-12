@@ -1409,12 +1409,12 @@ ul.vfb-fields-col-2{
 
 /* !Help tooltip popups */
 .vfb-tooltip{
-	position:relative;
-	float:right;
-	margin-right:2px;
-	width:16px;
-	height:16px;
-	cursor:pointer;
+	position: relative;
+	float: right;
+	margin-right: 2px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
 }
 
 	.rtl .vfb-tooltip {
@@ -1423,37 +1423,37 @@ ul.vfb-fields-col-2{
 		margin-left: 2px;
 	}
 
-	.tooltip {
-		position:absolute;
-		top:-40px;
-		z-index:200;
-		display:none;
-		padding:5px 20px;
-		width:250px;
-		border:2px solid #333;
-		border-radius:5px;
+	.vfb-tooltip-popup {
+		position: absolute;
+		top: -40px;
+		z-index: 200;
+		display: none;
+		padding: 5px 20px;
+		width: 250px;
+		border: 2px solid #333;
+		border-radius: 5px;
 		background: #222;
-		box-shadow:0 0 7px black;
-		color:white;
-		text-indent:0;
-		font-style:normal;
+		box-shadow: 0 0 7px black;
+		color: white;
+		text-indent: 0;
+		font-style: normal;
 	}
 
-	.tooltip h3,
-	.vfb-tooltip .tooltip h3{
-		margin:5px 0;
-		padding:0 0 6px 0;
-		border-bottom:1px solid white;
-		font-weight:normal;
-		font-size:13px;
+	.vfb-tooltip-popup h3,
+	.vfb-tooltip .vfb-tooltip-popup h3{
+		margin: 5px 0;
+		padding: 0 0 6px 0;
+		border-bottom: 1px solid white;
+		color: white;
+		font-weight: normal;
+		font-size: 13px;
 		font-family: sans-serif;
-		color: white;
 	}
 
-	.tooltip p{
-		margin-top:10px;
-		font-size:12px;
+	.vfb-tooltip-popup p{
+		margin-top:1 0px;
 		color: white;
+		font-size: 12px;
 	}
 
 /* !Bulk Add Options */
