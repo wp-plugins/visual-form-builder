@@ -813,12 +813,6 @@ strong .vfb-meta-entries-total span {
 				cursor: pointer;
 			}
 
-	.ui-state-disabled .menu-item-handle{
-		background: #dfdfdf;
-		box-shadow: none;
-		cursor:default;
-	}
-
 .option {
 	float: left;
 	width: 97%;
@@ -1055,10 +1049,21 @@ ul#vfb-menu-to-edit ul{
 	display: none;
 }
 
-.ui-state-disabled{
+.ui-state-disabled,
+.ui-state-disabled dl,
+.ui-state-disabled dt,
+.form-item.ui-state-disabled {
 	opacity: 100;
 	filter: alpha(Opacity=100);
+	background-image: none;
 }
+
+	.ui-state-disabled .vfb-menu-item-handle,
+	.ui-state-disabled .menu-item-handle {
+		background: #dfdfdf;
+		box-shadow: none;
+		cursor: default;
+	}
 
 .vfb-details{
 	margin-bottom:10px;
